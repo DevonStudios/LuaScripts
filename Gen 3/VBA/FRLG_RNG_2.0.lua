@@ -20,39 +20,39 @@ local typeorder = {
  "Fire", "Water", "Grass", "Electric",
  "Psychic", "Ice", "Dragon", "Dark"}
 local movename = {
- "--" , "Pound", "Karate Chop", "Double Slap", "Comet Punch", "Mega Punch", "Pay Day", "Fire Punch", "Ice Punch", "Thunder Punch", 
- "Scratch", "Vice Grip", "Guillotine", "Razor Wind", "Swords Dance", "Cut", "Gust", "Wing Attack", "Whirlwind", "Fly", 
- "Bind", "Slam", "Vine Whip", "Stomp", "Double Kick", "Mega Kick", "Jump Kick", "Rolling Kick", "Sand Attack", "Headbutt", 
+ "--" , "Pound", "Karate Chop", "Double Slap", "Comet Punch", "Mega Punch", "Pay Day", "Fire Punch", "Ice Punch", "Thunder Punch",
+ "Scratch", "Vice Grip", "Guillotine", "Razor Wind", "Swords Dance", "Cut", "Gust", "Wing Attack", "Whirlwind", "Fly",
+ "Bind", "Slam", "Vine Whip", "Stomp", "Double Kick", "Mega Kick", "Jump Kick", "Rolling Kick", "Sand Attack", "Headbutt",
  "Horn Attack", "Fury Attack", "Horn Drill", "Tackle", "Body Slam", "Wrap", "Take Down", "Thrash", "Double-Edge",
- "Tail Whip", "Poison Sting", "Twineedle", "Pin Missile", "Leer", "Bite", "Growl", "Roar", "Sing", "Supersonic", "Sonic Boom", 
- "Disable", "Acid", "Ember", "Flamethrower", "Mist", "Water Gun", "Hydro Pump", "Surf", "Ice Beam", "Blizzard", "Psybeam", 
- "Bubble Beam", "Aurora Beam", "Hyper Beam", "Peck", "Drill Peck", "Submission", "Low Kick", "Counter", "Seismic Toss", 
- "Strength", "Absorb", "Mega Drain", "Leech Seed", "Growth", "Razor Leaf", "Solar Beam", "Poison Powder", "Stun Spore", 
- "Sleep Powder", "Petal Dance", "String Shot", "Dragon Rage", "Fire Spin", "Thunder Shock", "Thunderbolt", "Thunder Wave", 
- "Thunder", "Rock Throw", "Earthquake", "Fissure", "Dig", "Toxic", "Confusion", "Psychic", "Hypnosis", "Meditate", 
- "Agility", "Quick Attack", "Rage", "Teleport", "Night Shade", "Mimic", "Screech", "Double Team", "Recover", "Harden", 
+ "Tail Whip", "Poison Sting", "Twineedle", "Pin Missile", "Leer", "Bite", "Growl", "Roar", "Sing", "Supersonic", "Sonic Boom",
+ "Disable", "Acid", "Ember", "Flamethrower", "Mist", "Water Gun", "Hydro Pump", "Surf", "Ice Beam", "Blizzard", "Psybeam",
+ "Bubble Beam", "Aurora Beam", "Hyper Beam", "Peck", "Drill Peck", "Submission", "Low Kick", "Counter", "Seismic Toss",
+ "Strength", "Absorb", "Mega Drain", "Leech Seed", "Growth", "Razor Leaf", "Solar Beam", "Poison Powder", "Stun Spore",
+ "Sleep Powder", "Petal Dance", "String Shot", "Dragon Rage", "Fire Spin", "Thunder Shock", "Thunderbolt", "Thunder Wave",
+ "Thunder", "Rock Throw", "Earthquake", "Fissure", "Dig", "Toxic", "Confusion", "Psychic", "Hypnosis", "Meditate",
+ "Agility", "Quick Attack", "Rage", "Teleport", "Night Shade", "Mimic", "Screech", "Double Team", "Recover", "Harden",
  "Minimize", "Smokescreen", "Confuse Ray", "Withdraw", "Defense Curl", "Barrier", "Light Screen", "Haze", "Reflect",
  "Focus Energy", "Bide", "Metronome", "Mirror Move", "Self-Destruct", "Egg Bomb", "Lick", "Smog", "Sludge", "Bone Club",
- "Fire Blast", "Waterfall", "Clamp", "Swift", "Skull Bash", "Spike Cannon", "Constrict", "Amnesia", "Kinesis", "Soft-Boiled", 
- "High Jump Kick", "Glare", "Dream Eater", "Poison Gas", "Barrage", "Leech Life", "Lovely Kiss", "Sky Attack", "Transform", 
- "Bubble", "Dizzy Punch", "Spore", "Flash", "Psywave", "Splash", "Acid Armor", "Crabhammer", "Explosion", "Fury Swipes", 
- "Bonemerang", "Rest", "Rock Slide", "Hyper Fang", "Sharpen", "Conversion", "Tri Attack", "Super Fang", "Slash", 
- "Substitute", "Struggle", "Sketch", "Triple Kick", "Thief", "Spider Web", "Mind Reader", "Nightmare", "Flame Wheel", 
- "Snore", "Curse", "Flail", "Conversion 2", "Aeroblast", "Cotton Spore", "Reversal", "Spite", "Powder Snow", "Protect", 
- "Mach Punch", "Scary Face", "Feint Attack", "Sweet Kiss", "Belly Drum", "Sludge Bomb", "Mud-Slap", "Octazooka", "Spikes", 
- "Zap Cannon", "Foresight", "Destiny Bond", "Perish Song", "Icy Wind", "Detect", "Bone Rush", "Lock-On", "Outrage", 
- "Sandstorm", "Giga Drain", "Endure", "Charm", "Rollout", "False Swipe", "Swagger", "Milk Drink", "Spark", "Fury Cutter", 
+ "Fire Blast", "Waterfall", "Clamp", "Swift", "Skull Bash", "Spike Cannon", "Constrict", "Amnesia", "Kinesis", "Soft-Boiled",
+ "High Jump Kick", "Glare", "Dream Eater", "Poison Gas", "Barrage", "Leech Life", "Lovely Kiss", "Sky Attack", "Transform",
+ "Bubble", "Dizzy Punch", "Spore", "Flash", "Psywave", "Splash", "Acid Armor", "Crabhammer", "Explosion", "Fury Swipes",
+ "Bonemerang", "Rest", "Rock Slide", "Hyper Fang", "Sharpen", "Conversion", "Tri Attack", "Super Fang", "Slash",
+ "Substitute", "Struggle", "Sketch", "Triple Kick", "Thief", "Spider Web", "Mind Reader", "Nightmare", "Flame Wheel",
+ "Snore", "Curse", "Flail", "Conversion 2", "Aeroblast", "Cotton Spore", "Reversal", "Spite", "Powder Snow", "Protect",
+ "Mach Punch", "Scary Face", "Feint Attack", "Sweet Kiss", "Belly Drum", "Sludge Bomb", "Mud-Slap", "Octazooka", "Spikes",
+ "Zap Cannon", "Foresight", "Destiny Bond", "Perish Song", "Icy Wind", "Detect", "Bone Rush", "Lock-On", "Outrage",
+ "Sandstorm", "Giga Drain", "Endure", "Charm", "Rollout", "False Swipe", "Swagger", "Milk Drink", "Spark", "Fury Cutter",
  "Steel Wing", "Mean Look", "Attract", "Sleep Talk", "Heal Bell", "Return", "Present", "Frustration", "Safeguard",
  "Pain Split", "Sacred Fire", "Magnitude", "Dynamic Punch", "Megahorn", "Dragon Breath", "Baton Pass", "Encore", "Pursuit",
- "Rapid Spin", "Sweet Scent", "Iron Tail", "Metal Claw", "Vital Throw", "Morning Sun", "Synthesis", "Moonlight", "Hidden Power", 
- "Cross Chop", "Twister", "Rain Dance", "Sunny Day", "Crunch", "Mirror Coat", "Psych Up", "Extreme Speed", "Ancient Power", 
- "Shadow Ball", "Future Sight", "Rock Smash", "Whirlpool", "Beat Up", "Fake Out", "Uproar", "Stockpile", "Spit Up", 
- "Swallow", "Heat Wave", "Hail", "Torment", "Flatter", "Will-O-Wisp", "Memento", "Facade", "Focus Punch", "Smelling Salts", 
- "Follow Me", "Nature Power", "Charge", "Taunt", "Helping Hand", "Trick", "Role Play", "Wish", "Assist", "Ingrain", 
- "Superpower", "Magic Coat", "Recycle", "Revenge", "Brick Break", "Yawn", "Knock Off", "Endeavor", "Eruption", "Skill Swap", 
- "Imprison", "Refresh", "Grudge", "Snatch", "Secret Power", "Dive", "Arm Thrust", "Camouflage", "Tail Glow", "Luster Purge", 
+ "Rapid Spin", "Sweet Scent", "Iron Tail", "Metal Claw", "Vital Throw", "Morning Sun", "Synthesis", "Moonlight", "Hidden Power",
+ "Cross Chop", "Twister", "Rain Dance", "Sunny Day", "Crunch", "Mirror Coat", "Psych Up", "Extreme Speed", "Ancient Power",
+ "Shadow Ball", "Future Sight", "Rock Smash", "Whirlpool", "Beat Up", "Fake Out", "Uproar", "Stockpile", "Spit Up",
+ "Swallow", "Heat Wave", "Hail", "Torment", "Flatter", "Will-O-Wisp", "Memento", "Facade", "Focus Punch", "Smelling Salts",
+ "Follow Me", "Nature Power", "Charge", "Taunt", "Helping Hand", "Trick", "Role Play", "Wish", "Assist", "Ingrain",
+ "Superpower", "Magic Coat", "Recycle", "Revenge", "Brick Break", "Yawn", "Knock Off", "Endeavor", "Eruption", "Skill Swap",
+ "Imprison", "Refresh", "Grudge", "Snatch", "Secret Power", "Dive", "Arm Thrust", "Camouflage", "Tail Glow", "Luster Purge",
  "Mist Ball", "Feather Dance", "Teeter Dance", "Blaze Kick", "Mud Sport", "Ice Ball", "Needle Arm", "Slack Off",
- "Hyper Voice", "Poison Fang", "Crush Claw", "Blast Burn", "Hydro Cannon", "Meteor Mash", "Astonish", "Weather Ball", 
+ "Hyper Voice", "Poison Fang", "Crush Claw", "Blast Burn", "Hydro Cannon", "Meteor Mash", "Astonish", "Weather Ball",
  "Aromatherapy", "Fake Tears", "Air Cutter", "Overheat", "Odor Sleuth", "Rock Tomb", "Silver Wind", "Metal Sound",
  "Grass Whistle", "Tickle", "Cosmic Power", "Water Spout", "Signal Beam", "Shadow Punch", "Extrasensory", "Sky Uppercut",
  "Sand Tomb", "Sheer Cold", "Muddy Water", "Bullet Seed", "Aerial Ace", "Icicle Spear", "Iron Defense", "Block", "Howl",
@@ -119,12 +119,12 @@ local language
 local monInfo
 local pointers
 local eggInfo
-local statscreenInfo
-local statscreenInfo2 
-local boxcheckOff
-local startboxInfo
-local startboxInfo2
-local partyselectionInfo
+local statScreenInfo
+local statScreenInfo2
+local boxCheckOff
+local startBoxInfo
+local startBoxInfo2
+local partySelectionInfo
 local partyScreen
 local partyCursor
 local hpiv
@@ -148,34 +148,34 @@ if gameLang == 0x4A then  -- Check game language
  monInfo = 0
  pointers = 0
  eggInfo = 0
- statscreenInfo = 0
- statscreenInfo2 = 0
- boxcheckOff = 0
- startboxInfo = 0
- startboxInfo2 = 0
- partyselectionInfo = 0
+ statScreenInfo = 0
+ statScreenInfo2 = 0
+ boxCheckOff = 0
+ startBoxInfo = 0
+ startBoxInfo2 = 0
+ partySelectionInfo = 0
 elseif gameLang == 0x45 then
  language = "USA"
  monInfo = 0xA0
  pointers = 0x60
  eggInfo = 0xB4
- boxcheckOff = 0xFFFF00
- statscreenInfo = 0x84
- statscreenInfo2 = 0x34
- startboxInfo = 0x54
- startboxInfo2 = 0x88
- partyselectionInfo = 0x8C
+ boxCheckOff = 0xFFFF00
+ statScreenInfo = 0x84
+ statScreenInfo2 = 0x34
+ startBoxInfo = 0x54
+ startBoxInfo2 = 0x88
+ partySelectionInfo = 0x8C
 else
  language = "EUR"
  monInfo = 0xA0
  pointers = -0x50
  eggInfo = 0xB4
- boxcheckOff = 0xFFFF00
- statscreenInfo = 0x84
- statscreenInfo2 = 0x34
- startboxInfo = 0x54
- startboxInfo2 = 0x88
- partyselectionInfo = 0x8C
+ boxCheckOff = 0xFFFF00
+ statScreenInfo = 0x84
+ statScreenInfo2 = 0x34
+ startBoxInfo = 0x54
+ startBoxInfo2 = 0x88
+ partySelectionInfo = 0x8C
 end
 
 if gameVersion == 0x56 then  -- Check game version
@@ -201,11 +201,11 @@ print()
 print("Game Version: "..game..warning)
 print("Language: "..language)
 
-local eggpidpointerAddr = 0x020397E0 + eggInfo
+local eggPidPointerAddr = 0x020397E0 + eggInfo
 local eggCheck = 0x020397D8 + eggInfo
 local partyStart = 0x020241E4 + monInfo
-local boxpointerAddr = 0x03004FB0 + pointers
-local currentboxpidSelected = 0x020396FC + eggInfo
+local boxPointerAddr = 0x03004FB0 + pointers
+local currentBoxPidSelected = 0x020396FC + eggInfo
 local wildStart = 0x02023F8C + monInfo
 local start = 0x02023F8C + monInfo
 local moveStart = 0x02023BA8 + monInfo
@@ -221,7 +221,7 @@ local prevKey = {}
 local catchKey = {}
 local catchInstructions = false
 local catchDelay = -1
-local j = 0
+local delayCounter = 0
 local bonusStatus = 1
 local skips = 0
 local seed2 = 0
@@ -229,7 +229,7 @@ local seed3 = 0
 local frameDelay = 0
 local oneTime = false
 local safariOffset = 0
-local safarirateOffset = 0
+local safariRateOffset = 0
 
 joypad.set(1, {A = true, B = true, select = true, start = true})
 
@@ -265,7 +265,7 @@ function calcFrameJump()
  return calibrationFrame
 end
 
-function findcatchSeed(s, d)
+function findCatchSeed(s, d)
  local t = s
  for i = 1, d do
   t = next(t)
@@ -273,7 +273,7 @@ function findcatchSeed(s, d)
  return t
 end
 
-function findsureCatch(s, b, sz)
+function findSureCatch(s, b, sz)
  local t = s
  local t1 = s
  local delay = 0
@@ -384,7 +384,7 @@ function showhiddenInfo()
   gui.text(22, 40, string.format("%08X", personality), "green")
  else
   gui.text(22, 40, string.format("%08X", personality))
- end 
+ end
  gui.text(2, 50, "Nature: "..naturename[nature + 1])
  gui.text(2, 60, natureorder[natinc + 1].."+ "..natureorder[natdec + 1].."-")
  gui.text(167, 30, "HP "..typeorder[hidpowtype + 1].." "..hidpowbase)
@@ -440,13 +440,13 @@ function showPP()
  end
 end
 
-function showrngInfo()
+function showRngInfo()
  gui.text(2, 122, frame)
  gui.text(1, 132, "Initial Seed: "..string.format("%04X", initSeed))
  gui.text(2, 142, "Current Seed: "..string.format("%08X", currSeed))
 end
 
-function showtrainerInfo()
+function showTrainerInfo()
  gui.text(199, 142, string.format("TID: %d", tid))
  gui.text(199, 152, string.format("SID: %d", sid))
 end
@@ -454,7 +454,7 @@ end
 while true do
  initSeed = mword(0x02020000)
  currSeed = mdword(0x03004FA0 + pointers)
- screenCheck = mdword(0x02020430 + statscreenInfo)
+ screenCheck = mdword(0x02020430 + statScreenInfo)
  statsScreen = screenCheck == 0x0D000001 or screenCheck == 0x0D000002
 
  key = input.get()
@@ -469,7 +469,7 @@ while true do
    index = 1
   end
  end
- 
+
  if key["4"] and not prevKey["4"] then
   catchInstructions = true
  elseif key["3"] and not prevKey["3"] then
@@ -493,45 +493,45 @@ while true do
   ppStart = 0x02023BC0 + monInfo
  elseif mode[index] == "Breeding" then
   partyCounter = mbyte(0x02023F89 + monInfo) - 1
-  eggpartypidStart = partyStart + (partyCounter) * 0x64
-  start = eggpartypidStart
+  eggPartyPidStart = partyStart + (partyCounter) * 0x64
+  start = eggPartyPidStart
  elseif mode[index] == "Pokemon Info" then
   partyScreen = screenCheck == 0x0A030100
-  partyCursor = mbyte(0x0203B01D + partyselectionInfo)
-  boxNum = mbyte(mdword(boxpointerAddr))
-  boxStart = mdword(boxpointerAddr) + 4
+  partyCursor = mbyte(0x0203B01D + partySelectionInfo)
+  boxNum = mbyte(mdword(boxPointerAddr))
+  boxStart = mdword(boxPointerAddr) + 4
   boxPosition = mbyte(0x0203976D + eggInfo)
-  boxpidStart = boxStart + (0x1E * boxNum * 0x50) + (boxPosition * 0x50)
-  boxCheck = mdword(mdword(currentboxpidSelected) + 0xCDC) == mdword(boxpidStart) and screenCheck == 0x080B0101 + boxcheckOff
-  
+  boxPidStart = boxStart + (0x1E * boxNum * 0x50) + (boxPosition * 0x50)
+  boxCheck = mdword(mdword(currentBoxPidSelected) + 0xCDC) == mdword(boxPidStart) and screenCheck == 0x080B0101 + boxCheckOff
+
   if boxCheck and not partyScreen then
-   start = boxpidStart
+   start = boxPidStart
   elseif partyScreen then
    if partyCursor ~= 0x7 then
     start = partyStart + partyCursor * 0x64
    end
   elseif statsScreen then
-   if mdword(0x0201196C + startboxInfo) == 0 and  mdword(0x020032A8 + statscreenInfo2) == 0 then
-    start = 0x02011970 + startboxInfo
-    moveStart = 0x02011938 + startboxInfo
-   elseif mdword(0x02003250 + statscreenInfo2) == 0 then  -- 1st floor box / party check
-    start = 0x02006410 + startboxInfo2
-    moveStart = 0x020063D8 + startboxInfo2
+   if mdword(0x0201196C + startBoxInfo) == 0 and  mdword(0x020032A8 + statScreenInfo2) == 0 then
+    start = 0x02011970 + startBoxInfo
+    moveStart = 0x02011938 + startBoxInfo
+   elseif mdword(0x02003250 + statScreenInfo2) == 0 then  -- 1st floor box / party check
+    start = 0x02006410 + startBoxInfo2
+    moveStart = 0x020063D8 + startBoxInfo2
    else  -- 2nd floor box / daycare box check
-    start = 0x0200324C + startboxInfo
-    moveStart = 0x02003214 + startboxInfo
+    start = 0x0200324C + startBoxInfo
+    moveStart = 0x02003214 + startBoxInfo
    end
   end
  end
 
  personality = mdword(start)
- trainerid = mdword(start + 4)
+ trainerID = mdword(start + 4)
  isEgg = mword(start + 0x12) == 0x0601
- magicword = bxor(personality, trainerid)
+ magicword = bxor(personality, trainerID)
 
  if mode[index] == "Pokemon Info" then
-  tid = trainerid % 0x10000
-  sid = floor(trainerid / 65536)
+  tid = trainerID % 0x10000
+  sid = floor(trainerID / 65536)
  else
   idsPointer = mdword(0x03004FAC + pointers) + 0xA
   ids = mdword(idsPointer)
@@ -586,7 +586,7 @@ while true do
    showPP()
   end
 
-  if roamerCheck == 0 then 
+  if roamerCheck == 0 then
    gui.text(186, 50, string.format("Roamer? No"))
   else
    gui.text(178, 50, string.format("Roamer? Yes"))
@@ -594,11 +594,11 @@ while true do
    gui.text(178, 70, "Nature: "..naturename[(roamerCheck % 25) + 1])
   end
 
-  showrngInfo()
-  showtrainerInfo()
+  showRngInfo()
+  showTrainerInfo()
  elseif mode[index] == "100% Catch" then
   if catchInstructions then
-   gui.text(155, 1, "3 - hide instructions")
+   gui.text(155, 1, "3 - Hide instructions")
    gui.text(2, 11, "1) During battle, go to BAG > POKE BALLS")
    gui.text(2, 21, "2) Press A on the ball you want to use")
    gui.text(2, 31, "3) Move the arrow on 'USE', pause the game and save a state")
@@ -608,16 +608,16 @@ while true do
    gui.text(2, 71, "become 0")
    gui.text(2, 81, "6) Unpase the game holding A")
   else
-   gui.text(155, 1, "4 - show instructions")
+   gui.text(155, 1, "4 - Show instructions")
   end
-  
+
   prevKey = key
 
   battleScreen = mdword(0x0600D000) ~= 0
   status = mbyte(wildStart + 80)
   HPcurrent = mword(wildStart + 86)
   HPmax = mword(wildStart + 88)
-  ballSelector = mbyte(0x0203ACA8 + startboxInfo2)
+  ballSelector = mbyte(0x0203ACA8 + startBoxInfo2)
   if ballSelector > 0 and ballSelector <= 0xC then
    bonusBall = ball[ballSelector + 1]
   else
@@ -625,7 +625,7 @@ while true do
   end
   species = mword(0x02023528 + monInfo)
   bagScreen = screenCheck == 0x12010B00
-  safariZone = mword(0x0203990E + startboxInfo2) ~= 0
+  safariZone = mword(0x0203990E + startBoxInfo2) ~= 0
 
   if species == 410 then
    species = 386
@@ -633,7 +633,7 @@ while true do
 
   if status == 0 then
    bonusStatus = 1
-  elseif (status > 0 and status < 0x08) or status == 0x020 then   
+  elseif (status > 0 and status < 0x08) or status == 0x020 then
    bonusStatus = 2
   else
    bonusStatus = 1.5
@@ -643,38 +643,38 @@ while true do
    bonusBall = ball[6]
    safariOffset = 80
    if catchRate[species + 1] == 30 then
-    safarirateOffset = 5
+    safariRateOffset = 5
    elseif catchRate[species + 1] == 45 then
-    safarirateOffset = 7
+    safariRateOffset = 7
    elseif catchRate[species + 1] == 60 or catchRate[species + 1] == 225 then
-    safarirateOffset = 9
+    safariRateOffset = 9
    elseif catchRate[species + 1] == 75 or catchRate[species + 1] == 190 then
-    safarirateOffset = 12
+    safariRateOffset = 12
    elseif catchRate[species + 1] == 90 then
-    safarirateOffset = 1
+    safariRateOffset = 1
    elseif catchRate[species + 1] == 120 or catchRate[species + 1] == 235 then
-    safarirateOffset = 6
+    safariRateOffset = 6
    end
   else
    safariOffset = 0
-   safarirateOffset = 0
+   safariRateOffset = 0
   end
 
-  a = floor(((((3*HPmax)-(2*HPcurrent))*(catchRate[species+1]-safarirateOffset)*bonusBall)/(3*HPmax))*bonusStatus)
+  a = floor(((((3 * HPmax) - (2 * HPcurrent)) * (catchRate[species + 1] - safariRateOffset) * bonusBall) / (3 * HPmax)) * bonusStatus)
   b = floor(1048560 / (sqrt(sqrt(16711680 / a))))
 
   catchKey = joypad.get(1)
   if catchKey.select then
    startingFrame = frame
-   j = 0
+   delayCounter = 0
    catchDelay = 0
    skips = 0
    oneTime = false
    seed2 = currSeed
    frameDelay = 0
   end
-  
-  if j <= 150 and catchDelay == 0 then
+
+  if delayCounter <= 150 and catchDelay == 0 then
    if mbyte(0x020054C4) == 0x40 and not oneTime then
     seed3 = currSeed
     while seed2 ~= seed3 do
@@ -687,7 +687,9 @@ while true do
     seed2 = currSeed
    end
 
-   if skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
+   if skips == 2 and frameDelay > 120 - safariOffset then
+	catchDelay = frameDelay + 1
+   elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
     catchDelay = frameDelay
    elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
     catchDelay = frameDelay - 1
@@ -696,7 +698,7 @@ while true do
    elseif skips == 6 and frameDelay > 120 - safariOffset then  -- 3 shake
     catchDelay = frameDelay - 3
    end
-   j = j + 1
+   delayCounter = delayCounter + 1
   end
 
   if catchDelay <= 0 then
@@ -705,28 +707,28 @@ while true do
    gui.text(2, 101, "Delay calculated")
   end
 
-  catchSeed = findcatchSeed(currSeed, catchDelay)
-  
+  catchSeed = findCatchSeed(currSeed, catchDelay)
+
   if catchDelay > 0 and a > 0 and battleScreen and ((bonusBall ~= 0 and bagScreen) or safariZone) then
-   surecatchDelay = findsureCatch(catchSeed, b, safariZone) - 1
+   sureCatchDelay = findSureCatch(catchSeed, b, safariZone) - 1
    if safariZone then
-    surecatchDelay = surecatchDelay / 2
+    sureCatchDelay = sureCatchDelay / 2
    end
-   gui.text(2, 111, "100% catch missing frames: "..surecatchDelay)
+   gui.text(2, 111, "100% catch missing frames: "..sureCatchDelay)
   end
  elseif mode[index] == "Breeding" then
-  eggpidPointer = mdword(eggpidpointerAddr) + 0x2CE0
-  eggstepCounter = mbyte(eggpidPointer - 0x4)
+  eggPidPointer = mdword(eggPidPointerAddr) + 0x2CE0
+  eggStepCounter = mbyte(eggPidPointer - 0x4)
   eggReady = mbyte(mdword(eggCheck) + 0xC1C) == 0xF8
-  gui.text(2, 77, "Step Counter: "..eggstepCounter)
+  gui.text(2, 77, "Step Counter: "..eggStepCounter)
 
   if eggReady then
-   egglowPid = mword(eggpidPointer)
+   eggLowPid = mword(eggPidPointer)
    gui.text(2, 87, "Egg generated, go get it!")
-   gui.text(2, 97, string.format("Egg lower PID: %04X", egglowPid))
-  elseif eggstepCounter == 254 then
+   gui.text(2, 97, string.format("Egg lower PID: %04X", eggLowPid))
+  elseif eggStepCounter == 254 then
    gui.text(2, 87, "Next step might generate an egg!")
-  elseif eggstepCounter == 255 then
+  elseif eggStepCounter == 255 then
    gui.text(2, 87, "255th step taken")
   else
    gui.text(2, 87, "Keep on steppin'")
@@ -741,19 +743,19 @@ while true do
    showhiddenInfo()
   end
 
-  showrngInfo()
-  showtrainerInfo()
+  showRngInfo()
+  showTrainerInfo()
  elseif mode[index] == "Pandora" then
   gui.text(2, 152, "TempTID: "..initSeed)
-  showrngInfo()
-  showtrainerInfo()
+  showRngInfo()
+  showTrainerInfo()
  elseif mode[index] == "Pokemon Info" then
   if (partyScreen and partyCursor ~= 0x7) or statsScreen or boxCheck then
    if not boxCheck then
     showStats()
    end
    showhiddenInfo()
-   showtrainerInfo()
+   showTrainerInfo()
   end
 
   if statsScreen and not isEgg then
