@@ -316,7 +316,7 @@ function showStats()
  gui.text(194, 11, "Spe "..mword(start + 94))
 end
 
-function showhiddenInfo()
+function showHiddenInfo()
  gui.text(1, 21, "IVs:")
  gui.text(30, 21, "HP ")
  if hpiv >= 30 then
@@ -581,7 +581,7 @@ while true do
 
   if battleScreen and not statsScreen then
    showStats()
-   showhiddenInfo()
+   showHiddenInfo()
    showMoves()
    showPP()
   end
@@ -740,7 +740,7 @@ while true do
 
   if isEgg then
    showStats()
-   showhiddenInfo()
+   showHiddenInfo()
   end
 
   showRngInfo()
@@ -754,7 +754,7 @@ while true do
    if not boxCheck then
     showStats()
    end
-   showhiddenInfo()
+   showHiddenInfo()
    showTrainerInfo()
   end
 
