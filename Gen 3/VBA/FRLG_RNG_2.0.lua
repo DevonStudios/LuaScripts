@@ -62,7 +62,7 @@ local movename = {
 
 local catchRate = {
  -- Gen 1
- 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
+ 0, 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
  120,45, 255, 120, 45, 255, 120, 45, 255,
  127, 255, 90, 255, 90, 190, 75, 255, 90,
  235, 120, 45, 235, 120, 45, 150, 25, 190,
@@ -618,11 +618,11 @@ while true do
   else
    bonusBall = 0
   end
-  species = mword(0x02023528 + monInfo)
+  species = mword(0x02023528 + monInfo) + 1
   bagScreen = screenCheck == 0x12010B00
   safariZone = mword(0x0203990E + startBoxInfo2) ~= 0
 
-  if species > 251 then
+  if species > 252 then
    species = species - 25
   end
 
@@ -637,17 +637,17 @@ while true do
   if safariZone then
    bonusBall = ball[6]
    safariOffset = 80
-   if catchRate[species + 1] == 30 then
+   if catchRate[species] == 30 then
     safariRateOffset = 5
-   elseif catchRate[species + 1] == 45 then
+   elseif catchRate[species] == 45 then
     safariRateOffset = 7
-   elseif catchRate[species + 1] == 60 or catchRate[species + 1] == 225 then
+   elseif catchRate[species] == 60 or catchRate[species] == 225 then
     safariRateOffset = 9
-   elseif catchRate[species + 1] == 75 or catchRate[species + 1] == 190 then
+   elseif catchRate[species] == 75 or catchRate[species] == 190 then
     safariRateOffset = 12
-   elseif catchRate[species + 1] == 90 then
+   elseif catchRate[species] == 90 then
     safariRateOffset = 1
-   elseif catchRate[species + 1] == 120 or catchRate[species + 1] == 235 then
+   elseif catchRate[species] == 120 or catchRate[species] == 235 then
     safariRateOffset = 6
    end
   else
@@ -655,7 +655,7 @@ while true do
    safariRateOffset = 0
   end
 
-  a = floor(((((3 * HPmax) - (2 * HPcurrent)) * (catchRate[species + 1] - safariRateOffset) * bonusBall) / (3 * HPmax)) * bonusStatus)
+  a = floor(((((3 * HPmax) - (2 * HPcurrent)) * (catchRate[species] - safariRateOffset) * bonusBall) / (3 * HPmax)) * bonusStatus)
   b = floor(1048560 / (sqrt(sqrt(16711680 / a))))
 
   catchKey = joypad.get(1)
