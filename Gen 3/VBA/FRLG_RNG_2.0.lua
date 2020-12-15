@@ -224,7 +224,6 @@ local seed3 = 0
 local frameDelay = 0
 local oneTime = false
 local safariOffset = 0
-local safariRateOffset = 0
 
 joypad.set(1, {A = true, B = true, select = true, start = true})
 
@@ -637,25 +636,13 @@ while true do
   if safariZone then
    bonusBall = ball[6]
    safariOffset = 80
-   if catchRate[species] == 30 then
-    safariRateOffset = 5
-   elseif catchRate[species] == 45 then
-    safariRateOffset = 7
-   elseif catchRate[species] == 60 or catchRate[species] == 225 then
-    safariRateOffset = 9
-   elseif catchRate[species] == 75 or catchRate[species] == 190 then
-    safariRateOffset = 12
-   elseif catchRate[species] == 90 then
-    safariRateOffset = 1
-   elseif catchRate[species] == 120 or catchRate[species] == 235 then
-    safariRateOffset = 6
-   end
+   rate = floor((1275 * mbyte(mdword(0x02023F48 + monInfo) + 0x7C)) / 100)
   else
    safariOffset = 0
-   safariRateOffset = 0
+   rate = catchRate[species]
   end
 
-  a = floor(((((3 * HPmax) - (2 * HPcurrent)) * (catchRate[species] - safariRateOffset) * bonusBall) / (3 * HPmax)) * bonusStatus)
+  a = floor(((((3 * HPmax) - (2 * HPcurrent)) * rate * bonusBall) / (3 * HPmax)) * bonusStatus)
   b = floor(1048560 / (sqrt(sqrt(16711680 / a))))
 
   catchKey = joypad.get(1)
