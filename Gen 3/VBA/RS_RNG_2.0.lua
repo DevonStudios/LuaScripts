@@ -5,6 +5,7 @@ rshift = bit.rshift
 bxor = bit.bxor
 band = bit.band
 floor = math.floor
+sqrt = math.sqrt
 
 local natureorder = {"Atk", "Def", "Spd", "SpAtk", "SpDef"}
 local naturename = {
@@ -59,7 +60,53 @@ local movename = {
  "Water Sport", "Calm Mind", "Leaf Blade", "Dragon Dance", "Rock Blast", "Shock Wave", "Water Pulse", "Doom Desire",
  "Psycho Boost"}
 
-local mode = {"None", "Capture", "Breeding", "Pandora", "Pokemon Info"}
+local catchRate = {
+ -- Gen 1
+ 0, 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
+ 120,45, 255, 120, 45, 255, 120, 45, 255,
+ 127, 255, 90, 255, 90, 190, 75, 255, 90,
+ 235, 120, 45, 235, 120, 45, 150, 25, 190,
+ 75, 170, 50, 255, 90, 255, 120, 45, 190,
+ 75, 190, 75, 255, 50, 255, 90, 190, 75,
+ 190, 75, 190, 75, 255, 120, 45, 200, 100,
+ 50, 180, 90, 45, 255, 120, 45, 190, 60,
+ 255, 120, 45, 190, 60, 190, 75, 190, 60,
+ 45, 190, 45, 190, 75, 190, 75, 190, 60,
+ 190, 90, 45, 45, 190, 75, 225, 60, 190,
+ 60, 90, 45, 190, 75, 45, 45, 45, 190, 60,
+ 120, 60, 30, 45, 45, 225, 75, 225, 60, 225,
+ 60, 45, 45, 45, 45, 45, 45, 45, 255, 45,
+ 45, 35, 45, 45, 45, 45, 45, 45, 45, 45,
+ 45,45, 25, 3, 3, 3, 45, 45, 45, 3, 45,
+ -- Gen 2
+ 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
+ 90, 255, 90, 255, 90, 255, 90, 90, 190,
+ 75, 190, 150, 170, 190, 75, 190, 75, 235,
+ 120, 45, 45, 190, 75, 65, 45, 255, 120, 45,
+ 45, 235, 120, 75, 255, 90, 45, 45, 30, 70,
+ 45, 225, 45, 60, 190, 75, 190, 60, 25, 190,
+ 75, 45, 25, 190, 45, 60, 120, 60, 190, 75,
+ 225, 75, 60, 190, 75, 45, 25, 25, 120, 45,
+ 45, 120, 60, 45, 45, 45, 75, 45, 45, 45, 45,
+ 45, 30, 3, 3, 3, 45, 45, 45, 3, 3, 45,
+ -- Gen 3
+ 45, 45, 45, 45, 45, 45, 45, 45, 45, 255, 127,
+ 255, 90, 255, 120, 45, 120, 45, 255, 120, 45,
+ 255, 120, 45, 255, 120, 45, 200, 45, 255, 90,
+ 255, 190, 45, 200, 75, 125, 60, 255, 60, 200,
+ 255, 90, 255, 90, 45, 190, 75, 225, 205, 155,
+ 255, 60, 225, 60, 255, 120, 45, 180, 200, 120,
+ 45, 255, 150, 255, 120, 45, 190, 60, 190, 75,
+ 45, 45, 150, 255, 60, 200, 200, 45, 180, 90,
+ 255, 45, 125, 190, 90, 150, 255, 120, 45, 225,
+ 75, 200, 190, 120, 45, 255, 60, 60, 30, 225, 45,
+ 90, 90, 25, 180, 90, 45, 45, 150, 150, 45, 45,
+ 45, 45, 235, 120, 45, 45, 45, 45, 3, 3, 3, 3,
+ 3, 3, 5, 5, 3, 3, 3, 3, 3, 45}
+
+local ball = {"0", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
+
+local mode = {"None", "Capture", "100% Catch", "Breeding", "Pandora", "Pokemon Info"}
 local index = 1
 local gameLang = mbyte(0x080000AF)
 local gameVersion = mbyte(0x080000AE)
@@ -95,6 +142,8 @@ if gameLang == 0x4A then  -- Check game language
  partyScreenOff = 0
  startBoxInfo = 0
  startBoxInfo2 = 0
+ catchInfo = 0
+ catchInfo2 = 0
 elseif gameLang == 0x45 then
  language = "USA"
  monInfo = 0xD0
@@ -103,6 +152,8 @@ elseif gameLang == 0x45 then
  partyScreenOff = 0x80000
  startBoxInfo = 0x2E4
  startBoxInfo2 = 0x5D0
+ catchInfo = 0x302
+ catchInfo2 = 0x304
 else
  language = "EUR"
  monInfo = 0xE0
@@ -111,6 +162,8 @@ else
  partyScreenOff = 0x80000
  startBoxInfo = 0x2E4
  startBoxInfo2 = 0x5D0
+ catchInfo = 0x302
+ catchInfo2 = 0x304
 end
 
 if gameVersion == 0x56 then  -- Check game version
@@ -125,17 +178,18 @@ elseif gameVersion == 0x45 then
  game = "Emerald"
 end
 
-if game ~= 'Ruby' and game ~= 'Sapphire' then
- warning = ' - Wrong game version! Use Ruby/Sapphire instead'
+if game ~= "Ruby" and game ~= "Sapphire" then
+ warning = " - Wrong game version! Use Ruby/Sapphire instead"
 else
- warning = ''
+ warning = ""
 end
 
-print("New Order of Breeding x Real.96")
+print("Devon Studios x Real.96")
 print()
 print("Game Version: "..game..warning)
 print("Language: "..language)
 
+local wildStart = 0x030044F0 + monInfo
 local start = 0x030044F0 + monInfo
 local moveStart = 0x02024844 + movesInfo
 local ppStart = 0x0202485C + pointers
@@ -149,6 +203,17 @@ local tempCurr = 0
 local frame = 0
 local key = {}
 local prevKey = {}
+local catchKey = {}
+local catchInstructions = false
+local catchDelay = -1
+local delayCounter = 0
+local bonusStatus = 1
+local skips = 0
+local seed2 = 0
+local seed3 = 0
+local frameDelay = 0
+local oneTime = false
+local safariOffset = 0
 
 joypad.set(1, {A = true, B = true, select = true, start = true})
 
@@ -182,6 +247,47 @@ function calcFrameJump()
   end
  end
  return calibrationFrame
+end
+
+function findCatchSeed(s, d)
+ local t = s
+ for i = 1, d do
+  t = next(t)
+ end
+ return t
+end
+
+function findSureCatch(s, b, sz)
+ local t = s
+ local t1 = s
+ local delay = 0
+ local ballShakes = 0
+ while ballShakes ~= 4 do
+  if rshift(t, 16) < b then
+   ballShakes = 1
+   t = next(t)
+   if rshift(t, 16) < b then
+    ballShakes = 2
+    t = next(t)
+    if rshift(t, 16) < b then
+     ballShakes = 3
+     t = next(t)
+     if rshift(t, 16) < b then
+      ballShakes = 4
+     end
+    end
+   end
+   else
+    ballShakes = 0
+  end
+  if sz and delay % 2 ~= 0 then
+   ballShakes = 0
+  end
+  t1 = next(t1)
+  t = t1
+  delay = delay + 1
+ end
+ return delay
 end
 
 function showStats()
@@ -338,13 +444,19 @@ while true do
  if key["1"] and not prevKey["1"] then
   index = index - 1
   if index < 1 then
-   index = 5
+   index = 6
   end
  elseif key["2"] and not prevKey["2"] then
   index = index + 1
-  if index > 5 then
+  if index > 6 then
    index = 1
   end
+ end
+
+ if key["4"] and not prevKey["4"] then
+  catchInstructions = true
+ elseif key["3"] and not prevKey["3"] then
+  catchInstructions = false
  end
 
  prevKey = key
@@ -360,6 +472,127 @@ while true do
 
  if mode[index] == "Capture" then
   start = 0x030044F0 + monInfo
+ elseif mode[index] == "100% Catch" then
+  if catchInstructions then
+   gui.text(155, 1, "3 - Hide instructions")
+   gui.text(2, 11, "1) During battle, go to BAG > POKE BALLS")
+   gui.text(2, 21, "2) Press A on the ball you want to use")
+   gui.text(2, 31, "3) Move the arrow on 'USE', pause the game and save a state")
+   gui.text(2, 41, "4) Advance one frame holding SELECT and then unpause the")
+   gui.text(2, 51, "game holding A. Wait until delay is calculated")
+   gui.text(2, 61, "5) Load the state you made, advance frames until counter")
+   gui.text(2, 71, "become 0")
+   gui.text(2, 81, "6) Unpase the game holding A")
+  else
+   gui.text(155, 1, "4 - Show instructions")
+  end
+
+  prevKey = key
+
+  battleScreen = mdword(0x0600D000) ~= 0 and mdword(0x0600CFFC) == 0
+  status = mbyte(wildStart + 80)
+  HPcurrent = mword(wildStart + 86)
+  HPmax = mword(wildStart + 88)
+  ballSelector = mword(0x0203825C + catchInfo)
+  isBallSelected = ballSelector > 0 and ballSelector <= 0xC
+  if ballSelector > 0 and ballSelector <= 0xC then
+   bonusBall = ball[ballSelector + 1]
+  else
+   bonusBall = 0
+  end
+  species = mword(0x020241C4 + pointers) + 1
+  bagScreen = screenCheck == 0x00004000
+  safariZone = mword(0x02038506 + catchInfo2) ~= 0
+
+  if species > 252 then
+   species = species - 25
+  end
+
+  if status == 0 then
+   bonusStatus = 1
+  elseif (status > 0 and status < 0x08) or status == 0x020 then
+   bonusStatus = 2
+  else
+   bonusStatus = 1.5
+  end
+
+  if safariZone then
+   bonusBall = ball[6]
+   safariOffset = 80
+   if catchRate[species] == 30 then
+    rate = catchRate[species] - 5
+   elseif catchRate[species] == 45 then
+    rate = catchRate[species] - 7
+   elseif catchRate[species] == 60 or catchRate[species] == 225 then
+    rate = catchRate[species] - 9
+   elseif catchRate[species] == 75 or catchRate[species] == 190 then
+    rate = catchRate[species] - 12
+   elseif catchRate[species] == 90 then
+    rate = catchRate[species] - 1
+   elseif catchRate[species] == 120 or catchRate[species] == 235 then
+    rate = catchRate[species] - 6
+   end
+  else
+   safariOffset = 0
+   rate = catchRate[species]
+  end
+
+  a = floor(((((3 * HPmax) - (2 * HPcurrent)) * rate * bonusBall) / (3 * HPmax)) * bonusStatus)
+  b = floor(1048560 / (sqrt(sqrt(16711680 / a))))
+
+  catchKey = joypad.get(1)
+  if catchKey.select then
+   startingFrame = frame
+   delayCounter = 0
+   catchDelay = 0
+   skips = 0
+   oneTime = false
+   seed2 = currSeed
+   frameDelay = 0
+  end
+
+  if delayCounter <= 150 and catchDelay == 0 then
+   if mbyte(0x02017810) == 0x40 and not oneTime then
+    seed3 = currSeed
+    while seed2 ~= seed3 do
+     seed2 = next(seed2)
+     skips = skips + 1
+    end
+    oneTime = true
+	frameDelay = frame - startingFrame
+   else
+    seed2 = currSeed
+   end
+
+   if skips == 2 and frameDelay > 120 - safariOffset then
+	catchDelay = frameDelay + 1
+   elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
+    catchDelay = frameDelay
+   elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
+    catchDelay = frameDelay - 1
+   elseif skips == 5 and frameDelay > 120 - safariOffset then  -- 2 shake
+    catchDelay = frameDelay - 2
+   elseif skips == 6 and frameDelay > 120 - safariOffset then  -- 3 shake
+    catchDelay = frameDelay - 3
+   end
+   delayCounter = delayCounter + 1
+  end
+
+  if catchDelay <= 0 then
+   gui.text(2, 101, "Delay not calculated yet")
+  else
+   gui.text(2, 101, "Delay calculated")
+  end
+
+  catchSeed = findCatchSeed(currSeed, catchDelay)
+
+  if catchDelay > 0 and a > 0 and (battleScreen or isBallSelected) and ((bonusBall ~= 0 and bagScreen) or safariZone) then
+   sureCatchDelay = findSureCatch(catchSeed, b, safariZone) - 1
+   if safariZone then
+    sureCatchDelay = sureCatchDelay / 2
+   end
+   gui.text(2, 111, "100% catch missing frames: "..sureCatchDelay)
+  end
  elseif mode[index] == "Breeding" then
   partyCounter = mbyte(0x03004280 + monInfo) - 1
   eggPartyPidStart = partyStart + partyCounter * 0x64
@@ -432,6 +665,7 @@ while true do
  hidpowbase=floor(((band(hpiv,2)/2 + band(atkiv,2) + 2*band(defiv,2) + 4*band(spdiv,2) + 8*band(spatkiv,2) + 16*band(spdefiv,2))*40)/63 + 30)
 
  gui.text(2, 1, "Mode: "..mode[index])
+ gui.text(95, 1, "<- 1 - 2 ->")
 
  if mode[index] == "Capture" then
   battleScreen = mdword(0x0600D000) ~= 0 and mdword(0x0600CFFC) == 0
