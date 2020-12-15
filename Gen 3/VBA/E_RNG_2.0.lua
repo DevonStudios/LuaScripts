@@ -59,8 +59,8 @@ local movename = {
  "Dragon Claw", "Frenzy Plant", "Bulk Up", "Bounce", "Mud Shot", "Poison Tail", "Covet", "Volt Tackle", "Magical Leaf",
  "Water Sport", "Calm Mind", "Leaf Blade", "Dragon Dance", "Rock Blast", "Shock Wave", "Water Pulse", "Doom Desire",
  "Psycho Boost"}
- 
- local catchRate = {
+
+local catchRate = {
  -- Gen 1
  0, 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
  120,45, 255, 120, 45, 255, 120, 45, 255,
@@ -165,13 +165,13 @@ elseif gameVersion == 0x45 then
  game = "Emerald"
 end
 
-if game ~= 'Emerald' then
- warning = ' - Wrong game version! Use Emerald instead'
+if game ~= "Emerald" then
+ warning = " - Wrong game version! Use Emerald instead"
 else
- warning = ''
+ warning = ""
 end
 
-print("New Order of Breeding x Real.96")
+print("Devon Studios x Real.96")
 print()
 print("Game Version: "..game..warning)
 print("Language: "..language)
@@ -497,7 +497,7 @@ while true do
    gui.text(2, 21, "2) Press A on the ball you want to use")
    gui.text(2, 31, "3) Move the arrow on 'USE', pause the game and save a state")
    gui.text(2, 41, "4) Advance one frame holding SELECT and then unpause the")
-   gui.text(2, 51, "game holding A. Delay will be calculated")
+   gui.text(2, 51, "game holding A. Wait until delay is calculated")
    gui.text(2, 61, "5) Load the state you made, advance frames until counter")
    gui.text(2, 71, "become 0")
    gui.text(2, 81, "6) Unpase the game holding A")
@@ -611,7 +611,7 @@ while true do
   boxPosition = mbyte(0x02039A19 + eggInfo)
   boxPidStart = boxStart + (0x1E * boxNum * 0x50) + (boxPosition * 0x50)
   boxCheck = mdword(currentBoxPidSelected) == mdword(boxPidStart) and screenCheck == 0x080B0101 + boxCheckOff
- 
+
   if boxCheck and not partyScreen then
    start = boxPidStart
   elseif partyScreen then
@@ -755,9 +755,9 @@ while true do
    else
     gui.text(38, 97, string.format("%08X", eggPid))
    end
- 
+
    gui.text(2, 107, "Nature: "..naturename[eggNature + 1])
- 
+
    if iter > 1 then
     gui.text(100, 97, string.format("Approx iter: %d", iter))
     gui.text(100, 107, string.format("Stone worked!"))

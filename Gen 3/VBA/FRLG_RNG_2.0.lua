@@ -191,7 +191,7 @@ else
  warning = ""
 end
 
-print("New Order of Breeding x Real.96")
+print("Devon Studios x Real.96")
 print()
 print("Game Version: "..game..warning)
 print("Language: "..language)
@@ -597,7 +597,7 @@ while true do
    gui.text(2, 21, "2) Press A on the ball you want to use")
    gui.text(2, 31, "3) Move the arrow on 'USE', pause the game and save a state")
    gui.text(2, 41, "4) Advance one frame holding SELECT and then unpause the")
-   gui.text(2, 51, "game holding A. Delay will be calculated")
+   gui.text(2, 51, "game holding A. Wait until delay is calculated")
    gui.text(2, 61, "5) Load the state you made, advance frames until counter")
    gui.text(2, 71, "become 0")
    gui.text(2, 81, "6) Unpase the game holding A")
