@@ -2,6 +2,7 @@ mdword = memory.readdwordunsigned
 mword = memory.readwordunsigned
 mbyte = memory.readbyte
 rshift = bit.rshift
+lshift = bit.lshift
 bxor = bit.bxor
 band = bit.band
 floor = math.floor
@@ -105,7 +106,6 @@ local catchRate = {
  3, 3, 5, 5, 3, 3, 3, 3, 3, 45}
 
 local ball = {"0", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
-
 local mode = {"None", "Capture", "100% Catch", "Breeding", "Pandora", "Pokemon Info"}
 local index = 1
 local gameLang = mbyte(0x080000AF)
@@ -605,21 +605,53 @@ while true do
    gui.text(155, 1, "4 - Show instructions")
   end
 
-  prevKey = key
-
   battleScreen = mdword(0x0600D000) ~= 0
+  species = mword(0x02023528 + monInfo) + 1
+  bagScreen = screenCheck == 0x12010B00
+  ballSelector = mword(0x0203ACA8 + startBoxInfo2) + 1
+  isBallSelected = ballSelector > 0 and ballSelector < 0xD
   status = mbyte(wildStart + 80)
+  level = mbyte(start + 84)
+  wildType = mbyte(0x2023BBD + monInfo)
   HPcurrent = mword(wildStart + 86)
   HPmax = mword(wildStart + 88)
-  ballSelector = mword(0x0203ACA8 + startBoxInfo2)
-  if ballSelector > 0 and ballSelector <= 0xC then
-   bonusBall = ball[ballSelector + 1]
+  isSafariZone = mword(0x0203990E + startBoxInfo2) ~= 0
+  saveBlock2 = mdword(0x03004FA0 + pointers + 0xC)
+  baseDexFlag = rshift(lshift(0x1000000, band((species - 2), 7)), 24)
+  dexFlag = band(mbyte(saveBlock2 + 0x28 + band(rshift(lshift(species - 2, 16), 19), 0xFF)), baseDexFlag)
+  battleTurnsCounter = mbyte(0x03004F43 + pointers)
+
+  if wildType == 0x0B or wildType == 0x06 then  -- net ball catch rate, 0x0B = Water, 0x06 = Bug
+   ball[7] = 3
+  else
+   ball[7] = 1
+  end
+
+  if level < 30 then  -- nest ball catch rate
+   ball[9] = (40 - level) / 10
+  else
+   ball[9] = 1
+  end
+
+  if dexFlag ~= 0 then  -- repeat ball catch rate
+   ball[10] = 3
+   -- gui.text(0,77,"Catched? Yes")
+  else
+   ball[10] = 1
+   -- gui.text(0,77,"Catched? No")
+  end
+
+  if battleTurnsCounter < 30 then  -- timer ball catch rate, bonusball is x4 if battle turns are >= 30
+   ball[11] = (battleTurnsCounter + 10) / 10
+  else
+   ball[11] = 4
+  end
+
+  if isBallSelected then
+   bonusBall = ball[ballSelector]
   else
    bonusBall = 0
   end
-  species = mword(0x02023528 + monInfo) + 1
-  bagScreen = screenCheck == 0x12010B00
-  safariZone = mword(0x0203990E + startBoxInfo2) ~= 0
 
   if species > 252 then
    species = species - 25
@@ -633,7 +665,7 @@ while true do
    bonusStatus = 1.5
   end
 
-  if safariZone then
+  if isSafariZone then
    bonusBall = ball[6]
    safariOffset = 80
    rate = floor((1275 * mbyte(mdword(0x02023F48 + monInfo) + 0x7C)) / 100)
@@ -691,9 +723,9 @@ while true do
 
   catchSeed = findCatchSeed(currSeed, catchDelay)
 
-  if catchDelay > 0 and a > 0 and battleScreen and ((bonusBall ~= 0 and bagScreen) or safariZone) then
-   sureCatchDelay = findSureCatch(catchSeed, b, safariZone) - 1
-   if safariZone then
+  if catchDelay > 0 and a > 0 and battleScreen and ((bonusBall ~= 0 and bagScreen) or isSafariZone) then
+   sureCatchDelay = findSureCatch(catchSeed, b, isSafariZone) - 1
+   if isSafariZone then
     sureCatchDelay = sureCatchDelay / 2
    end
    gui.text(2, 111, "100% catch missing frames: "..sureCatchDelay)
