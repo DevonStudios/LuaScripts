@@ -2,6 +2,7 @@ mdword = memory.readdwordunsigned
 mword = memory.readwordunsigned
 mbyte = memory.readbyte
 rshift = bit.rshift
+lshift = bit.lshift
 bxor = bit.bxor
 band = bit.band
 floor = math.floor
@@ -60,52 +61,102 @@ local movename = {
  "Water Sport", "Calm Mind", "Leaf Blade", "Dragon Dance", "Rock Blast", "Shock Wave", "Water Pulse", "Doom Desire",
  "Psycho Boost"}
 
+local nationalDexTable = {
+ 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+ 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+ 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+ 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
+ 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+ 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75,
+ 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
+ 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+ 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+ 110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+ 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+ 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
+ 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
+ 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+ 160, 161, 162, 163, 164, 165, 166, 167, 168, 169,
+ 170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
+ 180, 181, 182, 183, 184, 185, 186, 187, 188, 189,
+ 190, 191, 192, 193, 194, 195, 196, 197, 198, 199,
+ 200, 201, 202, 203, 204, 205, 206, 207, 208, 209,
+ 210, 211, 212, 213, 214, 215, 216, 217, 218, 219,
+ 220, 221, 222, 223, 224, 225, 226, 227, 228, 229,
+ 230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
+ 240, 241, 242, 243, 244, 245, 246, 247, 248, 249,
+ 250, 251, 387, 388, 389, 390, 391, 392, 393, 394,
+ 395, 396, 397, 398, 399, 400, 401, 402, 403, 404,
+ 405, 406, 407, 408, 409, 410, 411, 252, 253, 254,
+ 255, 256, 257, 258, 259, 260, 261, 262, 263, 264,
+ 265, 266, 267, 268, 269, 270, 271, 272, 273, 274,
+ 275, 290, 291, 292, 276, 277, 285, 286, 327, 278,
+ 279, 283, 284, 320, 321, 300, 301, 352, 343, 344,
+ 299, 324, 302, 339, 340, 370, 341, 342, 349, 350,
+ 318, 319, 328, 329, 330, 296, 297, 309, 310, 322,
+ 323, 363, 364, 365, 331, 332, 361, 362, 337, 338,
+ 298, 325, 326, 311, 312, 303, 307, 308, 333, 334,
+ 360, 355, 356, 315, 287, 288, 289, 316, 317, 357,
+ 293, 294, 295, 366, 367, 368, 359, 353, 354, 336,
+ 335, 369, 304, 305, 306, 351, 313, 314, 345, 346,
+ 347, 348, 280, 281, 282, 371, 372, 373, 374, 375,
+ 376, 377, 378, 379, 382, 383, 384, 380, 381, 385,
+ 386, 358
+}
+
 local catchRate = {
  -- Gen 1
- 0, 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
- 120,45, 255, 120, 45, 255, 120, 45, 255,
- 127, 255, 90, 255, 90, 190, 75, 255, 90,
- 235, 120, 45, 235, 120, 45, 150, 25, 190,
- 75, 170, 50, 255, 90, 255, 120, 45, 190,
- 75, 190, 75, 255, 50, 255, 90, 190, 75,
- 190, 75, 190, 75, 255, 120, 45, 200, 100,
- 50, 180, 90, 45, 255, 120, 45, 190, 60,
- 255, 120, 45, 190, 60, 190, 75, 190, 60,
- 45, 190, 45, 190, 75, 190, 75, 190, 60,
- 190, 90, 45, 45, 190, 75, 225, 60, 190,
- 60, 90, 45, 190, 75, 45, 45, 45, 190, 60,
- 120, 60, 30, 45, 45, 225, 75, 225, 60, 225,
- 60, 45, 45, 45, 45, 45, 45, 45, 255, 45,
- 45, 35, 45, 45, 45, 45, 45, 45, 45, 45,
- 45,45, 25, 3, 3, 3, 45, 45, 45, 3, 45,
+ 45, 45, 45, 45, 45, 45, 45, 45, 45,
+ 255, 120, 45, 255, 120, 45, 255, 120,
+ 45, 255, 127, 255, 90, 255, 90, 190,
+ 75, 255, 90, 235, 120, 45, 235, 120,
+ 45, 150, 25, 190, 75, 170, 50, 255,
+ 90, 255, 120, 45, 190, 75, 190, 75,
+ 255, 50, 255, 90, 190, 75, 190, 75,
+ 190, 75, 255, 120, 45, 200, 100, 50,
+ 180, 90, 45, 255, 120, 45, 190, 60,
+ 255, 120, 45, 190, 60, 190, 75, 190,
+ 60, 45, 190, 45, 190, 75, 190, 75,
+ 190, 60, 190, 90, 45, 45, 190, 75,
+ 225, 60, 190, 60, 90, 45, 190, 75,
+ 45, 45, 45, 190, 60, 120, 60, 30,
+ 45, 45, 225, 75, 225, 60, 225, 60,
+ 45, 45, 45, 45, 45, 45, 45, 255, 45,
+ 45, 35, 45, 45, 45, 45, 45, 45, 45,
+ 45, 45, 45, 25, 3, 3, 3, 45, 45, 45,
+ 3, 45,
  -- Gen 2
- 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
- 90, 255, 90, 255, 90, 255, 90, 90, 190,
- 75, 190, 150, 170, 190, 75, 190, 75, 235,
- 120, 45, 45, 190, 75, 65, 45, 255, 120, 45,
- 45, 235, 120, 75, 255, 90, 45, 45, 30, 70,
- 45, 225, 45, 60, 190, 75, 190, 60, 25, 190,
- 75, 45, 25, 190, 45, 60, 120, 60, 190, 75,
- 225, 75, 60, 190, 75, 45, 25, 25, 120, 45,
- 45, 120, 60, 45, 45, 45, 75, 45, 45, 45, 45,
- 45, 30, 3, 3, 3, 45, 45, 45, 3, 3, 45,
+ 45, 45, 45, 45, 45, 45, 45, 45, 45,
+ 255, 90, 255, 90, 255, 90, 255, 90,
+ 90, 190, 75, 190, 150, 170, 190, 75,
+ 190, 75, 235, 120, 45, 45, 190, 75,
+ 65, 45, 255, 120, 45, 45, 235, 120,
+ 75, 255, 90, 45, 45, 30, 70, 45, 225,
+ 45, 60, 190, 75, 190, 60, 25, 190,
+ 75, 45, 25, 190, 45, 60, 120, 60, 190,
+ 75, 225, 75, 60, 190, 75, 45, 25, 25,
+ 120, 45, 45, 120, 60, 45, 45, 45, 75,
+ 45, 45, 45, 45, 45, 30, 3, 3, 3, 45,
+ 45, 45, 3, 3, 45,
  -- Gen 3
- 45, 45, 45, 45, 45, 45, 45, 45, 45, 255, 127,
- 255, 90, 255, 120, 45, 120, 45, 255, 120, 45,
- 255, 120, 45, 255, 120, 45, 200, 45, 255, 90,
- 255, 190, 45, 200, 75, 125, 60, 255, 60, 200,
- 255, 90, 255, 90, 45, 190, 75, 225, 205, 155,
- 255, 60, 225, 60, 255, 120, 45, 180, 200, 120,
- 45, 255, 150, 255, 120, 45, 190, 60, 190, 75,
- 45, 45, 150, 255, 60, 200, 200, 45, 180, 90,
- 255, 45, 125, 190, 90, 150, 255, 120, 45, 225,
- 75, 200, 190, 120, 45, 255, 60, 60, 30, 225, 45,
- 90, 90, 25, 180, 90, 45, 45, 150, 150, 45, 45,
- 45, 45, 235, 120, 45, 45, 45, 45, 3, 3, 3, 3,
- 3, 3, 5, 5, 3, 3, 3, 3, 3, 45}
+ 45, 45, 45, 45, 45, 45, 45, 45, 45,
+ 255, 127, 255, 90, 255, 120, 45, 120,
+ 45, 255, 120, 45, 255, 120, 45, 200,
+ 45, 190, 45, 235, 120, 45, 200, 75,
+ 255, 90, 255, 120, 45, 255, 120, 45,
+ 190, 120, 45, 180, 200, 150, 255, 255,
+ 60, 45, 45, 180, 90, 45, 180, 90, 120,
+ 45, 200, 200, 150, 150, 150, 225, 75,
+ 225, 60, 125, 60, 255, 150, 90, 255,
+ 60, 255, 255, 120, 45, 190, 60, 255,
+ 45, 90, 90, 45, 45, 190, 75, 205, 155,
+ 255, 90, 45, 45, 45, 45, 255, 60, 45,
+ 200, 225, 45, 190, 90, 200, 45, 30,
+ 125, 190, 75, 255, 120, 45, 255, 60,
+ 60, 25, 225, 45, 45, 45, 3, 3, 3, 3,
+ 3, 3, 3, 3, 5, 5, 3, 3, 3}
 
 local ball = {"0", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
-
 local mode = {"None", "Capture", "100% Catch", "Breeding", "Pandora", "Pokemon Info"}
 local index = 1
 local gameLang = mbyte(0x080000AF)
@@ -505,25 +556,61 @@ while true do
    gui.text(155, 1, "4 - Show instructions")
   end
 
-  prevKey = key
-
   battleScreen = mdword(0x0600D000) ~= 0
+  isUnderWater = mbyte(0x02036FCF + eggInfo) == 0x5
+  species = nationalDexTable[mword(0x0202370C + monInfo) + 1]
+  bagScreen = screenCheck == 0x0F020E00
+  ballSelector = mword(0x0203CB48 + battleSeedInfo) + 1
+  isBallSelected = ballSelector > 0 and ballSelector < 0xD
   status = mbyte(wildStart + 80)
+  level = mbyte(start + 84)
+  wildType = mbyte(0x02023C5D)
   HPcurrent = mword(wildStart + 86)
   HPmax = mword(wildStart + 88)
-  ballSelector = mword(0x0203CB48 + battleSeedInfo)
-  isBallSelected = ballSelector > 0 and ballSelector <= 0xC
-  if ballSelector > 0 and ballSelector <= 0xC then
-   bonusBall = ball[ballSelector + 1]
+  isSafariZone = mword(0x02039D1A + battleSeedInfo) ~= 0
+  saveBlock2 = mdword(0x03005AE0 + pointers + 0x10)
+  baseDexFlag = rshift(lshift(0x1000000, band((species - 1), 7)), 24)
+  dexFlag = band(mbyte(saveBlock2 + 0x28 + band(rshift(lshift(species - 1, 16), 19), 0xFF)), baseDexFlag)
+  battleTurnsCounter = mbyte(0x03005A83 + pointers)
+
+  if wildType == 0x0B or wildType == 0x06 then  -- net ball catch rate, 0x0B = Water, 0x06 = Bug
+   ball[7] = 3
+  else
+   ball[7] = 1
+  end
+
+  if isUnderWater then -- dive ball catch rate
+   ball[8] = 3.5
+   -- gui.text(0,77,"Undewater? Yes")
+  else
+   ball[8] = 1
+   -- gui.text(0,77,"Undewater? No")
+  end
+
+  if level < 30 then  -- nest ball catch rate
+   ball[9] = (40 - level) / 10
+  else
+   ball[9] = 1
+  end
+
+  if dexFlag ~= 0 then  -- repeat ball catch rate
+   ball[10] = 3
+   -- gui.text(0,77,"Already Catched? Yes")
+  else
+   ball[10] = 1
+   -- gui.text(0,77,"Already Catched? No")
+  end
+
+  if battleTurnsCounter < 30 then  -- timer ball catch rate, bonusball is x4 if battle turns are >= 30
+   ball[11] = (battleTurnsCounter + 10) / 10
+  else
+   ball[11] = 4
+  end
+
+  if isBallSelected then
+   bonusBall = ball[ballSelector]
   else
    bonusBall = 0
-  end
-  species = mword(0x0202370C + monInfo) + 1
-  bagScreen = screenCheck == 0x0F020E00
-  safariZone = mword(0x02039D1A + battleSeedInfo) ~= 0
-
-  if species > 252 then
-   species = species - 25
   end
 
   if status == 0 then
@@ -534,7 +621,7 @@ while true do
    bonusStatus = 1.5
   end
 
-  if safariZone then
+  if isSafariZone then
    bonusBall = ball[6]
    safariOffset = 80
    rate = floor((1275 * mbyte(mdword(0x02024140 + monInfo) + 0x7C)) / 100)
@@ -592,9 +679,9 @@ while true do
 
   catchSeed = findCatchSeed(currSeed, catchDelay)
 
-  if catchDelay > 0 and a > 0 and (battleScreen or isBallSelected) and ((bonusBall ~= 0 and bagScreen) or safariZone) then
-   sureCatchDelay = findSureCatch(catchSeed, b, safariZone) - 1
-   if safariZone then
+  if catchDelay > 0 and a > 0 and (battleScreen or isBallSelected) and ((bonusBall ~= 0 and bagScreen) or isSafariZone) then
+   sureCatchDelay = findSureCatch(catchSeed, b, isSafariZone) - 1
+   if isSafariZone then
     sureCatchDelay = sureCatchDelay / 2
    end
    gui.text(2, 111, "100% catch missing frames: "..sureCatchDelay)
@@ -801,6 +888,10 @@ while true do
   if statsScreen and not isEgg then
    showMoves()
   end
+ end
+
+ if mode[index] ~= "100% Catch" then
+  catchInstructions = false
  end
 
  emu.frameadvance()
