@@ -535,7 +535,7 @@ while true do
  end
 
  gui.text(2, 1, "Mode: "..mode[index])
- gui.text(95, 1, "<- 1 - 2 ->")
+ gui.text(97, 1, "<- 1 - 2 ->")
 
  if mode[index] == "Capture" then
   start = 0x020243E8 + monInfo
@@ -557,16 +557,16 @@ while true do
   end
 
   battleScreen = mdword(0x0600D000) ~= 0
-  isUnderWater = mbyte(0x02036FCF + eggInfo) == 0x5
   species = nationalDexTable[mword(0x0202370C + monInfo) + 1]
   bagScreen = screenCheck == 0x0F020E00
   ballSelector = mword(0x0203CB48 + battleSeedInfo) + 1
   isBallSelected = ballSelector > 0 and ballSelector < 0xD
   status = mbyte(wildStart + 80)
   level = mbyte(start + 84)
-  wildType = mbyte(0x02023C5D)
+  wildType = mbyte(0x02023DA1 + monInfo)
   HPcurrent = mword(wildStart + 86)
   HPmax = mword(wildStart + 88)
+  isUnderWater = mbyte(0x02036FCF + eggInfo) == 0x5
   isSafariZone = mword(0x02039D1A + battleSeedInfo) ~= 0
   saveBlock2 = mdword(0x03005AE0 + pointers + 0x10)
   baseDexFlag = rshift(lshift(0x1000000, band((species - 1), 7)), 24)
