@@ -2,7 +2,7 @@ local tid
 local state = savestate.create()
 local seedWritten = false
 local notFound = true
-local targetTID = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+local targetTID = {}  -- Input here the target TIDs
 
 function writeCheck()
 	seedWritten = true
