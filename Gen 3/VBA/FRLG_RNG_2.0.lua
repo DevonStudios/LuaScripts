@@ -617,7 +617,7 @@ while true do
  hidpowbase=floor(((band(hpiv,2)/2 + band(atkiv,2) + 2*band(defiv,2) + 4*band(spdiv,2) + 8*band(spatkiv,2) + 16*band(spdefiv,2))*40)/63 + 30)
 
  gui.text(2, 1, "Mode: "..mode[index])
- gui.text(95, 1, "<- 1 - 2 ->")
+ gui.text(97, 1, "<- 1 - 2 ->")
 
  if mode[index] == "Capture" then
   battleScreen = mdword(0x0600D000) ~= 0
@@ -663,7 +663,7 @@ while true do
   isBallSelected = ballSelector > 0 and ballSelector < 0xD
   status = mbyte(wildStart + 80)
   level = mbyte(start + 84)
-  wildType = mbyte(0x2023BBD + monInfo)
+  wildType = mbyte(0x02023BBD + monInfo)
   HPcurrent = mword(wildStart + 86)
   HPmax = mword(wildStart + 88)
   isSafariZone = mword(0x0203990E + startBoxInfo2) ~= 0

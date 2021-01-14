@@ -742,7 +742,7 @@ while true do
  hidpowbase=floor(((band(hpiv,2)/2 + band(atkiv,2) + 2*band(defiv,2) + 4*band(spdiv,2) + 8*band(spatkiv,2) + 16*band(spdefiv,2))*40)/63 + 30)
 
  gui.text(2, 1, "Mode: "..mode[index])
- gui.text(95, 1, "<- 1 - 2 ->")
+ gui.text(97, 1, "<- 1 - 2 ->")
 
  if mode[index] == "Capture" then
   battleScreen = mdword(0x0600D000) ~= 0 and mdword(0x0600CFFC) == 0
