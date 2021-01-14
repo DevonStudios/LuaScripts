@@ -2,7 +2,7 @@ local tid
 local state = savestate.create()
 local seedWritten = false
 local notFound = true
-local targetTID = {}
+local targetTID = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
 function writeCheck()
 	seedWritten = true
@@ -19,28 +19,28 @@ end
 
 memory.registerwrite(0x2020000, writeCheck)
 
-while true do
-	while notFound do
-		savestate.save(state)
-		joypad.set(1, {A=true})
-		i = 0
-		while seedWritten == false and i < 36 do
-			emu.frameadvance()
-			i = i + 1
-		end
-		if seedWritten then
-			tid = memory.readword(0x2020000)
-			print(tid)
-			notFound = isNotFound()
-		end
-		if notFound then
-			seedWritten = false
-			savestate.load(state)
-			emu.frameadvance()
-		else
-			break
-		end
+print("Searching...")
+
+while notFound do
+	savestate.save(state)
+	joypad.set(1, {A=true})
+	i = 0
+	while seedWritten == false and i < 36 do
+		emu.frameadvance()
+		i = i + 1
 	end
-	emu.pause()
-	break
+	if seedWritten then
+		tid = memory.readword(0x2020000)
+		notFound = isNotFound()
+	end
+	if notFound then
+		seedWritten = false
+		savestate.load(state)
+		emu.frameadvance()
+	end
 end
+
+print()
+print("Found!")
+print(string.format("TID: %05d", tid))
+emu.pause()
