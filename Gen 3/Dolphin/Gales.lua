@@ -1,99 +1,100 @@
 local pokemon = {
-"NONE", "BULBASAUR", "IVYSAUR", "VENUSAUR", "CHARMANDER", "CHARMELEON", "CHARIZARD", "SQUIRTLE", "WARTORTLE", "BLASTOISE",
-"CATERPIE", "METAPOD", "BUTTERFREE", "WEEDLE", "KAKUNA", "BEEDRILL", "PIDGEY", "PIDGEOTTO", "PIDGEOT", "RATTATA", "RATICATE",
-"SPEAROW", "FEAROW", "EKANS", "ARBOK", "PIKACHU", "RAICHU", "SANDSHREW", "SANDSLASH", "NIDORANF", "NIDORINA", "NIDOQUEEN",
-"NIDORANM", "NIDORINO", "NIDOKING", "CLEFAIRY", "CLEFABLE", "VULPIX", "NINETALES", "JIGGLYPUFF", "WIGGLYTUFF", "ZUBAT", "GOLBAT",
-"ODDISH", "GLOOM", "VILEPLUME", "PARAS", "PARASECT", "VENONAT", "VENOMOTH", "DIGLETT", "DUGTRIO", "MEOWTH", "PERSIAN", "PSYDUCK",
-"GOLDUCK", "MANKEY", "PRIMEAPE", "GROWLITHE", "ARCANINE", "POLIWAG", "POLIWHIRL", "POLIWRATH", "ABRA", "KADABRA", "ALAKAZAM",
-"MACHOP", "MACHOKE", "MACHAMP", "BELLSPROUT", "WEEPINBELL", "VICTREEBEL", "TENTACOOL", "TENTACRUEL", "GEODUDE", "GRAVELER",
-"GOLEM", "PONYTA", "RAPIDASH", "SLOWPOKE", "SLOWBRO", "MAGNEMITE", "MAGNETON", "FARFETCHED", "DODUO", "DODRIO", "SEEL","DEWGONG",
-"GRIMER", "MUK", "SHELLDER", "CLOYSTER", "GASTLY", "HAUNTER", "GENGAR", "ONIX", "DROWZEE", "HYPNO", "KRABBY", "KINGLER", "VOLTORB",
-"ELECTRODE", "EXEGGCUTE", "EXEGGUTOR", "CUBONE", "MAROWAK", "HITMONLEE", "HITMONCHAN", "LICKITUNG", "KOFFING", "WEEZING", "RHYHORN",
-"RHYDON", "CHANSEY", "TANGELA", "KANGASKHAN", "HORSEA", "SEADRA", "GOLDEEN", "SEAKING", "STARYU", "STARMIE", "MRMIME", "SCYTHER",
-"JYNX", "ELECTABUZZ", "MAGMAR", "PINSIR", "TAUROS", "MAGIKARP", "GYARADOS", "LAPRAS", "DITTO", "EEVEE", "VAPOREON", "JOLTEON",
-"FLAREON", "PORYGON", "OMANYTE", "OMASTAR", "KABUTO", "KABUTOPS", "AERODACTYL", "SNORLAX", "ARTICUNO", "ZAPDOS", "MOLTRES",
-"DRATINI", "DRAGONAIR", "DRAGONITE", "MEWTWO", "MEW", "CHIKORITA", "BAYLEEF", "MEGANIUM", "CYNDAQUIL", "QUILAVA", "TYPHLOSION",
-"TOTODILE", "CROCONAW", "FERALIGATR", "SENTRET", "FURRET", "HOOTHOOT", "NOCTOWL", "LEDYBA", "LEDIAN", "SPINARAK", "ARIADOS",
-"CROBAT", "CHINCHOU", "LANTURN", "PICHU", "CLEFFA", "IGGLYBUFF", "TOGEPI", "TOGETIC", "NATU", "XATU", "MAREEP", "FLAAFFY",
-"AMPHAROS", "BELLOSSOM", "MARILL", "AZUMARILL", "SUDOWOODO", "POLITOED", "HOPPIP", "SKIPLOOM", "JUMPLUFF", "AIPOM", "SUNKERN",
-"SUNFLORA", "YANMA", "WOOPER", "QUAGSIRE", "ESPEON", "UMBREON", "MURKROW", "SLOWKING", "MISDREAVUS", "UNOWN", "WOBBUFFET",
-"GIRAFARIG", "PINECO", "FORRETRESS", "DUNSPARCE", "GLIGAR", "STEELIX", "SNUBBULL", "GRANBULL", "QWILFISH", "SCIZOR", "SHUCKLE",
-"HERACROSS", "SNEASEL", "TEDDIURSA", "URSARING", "SLUGMA", "MAGCARGO", "SWINUB", "PILOSWINE", "CORSOLA", "REMORAID", "OCTILLERY",
-"DELIBIRD", "MANTINE", "SKARMORY", "HOUNDOUR", "HOUNDOOM", "KINGDRA", "PHANPY", "DONPHAN", "PORYGON", "STANTLER", "SMEARGLE",
-"TYROGUE", "HITMONTOP", "SMOOCHUM", "ELEKID", "MAGBY", "MILTANK", "BLISSEY", "RAIKOU", "ENTEI", "SUICUNE", "LARVITAR", "PUPITAR",
-"TYRANITAR", "LUGIA", "HOOH", "CELEBI", "TREECKO", "GROVYLE", "SCEPTILE", "TORCHIC", "COMBUSKEN", "BLAZIKEN", "MUDKIP", "MARSHTOMP",
-"SWAMPERT", "POOCHYENA", "MIGHTYENA", "ZIGZAGOON", "LINOONE", "WURMPLE", "SILCOON", "BEAUTIFLY", "CASCOON", "DUSTOX", "LOTAD",
-"LOMBRE", "LUDICOLO", "SEEDOT", "NUZLEAF", "SHIFTRY", "NINCADA", "NINJASK", "SHEDINJA", "TAILLOW", "SWELLOW", "SHROOMISH",
-"BRELOOM", "SPINDA", "WINGULL", "PELIPPER", "SURSKIT", "MASQUERAIN", "WAILMER", "WAILORD", "SKITTY", "DELCATTY", "KECLEON", "BALTOY",
-"CLAYDOL", "NOSEPASS", "TORKOAL", "SABLEYE", "BARBOACH", "WHISCASH", "LUVDISC", "CORPHISH", "CRAWDAUNT", "FEEBAS", "MILOTIC",
-"CARVANHA", "SHARPEDO", "TRAPINCH", "VIBRAVA", "FLYGON", "MAKUHITA", "HARIYAMA", "ELECTRIKE", "MANECTRIC", "NUMEL", "CAMERUPT",
-"SPHEAL", "SEALEO", "WALREIN", "CACNEA", "CACTURNE", "SNORUNT", "GLALIE", "LUNATONE", "SOLROCK", "AZURILL", "SPOINK", "GRUMPIG",
-"PLUSLE", "MINUN", "MAWILE", "MEDITITE", "MEDICHAM", "SWABLU", "ALTARIA", "WYNAUT", "DUSKULL", "DUSCLOPS", "ROSELIA", "SLAKOTH",
-"VIGOROTH", "SLAKING", "GULPIN", "SWALOT", "TROPIUS", "WHISMUR", "LOUDRED", "EXPLOUD", "CLAMPERL", "HUNTAIL", "GOREBYSS", "ABSOL",
-"SHUPPET", "BANETTE", "SEVIPER", "ZANGOOSE", "RELICANTH", "ARON", "LAIRON", "AGGRON", "CASTFORM", "VOLBEAT", "ILLUMISE", "LILEEP",
-"CRADILY", "ANORITH", "ARMALDO", "RALTS", "KIRLIA", "GARDEVOIR", "BAGON", "SHELGON", "SALAMENCE", "BELDUM", "METANG", "METAGROSS",
-"REGIROCK", "REGICE", "REGISTEEL", "KYOGRE", "GROUDON", "RAYQUAZA", "LATIAS", "LATIOS", "JIRACHI", "DEOXYS", "CHIMECHO"}
+ "NONE", "BULBASAUR", "IVYSAUR", "VENUSAUR", "CHARMANDER", "CHARMELEON", "CHARIZARD", "SQUIRTLE", "WARTORTLE", "BLASTOISE",
+ "CATERPIE", "METAPOD", "BUTTERFREE", "WEEDLE", "KAKUNA", "BEEDRILL", "PIDGEY", "PIDGEOTTO", "PIDGEOT", "RATTATA", "RATICATE",
+ "SPEAROW", "FEAROW", "EKANS", "ARBOK", "PIKACHU", "RAICHU", "SANDSHREW", "SANDSLASH", "NIDORAN♀", "NIDORINA", "NIDOQUEEN",
+ "NIDORAN♂", "NIDORINO", "NIDOKING", "CLEFAIRY", "CLEFABLE", "VULPIX", "NINETALES", "JIGGLYPUFF", "WIGGLYTUFF", "ZUBAT", "GOLBAT",
+ "ODDISH", "GLOOM", "VILEPLUME", "PARAS", "PARASECT", "VENONAT", "VENOMOTH", "DIGLETT", "DUGTRIO", "MEOWTH", "PERSIAN", "PSYDUCK",
+ "GOLDUCK", "MANKEY", "PRIMEAPE", "GROWLITHE", "ARCANINE", "POLIWAG", "POLIWHIRL", "POLIWRATH", "ABRA", "KADABRA", "ALAKAZAM",
+ "MACHOP", "MACHOKE", "MACHAMP", "BELLSPROUT", "WEEPINBELL", "VICTREEBEL", "TENTACOOL", "TENTACRUEL", "GEODUDE", "GRAVELER",
+ "GOLEM", "PONYTA", "RAPIDASH", "SLOWPOKE", "SLOWBRO", "MAGNEMITE", "MAGNETON", "FARFETCH'D", "DODUO", "DODRIO", "SEEL", "DEWGONG",
+ "GRIMER", "MUK", "SHELLDER", "CLOYSTER", "GASTLY", "HAUNTER", "GENGAR", "ONIX", "DROWZEE", "HYPNO", "KRABBY", "KINGLER", "VOLTORB",
+ "ELECTRODE", "EXEGGCUTE", "EXEGGUTOR", "CUBONE", "MAROWAK", "HITMONLEE", "HITMONCHAN", "LICKITUNG", "KOFFING", "WEEZING", "RHYHORN",
+ "RHYDON", "CHANSEY", "TANGELA", "KANGASKHAN", "HORSEA", "SEADRA", "GOLDEEN", "SEAKING", "STARYU", "STARMIE", "MR.MIME", "SCYTHER",
+ "JYNX", "ELECTABUZZ", "MAGMAR", "PINSIR", "TAUROS", "MAGIKARP", "GYARADOS", "LAPRAS", "DITTO", "EEVEE", "VAPOREON", "JOLTEON",
+ "FLAREON", "PORYGON", "OMANYTE", "OMASTAR", "KABUTO", "KABUTOPS", "AERODACTYL", "SNORLAX", "ARTICUNO", "ZAPDOS", "MOLTRES",
+ "DRATINI", "DRAGONAIR", "DRAGONITE", "MEWTWO", "MEW", "CHIKORITA", "BAYLEEF", "MEGANIUM", "CYNDAQUIL", "QUILAVA", "TYPHLOSION",
+ "TOTODILE", "CROCONAW", "FERALIGATR", "SENTRET", "FURRET", "HOOTHOOT", "NOCTOWL", "LEDYBA", "LEDIAN", "SPINARAK", "ARIADOS", "CROBAT",
+ "CHINCHOU", "LANTURN", "PICHU", "CLEFFA", "IGGLYBUFF", "TOGEPI", "TOGETIC", "NATU", "XATU", "MAREEP", "FLAAFFY", "AMPHAROS", "BELLOSSOM",
+ "MARILL", "AZUMARILL", "SUDOWOODO", "POLITOED", "HOPPIP", "SKIPLOOM", "JUMPLUFF", "AIPOM", "SUNKERN", "SUNFLORA", "YANMA", "WOOPER",
+ "QUAGSIRE", "ESPEON", "UMBREON", "MURKROW", "SLOWKING", "MISDREAVUS", "UNOWN", "WOBBUFFET", "GIRAFARIG", "PINECO", "FORRETRESS",
+ "DUNSPARCE", "GLIGAR", "STEELIX", "SNUBBULL", "GRANBULL", "QWILFISH", "SCIZOR", "SHUCKLE", "HERACROSS", "SNEASEL", "TEDDIURSA",
+ "URSARING", "SLUGMA", "MAGCARGO", "SWINUB", "PILOSWINE", "CORSOLA", "REMORAID", "OCTILLERY", "DELIBIRD", "MANTINE", "SKARMORY", "HOUNDOUR",
+ "HOUNDOOM", "KINGDRA", "PHANPY", "DONPHAN", "PORYGON2", "STANTLER", "SMEARGLE", "TYROGUE", "HITMONTOP", "SMOOCHUM", "ELEKID", "MAGBY",
+ "MILTANK", "BLISSEY", "RAIKOU", "ENTEI", "SUICUNE", "LARVITAR", "PUPITAR", "TYRANITAR", "LUGIA", "HO-OH", "CELEBI", "TREECKO", "GROVYLE",
+ "SCEPTILE", "TORCHIC", "COMBUSKEN", "BLAZIKEN", "MUDKIP", "MARSHTOMP", "SWAMPERT", "POOCHYENA", "MIGHTYENA", "ZIGZAGOON", "LINOONE",
+ "WURMPLE", "SILCOON", "BEAUTIFLY", "CASCOON", "DUSTOX", "LOTAD", "LOMBRE", "LUDICOLO", "SEEDOT", "NUZLEAF", "SHIFTRY", "TAILLOW",
+ "SWELLOW", "WINGULL", "PELIPPER", "RALTS", "KIRLIA", "GARDEVOIR", "SURSKIT", "MASQUERAIN", "SHROOMISH", "BRELOOM", "SLAKOTH", "VIGOROTH",
+ "SLAKING", "NINCADA", "NINJASK", "SHEDINJA", "WHISMUR", "LOUDRED", "EXPLOUD", "MAKUHITA", "HARIYAMA", "AZURILL", "NOSEPASS", "SKITTY",
+ "DELCATTY", "SABLEYE", "MAWILE", "ARON", "LAIRON", "AGGRON", "MEDITITE", "MEDICHAM", "ELECTRIKE", "MANECTRIC", "PLUSLE", "MINUN", "VOLBEAT",
+ "ILLUMISE", "ROSELIA", "GULPIN", "SWALOT", "CARVANHA", "SHARPEDO", "WAILMER", "WAILORD", "NUMEL", "CAMERUPT", "TORKOAL", "SPOINK", "GRUMPIG",
+ "SPINDA", "TRAPINCH", "VIBRAVA", "FLYGON", "CACNEA", "CACTURNE", "SWABLU", "ALTARIA", "ZANGOOSE", "SEVIPER", "LUNATONE", "SOLROCK", "BARBOACH",
+ "WHISCASH", "CORPHISH", "CRAWDAUNT", "BALTOY", "CLAYDOL", "LILEEP", "CRADILY", "ANORITH", "ARMALDO", "FEEBAS", "MILOTIC", "CASTFORM", "KECLEON",
+ "SHUPPET", "BANETTE", "DUSKULL", "DUSCLOPS", "TROPIUS", "CHIMECHO", "ABSOL", "WYNAUT", "SNORUNT", "GLALIE", "SPHEAL", "SEALEO", "WALREIN",
+ "CLAMPERL", "HUNTAIL", "GOREBYSS", "RELICANTH", "LUVDISC", "BAGON", "SHELGON", "SALAMENCE", "BELDUM", "METANG", "METAGROSS", "REGIROCK", "REGICE",
+ "REGISTEEL", "LATIAS", "LATIOS", "KYOGRE", "GROUDON", "RAYQUAZA", "JIRACHI", "DEOXYS"}
 
 local naturename = {
-"Hardy", "Lonely", "Brave", "Adamant", "Naughty",
-"Bold", "Docile", "Relaxed", "Impish", "Lax",
-"Timid", "Hasty", "Serious", "Jolly", "Naive",
-"Modest", "Mild", "Quiet", "Bashful", "Rash",
-"Calm", "Gentle", "Sassy", "Careful", "Quirky"}
+ "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
+ "Bold", "Docile", "Relaxed", "Impish", "Lax",
+ "Timid", "Hasty", "Serious", "Jolly", "Naive",
+ "Modest", "Mild", "Quiet", "Bashful", "Rash",
+ "Calm", "Gentle", "Sassy", "Careful", "Quirky"}
 
 local typeorder = {
-"Fighting", "Flying", "Poison", "Ground",
-"Rock", "Bug", "Ghost", "Steel",
-"Fire", "Water", "Grass", "Electric",
-"Psychic", "Ice", "Dragon", "Dark"}
+ "Fighting", "Flying", "Poison", "Ground",
+ "Rock", "Bug", "Ghost", "Steel",
+ "Fire", "Water", "Grass", "Electric",
+ "Psychic", "Ice", "Dragon", "Dark"}
+
+local nationalDexTable = {
+ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+ 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+ 51,  52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74,
+ 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+ 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+ 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
+ 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+ 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
+ 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199,
+ 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219,
+ 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
+ 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 387, 388, 389, 390, 391, 392, 393, 394,
+ 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 252, 253, 254,
+ 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274,
+ 275, 290, 291, 292, 276, 277, 285, 286, 327, 278, 279, 283, 284, 320, 321, 300, 301, 352, 343, 344,
+ 299, 324, 302, 339, 340, 370, 341, 342, 349, 350, 318, 319, 328, 329, 330, 296, 297, 309, 310, 322,
+ 323, 363, 364, 365, 331, 332, 361, 362, 337, 338, 298, 325, 326, 311, 312, 303, 307, 308, 333, 334,
+ 360, 355, 356, 315, 287, 288, 289, 316, 317, 357, 293, 294, 295, 366, 367, 368, 359, 353, 354, 336,
+ 335, 369, 304, 305, 306, 351, 313, 314, 345, 346, 347, 348, 280, 281, 282, 371, 372, 373, 374, 375,
+ 376, 377, 378, 379, 382, 383, 384, 380, 381, 385, 386, 358}
 
 local catchRate = {
  -- Gen 1
- 0, 45, 45, 45, 45, 45, 45, 45,
- 45, 45, 255, 120, 90, 255, 120, 90,
- 255, 120, 45, 255, 127, 255, 90, 255,
- 90, 190, 75, 255, 90, 235, 120, 45,
- 235, 120, 45, 150, 25, 190, 75, 170,
- 50, 255, 90, 255, 120, 45, 190, 75,
- 190, 120, 255, 100, 255, 90, 190, 120,
- 190, 80, 190, 75, 255, 120, 90, 200,
- 100, 50, 180, 90, 45, 255, 120, 45,
- 190, 60, 255, 120, 45, 190, 110, 190,
- 75, 190, 110, 80, 190, 90, 190, 75,
- 190, 75, 190, 60, 190, 90, 45, 45,
- 190, 80, 225, 60, 190, 60, 90, 80,
- 190, 110, 90, 90, 90, 190, 60, 120,
- 100, 70, 90, 90, 225, 75, 225, 60,
- 225, 110, 90, 90, 45, 90, 90, 90,
- 80, 255, 45, 80, 35, 45, 45, 45,
- 45, 45, 45, 45, 45, 45, 45, 70,
- 25, 25, 25, 45, 45, 45, 3, 45,
- -- Gen 2
- 45, 45, 45, 45, 45, 45, 45, 45, 45, 255,
- 90, 255, 90, 255, 90, 255, 90, 90, 190, 75,
- 190, 150, 170, 190, 75, 190, 75, 235, 120, 45,
- 45, 190, 75, 65, 45, 255, 120, 45, 45, 235,
- 120, 75, 255, 90, 45, 45, 30, 70, 45, 225,
- 45, 60, 190, 75, 190, 60, 25, 190, 75, 45,
- 25, 190, 45, 60, 120, 60, 190, 120, 225, 75,
- 60, 190, 75, 45, 25, 25, 225, 45, 45, 120,
- 60, 45, 45, 45, 75, 45, 45, 45, 45, 45,
- 30, 3, 3, 3, 45, 45, 45, 3, 3, 45,
- -- Gen 3
- 45, 45, 45, 45, 45, 45, 45, 45, 45, 
- 255, 127, 255, 90, 255, 120, 45, 120, 45, 255, 
- 120, 45, 255, 120, 45, 255, 120, 45, 200, 90, 255, 
- 90, 255, 255, 45, 200, 75, 125, 60, 255, 
- 120, 200, 255, 90, 255, 90, 90, 190, 75, 
- 225, 205, 155, 255, 60, 225, 60, 255, 120, 
- 45, 180, 200, 120, 80, 255, 150, 255, 120, 45, 
- 190, 60, 190, 75, 100, 90, 150, 255, 60, 
- 200, 200, 120, 180, 90, 255, 80, 125, 190, 
- 90, 150, 255, 120, 45, 225, 75, 200, 190, 
- 120, 45, 255, 60, 60, 30, 225, 90, 90, 
- 90, 25, 180, 90, 45, 45, 150, 150, 45, 
- 45, 45, 45, 235, 120, 45, 45, 45, 80, 
- 3, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3, 3, 3, 45}
+ 0, 45, 45, 45, 45, 45, 45, 45, 45, 45, 255, 120, 90, 255, 120, 90, 255, 120,
+ 45, 255, 127, 255, 90, 255, 90, 190, 75, 255, 90, 235, 120, 45, 235, 120,
+ 45, 150, 25, 190, 75, 170, 50, 255, 90, 255, 120, 45, 190, 75, 190, 120,
+ 255, 100, 255, 90, 190, 120, 190, 80, 190, 75, 255, 120, 90, 200, 100, 50,
+ 180, 90, 45, 255, 120, 45, 190, 60, 255, 120, 45, 190, 110, 190, 75, 190,
+ 110, 80, 190, 90, 190, 75, 190, 75, 190, 60, 190, 90, 45, 45, 190, 80, 225,
+ 60, 190, 60, 90, 80, 190, 110, 90, 90, 90, 190, 60, 120, 100, 70, 90, 90,
+ 225, 75, 225, 60, 225, 110, 90, 90, 45, 90, 90, 90, 80, 255, 45, 80, 35, 45,
+ 45, 45, 45, 45, 45, 45, 45, 45, 45, 70, 25, 25, 25, 45, 45, 45, 3, 45,
+ -- Gen2
+ 45, 180, 45, 45, 180, 45, 45, 180, 45, 255, 90, 255, 90, 255, 90, 255, 90,
+ 90, 190, 75, 190, 150, 170, 190, 45, 190, 75, 235, 120, 45, 45, 190, 75, 65,
+ 45, 255, 120, 45, 45, 235, 120, 75, 255, 90, 45, 45, 30, 70, 90, 225, 45, 60,
+ 190, 75, 190, 60, 25, 190, 75, 45, 25, 190, 45, 60, 120, 60, 190, 120, 225,
+ 75, 60, 190, 75, 45, 90, 15, 225, 45, 45, 120, 60, 45, 45, 45, 75, 45, 45, 45,
+ 45, 45, 30, 15, 15, 15, 45, 45, 10, 3, 3, 45,
+ -- Gen3
+ 45, 45, 45, 45, 45, 45, 45, 45, 45, 255, 127, 255, 90, 255, 120, 45, 120, 45,
+ 255, 120, 45, 255, 120, 45, 200, 90, 255, 45, 235, 120, 45, 200, 75, 255, 90,
+ 255, 120, 45, 255, 120, 45, 190, 120, 45, 255, 200, 150, 255, 255, 120, 90, 120,
+ 180, 90, 45, 180, 90, 120, 80, 200, 200, 150, 150, 150, 225, 75, 225, 60, 125,
+ 60, 255, 150, 90, 255, 60, 255, 255, 120, 45, 190, 60, 255, 80, 90, 90, 100, 90,
+ 190, 75, 205, 155, 255, 90, 45, 45, 45, 45, 255, 60, 45, 200, 225, 90, 190, 90,
+ 45, 45, 30, 125, 190, 75, 255, 120, 45, 255, 60, 60, 25, 225, 45, 45, 80, 3, 3,
+ 15, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
 
 function next(s)
 	local a = 0x3 * (s % 65536) + (s >> 16) * 0x43FD
@@ -120,49 +121,20 @@ function setPadding(maxLength, goodSpacing, stringVar)
 	return spaces
 end
 
---[[function getSpecies(speciesAddr) -- Read Pokemon names from RAM. Useful for EUR/USA version only
-	addr = speciesAddr
-	name = ""
-	for i = 1, 22 do
-		if ReadValue8(addr) ~= 0 then
-			name = name..string.char(ReadValue8(addr))
-		end
-		addr = addr + 0x1
-	end
-
-	if name == "" then
-		name = "NONE"
-	end
-
-	name = name..setPadding(10, 5, name)
-	return name
-end]]
-
-function clalcRate(HP, bonusBall, rate)
+function calcRate(HP, bonusBall, rate)
 	a = math.floor((HP * rate * bonusBall) / (3 * HP))
 	return math.floor(1048560 / math.sqrt(math.sqrt(16711680 / a)))
-end
-
-function setIndex(ramIndex)
-	if ramIndex - 25 < 388 then
-		if ramIndex > 252 then
-			ramIndex = ramIndex - 25
-		end
-	else
-		ramIndex = 1
-	end
-	return ramIndex
 end
 
 function setInfo(start, partyStart, boxStart, i)
 	pid = ReadValue32(start)
 	speciesAddr = start - 0x28
-	index = setIndex(ReadValue16(speciesAddr) + 1)
+	index = nationalDexTable[ReadValue16(speciesAddr) + 1] + 1
 	species = pokemon[index]
 	species = species..setPadding(10, 5, species)
 	nature = naturename[(pid % 25) + 1]
 	nature = nature..setPadding(7, 9, nature)
-	catchValue = clalcRate(ReadValue16(start + 0x86), 1, catchRate[index])
+	catchValue = calcRate(ReadValue16(start + 0x86), 1, catchRate[index])
 
 	ivsAddr = start + 0x80
 	hpiv = ReadValue8(ivsAddr)
@@ -177,7 +149,7 @@ function setInfo(start, partyStart, boxStart, i)
 
 	partyPid = ReadValue32(partyStart)
 	partySpeciesAddr = partyStart - 0x28
-	partyIndex = setIndex(ReadValue16(partySpeciesAddr) + 1)
+	partyIndex = nationalDexTable[ReadValue16(partySpeciesAddr) + 1] + 1
 	partySpecies = pokemon[partyIndex]
 	partySpecies = partySpecies..setPadding(10, 5, partySpecies)
 	partyNature = naturename[(partyPid % 25) + 1]
@@ -197,7 +169,7 @@ function setInfo(start, partyStart, boxStart, i)
 	if i == 0 then
 		boxPid = ReadValue32(boxStart)
 		boxSpeciesAddr = boxStart - 0x28
-		boxSpecies = setIndex(ReadValue16(boxSpeciesAddr) + 1)
+		boxSpecies = nationalDexTable[ReadValue16(boxSpeciesAddr) + 1] + 1
 		boxSpecies = pokemon[boxSpecies]
 		boxNature = naturename[(boxPid % 25)+1]
 
@@ -216,7 +188,7 @@ function setInfo(start, partyStart, boxStart, i)
 		PIDs = string.format("\nPID: %08X", pid)..string.format("            PID: %08X", partyPid)..string.format("            PID: %08X", boxPid)
 		naturesText = string.format("\nNature: ")..nature..string.format("Nature: ")..partyNature..string.format("Nature: ")..boxNature
 		ivs = string.format("\nIVs: %02d", hpiv)..string.format("/%02d", atkiv)..string.format("/%02d", defiv)..string.format("/%02d", spdefiv)..string.format("/%02d", spatkiv)..string.format("/%02d", spdiv)..string.format("   IVs: %02d", partyHpiv)..string.format("/%02d", partyAtkiv)..string.format("/%02d", partyDefiv)..string.format("/%02d", partySpdefiv)..string.format("/%02d", partySpatkiv)..string.format("/%02d", partySpdiv)..string.format("   IVs: %02d", boxHpiv)..string.format("/%02d", boxAtkiv)..string.format("/%02d", boxDefiv)..string.format("/%02d", boxSpdefiv)..string.format("/%02d", boxSpatkiv)..string.format("/%02d", boxSpdiv)
-		hiddenPower = "\nHP: "..typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)..setPadding(11, 9, typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)).."HP: "..typeorder[partyHidpowtype + 1].." "..string.format("%02d", partyHidpowbase)..setPadding(11, 9, typeorder[partyHidpowtype + 1].." "..string.format("%02d", partyHidpowbase)).."HP: "..typeorder[boxHidpowtype + 1].." "..string.format("%02d", boxHidpowbase)
+		hiddenPower = "\nHP: "..typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)..setPadding(11, 9, typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)).."HP: "..typeorder[partyHidpowtype + 1].." "..string.format("%02d", partyHidpowbase)..setPadding(11, 9, typeorder[partyHidpowtype + 1].." "..string.format("%02d", partyHidpowbase)).."HP: "..typeorder[boxHidpowtype + 1].." "..string.format("%02d", boxHidpowbase).."\n"
 		catchrngText = string.format("Catch Rate Value: %.0f", catchValue)
 		infoText = speciesText..PIDs..naturesText..ivs..hiddenPower..catchrngText
 	else
@@ -224,7 +196,7 @@ function setInfo(start, partyStart, boxStart, i)
 		PIDs = string.format("\nPID: %08X", pid)..string.format("            PID: %08X", partyPid)
 		naturesText = string.format("\nNature: ")..nature..string.format("Nature: ")..partyNature
 		ivs = string.format("\nIVs: %02d", hpiv)..string.format("/%02d", atkiv)..string.format("/%02d", defiv)..string.format("/%02d", spdefiv)..string.format("/%02d", spatkiv)..string.format("/%02d", spdiv)..string.format("   IVs: %02d", partyHpiv)..string.format("/%02d", partyAtkiv)..string.format("/%02d", partyDefiv)..string.format("/%02d", partySpdefiv)..string.format("/%02d", partySpatkiv)..string.format("/%02d", partySpdiv)
-		hiddenPower = "\nHP: "..typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)..setPadding(11, 9, typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)).."HP: "..typeorder[partyHidpowtype + 1].." "..string.format("%02d", partyHidpowbase)
+		hiddenPower = "\nHP: "..typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)..setPadding(11, 9, typeorder[hidpowtype + 1].." "..string.format("%02d", hidpowbase)).."HP: "..typeorder[partyHidpowtype + 1].." "..string.format("%02d", partyHidpowbase).."\n"
 		catchrngText = string.format("Catch Rate Value: %.0f", catchValue)
 		infoText = speciesText..PIDs..naturesText..ivs..hiddenPower..catchrngText
 	end
