@@ -134,7 +134,7 @@ function setInfo(start, partyStart, boxStart, i)
 	species = species..setPadding(10, 5, species)
 	nature = naturename[(pid % 25) + 1]
 	nature = nature..setPadding(7, 9, nature)
-	catchValue = calcRate(ReadValue16(start + 0x86), 1, catchRate[index])
+	catchValue = calcRate(ReadValue16(start + 0x69), 1, catchRate[index])
 
 	ivsAddr = start + 0x80
 	hpiv = ReadValue8(ivsAddr)
