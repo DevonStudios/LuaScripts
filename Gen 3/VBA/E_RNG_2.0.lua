@@ -10,7 +10,7 @@ sqrt = math.sqrt
 
 local natureOrder = {"Atk", "Def", "Spd", "SpAtk", "SpDef"}
 
-local naturename = {
+local natureName = {
  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
  "Bold", "Docile", "Relaxed", "Impish", "Lax",
  "Timid", "Hasty", "Serious", "Jolly", "Naive",
@@ -378,7 +378,7 @@ function showHiddenInfo()
  else
   gui.text(22, 40, string.format("%08X", personality))
  end
- gui.text(2, 50, "Nature: "..naturename[nature + 1])
+ gui.text(2, 50, "Nature: "..natureName[nature + 1])
  gui.text(2, 60, natureOrder[natinc + 1].."+ "..natureOrder[natdec + 1].."-")
  gui.text(167, 30, "HP "..typeOrder[hidpowtype + 1].." "..hidpowbase)
 end
@@ -740,7 +740,7 @@ while true do
   else
    gui.text(178, 50, string.format("Roamer? Yes"))
    gui.text(178, 60, string.format("PID: %08X", roamerCheck))
-   gui.text(178, 70, "Nature: "..naturename[(roamerCheck % 25) + 1])
+   gui.text(178, 70, "Nature: "..natureName[(roamerCheck % 25) + 1])
   end
 
   showRngInfo()
@@ -785,7 +785,7 @@ while true do
      gui.text(38, 97, string.format("%08X", eggPid))
     end
 
-	gui.text(2, 107, "Nature: "..naturename[eggNature + 1])
+	gui.text(2, 107, "Nature: "..natureName[eggNature + 1])
    end
   elseif a < 65536 then
     gui.text(2, 97, string.format("Egg Generating... please advance another frame!"))
@@ -802,7 +802,7 @@ while true do
     gui.text(38, 97, string.format("%08X", eggPid))
    end
 
-   gui.text(2, 107, "Nature: "..naturename[eggNature + 1])
+   gui.text(2, 107, "Nature: "..natureName[eggNature + 1])
 
    if iter > 1 then
     gui.text(100, 97, string.format("Approx iter: %d", iter))
