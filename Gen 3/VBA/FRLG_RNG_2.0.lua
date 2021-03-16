@@ -246,6 +246,7 @@ local state3 = savestate.create()
 local seedWritten = false
 local found = false
 local oneTime2 = false
+local botInstructions = false
 local botTargetSeeds = {0x0,0x0BAD,0xDEAD,0x0DAD,0x2EE7,0xFEED}  -- Input here the bot target Initial Seeds
 
 joypad.set(1, {A = true, B = true, select = true, start = true})
@@ -525,9 +526,17 @@ while true do
  end
 
  if key["4"] and not prevKey["4"] then
-  catchInstructions = true
+  if mode[index] == "100% Catch" then
+   catchInstructions = true
+  elseif mode[index] == "Initial Seed Bot" then
+   botInstructions = true
+  end
  elseif key["3"] and not prevKey["3"] then
-  catchInstructions = false
+  if mode[index] == "100% Catch" then
+   catchInstructions = false
+  elseif mode[index] == "Initial Seed Bot" then
+   botInstructions = false
+  end
  end
 
  prevKey = key
@@ -816,6 +825,16 @@ while true do
   showRngInfo()
   showTrainerInfo()
  elseif mode[index] == "Initial Seed Bot" then
+  if botInstructions then
+   gui.text(155, 1, "3 - Hide instructions")
+   gui.text(2, 11, "1) Pause the game")
+   gui.text(2, 21, "2) Reset the emulaor")
+   gui.text(2, 31, "3) Advance one frame holding SELECT")
+   gui.text(2, 41, "4) Unpause the game")
+  else
+   gui.text(155, 1, "4 - Show instructions")
+  end
+
   catchKey = joypad.get(1)
   if catchKey.select then
    found = false
@@ -898,6 +917,10 @@ while true do
 
  if mode[index] ~= "100% Catch" then
   catchInstructions = false
+ end
+
+ if mode[index] ~= "Initial Seed Bot" then
+  botInstructions = false
  end
 
  emu.frameadvance()
