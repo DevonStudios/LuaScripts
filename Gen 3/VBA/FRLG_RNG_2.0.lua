@@ -116,7 +116,7 @@ local catchRate = {
  60, 25, 225, 45, 45, 45, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
 
 local ball = {"0", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
-local mode = {"None", "Capture", "100% Catch", "Breeding", "Pandora", "Pokemon Info"}
+local mode = {"None", "Capture", "100% Catch", "Breeding", "Initial Seed Bot", "Pandora", "Pokemon Info"}
 local index = 1
 local gameLang = mbyte(0x080000AF)
 local gameVersion = mbyte(0x080000AE)
@@ -234,6 +234,19 @@ local seed3 = 0
 local frameDelay = 0
 local oneTime = false
 local safariOffset = 0
+local delay1 = 208
+local delay5 = 1463
+local delay2 = 213
+local delay4 = 475
+local delay3 = 215
+local delay6 = 2912
+local state1 = savestate.create()
+local state2 = savestate.create()
+local state3 = savestate.create()
+local seedWritten = false
+local found = false
+local oneTime2 = false
+local botTargetSeeds = {0x0,0x0BAD,0xDEAD,0x0DAD,0x2EE7,0xFEED}  -- Input here the bot target Initial Seeds
 
 joypad.set(1, {A = true, B = true, select = true, start = true})
 
@@ -455,6 +468,43 @@ function showTrainerInfo()
  gui.text(199, 152, string.format("SID: %d", sid))
 end
 
+function writeCheck()
+ seedWritten = true
+end
+
+function isfound()
+ for i = 1, table.getn(botTargetSeeds) do
+  if initSeed == botTargetSeeds[i] then
+   return true
+  end
+ end
+ return false
+end
+
+function advance1()
+ while emu.framecount() ~= delay1 do 
+  emu.frameadvance()
+ end
+ savestate.save(state1)
+ joypad.set(1, {A = true})
+end
+
+function advance2()
+ while emu.framecount() ~= delay2 do 
+  emu.frameadvance()
+ end
+ savestate.save(state2)
+ joypad.set(1, {A = true})
+end
+
+function advance3()
+ while emu.framecount() ~= delay3 do 
+  emu.frameadvance()
+ end
+end
+
+memory.registerwrite(0x2020000, writeCheck)
+
 while true do
  initSeed = mword(0x02020000)
  currSeed = mdword(0x03004FA0 + pointers)
@@ -465,11 +515,11 @@ while true do
  if key["1"] and not prevKey["1"] then
   index = index - 1
   if index < 1 then
-   index = 6
+   index = 7
   end
  elseif key["2"] and not prevKey["2"] then
   index = index + 1
-  if index > 6 then
+  if index > 7 then
    index = 1
   end
  end
@@ -765,6 +815,69 @@ while true do
 
   showRngInfo()
   showTrainerInfo()
+ elseif mode[index] == "Initial Seed Bot" then
+  catchKey = joypad.get(1)
+  if catchKey.select then
+   found = false
+   oneTime2 = false
+   seedWritten = false
+   advance1()
+   advance2()
+   advance3()
+   while delay1 ~= delay5 and not found do
+    while delay2 ~= delay4 and not found do
+     while delay3 ~= delay6 and not found do
+      savestate.save(state3)
+      joypad.set(1, {A = true})
+      i = 0
+      while seedWritten == false and i < 130 do
+       emu.frameadvance()
+       i = i + 1
+      end
+      if seedWritten then
+       initSeed = memory.readword(0x2020000)
+       found = isfound()
+      end
+      if not found then
+       delay3 = delay3 + 1
+       seedWritten = false
+       savestate.load(state3)
+       emu.frameadvance()
+      else
+       break
+      end
+     end
+     if not found then
+      savestate.load(state2)
+      delay2 = delay2 + 1
+      delay3 = delay2 + 2
+      delay4 = delay2 + 262
+      delay6 = delay3 + 2697
+      advance2()
+      advance3()
+     end
+    end
+    if not found then
+     savestate.load(state1)
+     delay1 = delay1 + 1
+     delay2 = delay1 + 5
+     delay3 = delay2 + 2
+     delay4 = delay2 + 262
+     delay6 = delay2 + 2697
+     advance1()
+     advance2()
+     advance3()
+    end
+   end
+  end
+  if found then
+   gui.text(2, 100, "Found!")
+   gui.text(2, 110, "Initial Seed: "..string.format("%04X", initSeed))
+   if not oneTime2 then
+    emu.pause()
+	oneTime2 = true
+   end
+  end
  elseif mode[index] == "Pandora" then
   gui.text(2, 152, "TempTID: "..initSeed)
   showRngInfo()
