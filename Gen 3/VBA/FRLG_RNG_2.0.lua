@@ -277,7 +277,7 @@ function calcFrameJump()
   end
   if tempCurr2 == currSeed then
     calibrationFrame = (-1) * calibrationFrame
-	tempCurr = tempCurr2
+    tempCurr = tempCurr2
   end
  end
  return calibrationFrame
@@ -473,7 +473,7 @@ function writeCheck()
  seedWritten = true
 end
 
-function isfound()
+function isFound()
  for i = 1, table.getn(botTargetSeeds) do
   if initSeed == botTargetSeeds[i] then
    return true
@@ -483,7 +483,7 @@ function isfound()
 end
 
 function advance1()
- while emu.framecount() ~= delay1 do 
+ while emu.framecount() ~= delay1 do
   emu.frameadvance()
  end
  savestate.save(state1)
@@ -491,7 +491,7 @@ function advance1()
 end
 
 function advance2()
- while emu.framecount() ~= delay2 do 
+ while emu.framecount() ~= delay2 do
   emu.frameadvance()
  end
  savestate.save(state2)
@@ -499,12 +499,12 @@ function advance2()
 end
 
 function advance3()
- while emu.framecount() ~= delay3 do 
+ while emu.framecount() ~= delay3 do
   emu.frameadvance()
  end
 end
 
-memory.registerwrite(0x2020000, writeCheck)
+memory.registerwrite(0x02020000, writeCheck)
 
 while true do
  initSeed = mword(0x02020000)
@@ -524,6 +524,9 @@ while true do
    index = 1
   end
  end
+
+ gui.text(2, 1, "Mode: "..mode[index])
+ gui.text(97, 1, "<- 1 - 2 ->")
 
  if key["4"] and not prevKey["4"] then
   if mode[index] == "100% Catch" then
@@ -633,9 +636,6 @@ while true do
 
  hidpowtype=floor(((hpiv%2 + 2*(atkiv%2) + 4*(defiv%2) + 8*(spdiv%2) + 16*(spatkiv%2) + 32*(spdefiv%2))*15)/63)
  hidpowbase=floor(((band(hpiv,2)/2 + band(atkiv,2) + 2*band(defiv,2) + 4*band(spdiv,2) + 8*band(spatkiv,2) + 16*band(spdefiv,2))*40)/63 + 30)
-
- gui.text(2, 1, "Mode: "..mode[index])
- gui.text(97, 1, "<- 1 - 2 ->")
 
  if mode[index] == "Capture" then
   battleScreen = mdword(0x0600D000) ~= 0
@@ -761,13 +761,13 @@ while true do
      skips = skips + 1
     end
     oneTime = true
-	frameDelay = frame - startingFrame
+    frameDelay = frame - startingFrame
    else
     seed2 = currSeed
    end
 
    if skips == 2 and frameDelay > 120 - safariOffset then
-	catchDelay = frameDelay + 1
+    catchDelay = frameDelay + 1
    elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
     catchDelay = frameDelay
    elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
@@ -854,8 +854,8 @@ while true do
        i = i + 1
       end
       if seedWritten then
-       initSeed = memory.readword(0x2020000)
-       found = isfound()
+       initSeed = mword(0x02020000)
+       found = isFound()
       end
       if not found then
        delay3 = delay3 + 1
@@ -882,7 +882,7 @@ while true do
      delay2 = delay1 + 5
      delay3 = delay2 + 2
      delay4 = delay2 + 262
-     delay6 = delay2 + 2697
+     delay6 = delay2 + 2699
      advance1()
      advance2()
      advance3()
@@ -894,7 +894,7 @@ while true do
    gui.text(2, 110, "Initial Seed: "..string.format("%04X", initSeed))
    if not oneTime2 then
     emu.pause()
-	oneTime2 = true
+    oneTime2 = true
    end
   end
  elseif mode[index] == "Pandora" then

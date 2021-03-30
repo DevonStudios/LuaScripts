@@ -211,7 +211,6 @@ local currentBoxPidSelected = 0x02000C1C + startBoxInfo2
 local boxCheck = false
 local initSeed = 0
 local currSeed = 0
-local tempInit = 0
 local tempCurr = 0
 local frame = 0
 local key = {}
@@ -230,14 +229,14 @@ local safariOffset = 0
 
 joypad.set(1, {A = true, B = true, select = true, start = true})
 
-function next(s)	
+function next(s)
  local a = 0x41C6 * (s % 65536) + rshift(s, 16) * 0x4E6D
  local b = 0x4E6D * (s % 65536) + (a % 65536) * 65536 + 0x6073
  local c = b % 4294967296
  return c
 end
 
-function back(s)	
+function back(s)
  local a = 0xEEB9 * (s % 65536) + rshift(s, 16) * 0xEB65
  local b = 0xEB65 * (s % 65536) + (a % 65536) * 65536 + 0x0A3561A1
  local c = b % 4294967296
@@ -255,8 +254,8 @@ function calcFrameJump()
    calibrationFrame = calibrationFrame + 1
   end
   if tempCurr2 == currSeed then
-    calibrationFrame = (-1) * calibrationFrame
-	tempCurr = tempCurr2
+   calibrationFrame = (-1) * calibrationFrame
+   tempCurr = tempCurr2
   end
  end
  return calibrationFrame
@@ -466,6 +465,9 @@ while true do
   end
  end
 
+ gui.text(2, 1, "Mode: "..mode[index])
+ gui.text(97, 1, "<- 1 - 2 ->")
+
  if key["4"] and not prevKey["4"] then
   catchInstructions = true
  elseif key["3"] and not prevKey["3"] then
@@ -474,8 +476,8 @@ while true do
 
  prevKey = key
 
- if (currSeed <= 0xFFFF and frame < 8) or currSeed == 0 then  -- start counting the Frame
-  initSeed = currSeed										  -- when Initial Seed is generated
+ if (currSeed <= 0xFFFF and frame < 8) or currSeed == 0 then  -- start counting the Frame when Initial Seed is generated
+  initSeed = currSeed
   tempCurr = initSeed
   frame = 0
  end
@@ -522,7 +524,7 @@ while true do
    ball[7] = 1
   end
 
-  if isUnderWater then -- dive ball catch rate
+  if isUnderWater then  -- dive ball catch rate
    ball[8] = 3.5
    -- gui.text(0,77,"Undewater? Yes")
   else
@@ -595,13 +597,13 @@ while true do
      skips = skips + 1
     end
     oneTime = true
-	frameDelay = frame - startingFrame
+    frameDelay = frame - startingFrame
    else
     seed2 = currSeed
    end
 
    if skips == 2 and frameDelay > 120 - safariOffset then
-	catchDelay = frameDelay + 1
+    catchDelay = frameDelay + 1
    elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
     catchDelay = frameDelay
    elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
@@ -699,9 +701,6 @@ while true do
 
  hidpowtype=floor(((hpiv%2 + 2*(atkiv%2) + 4*(defiv%2) + 8*(spdiv%2) + 16*(spatkiv%2) + 32*(spdefiv%2))*15)/63)
  hidpowbase=floor(((band(hpiv,2)/2 + band(atkiv,2) + 2*band(defiv,2) + 4*band(spdiv,2) + 8*band(spatkiv,2) + 16*band(spdefiv,2))*40)/63 + 30)
-
- gui.text(2, 1, "Mode: "..mode[index])
- gui.text(97, 1, "<- 1 - 2 ->")
 
  if mode[index] == "Capture" then
   battleScreen = mdword(0x0600D000) ~= 0 and mdword(0x0600CFFC) == 0
