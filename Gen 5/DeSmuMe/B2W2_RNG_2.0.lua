@@ -12,33 +12,12 @@ local mtrng = 0x021FED68 - 0x40 * game -- Mersenne Twister Table Top
 local mac = 0x123456 -- MAC Address of Emulator
 local storage = 0x02000200
 local trackcgear = 0 -- 0 on, 1 off; disable for Standard Abuse, enable for Entralink Abuse
-local research = 0 -- 0 on, 1 off; only enable for dev features (unneeded)
 
 -- Setup initial variables, rest of script detection will take care of them
 local initl = 0
 local inith = 0
 local initm = 0
 local adv = 0
-local jump1 = 0
-local jump2 = 0
-local jump3 = 0
-local jump4 = 0
-local jump5 = 0
-local jump6 = 0
-local jump7 = 0
-local jump8 = 0
-local jump9 = 0
-local jump10 = 0
-local jump11 = 0
-local jump12 = 0
-local jump13 = 0
-local jump14 = 0
-local jump15 = 0
-local jump16 = 0
-local jump17 = 0
-local jump18 = 0
-local jump19 = 0
-local jump20 = 0
 local total = 0
 local last = 0
 local lastm = 0
@@ -175,26 +154,6 @@ function main()
   if adv > 200 then -- RNG advanced a bunch, or the game/script was reset. Reset variables then stop loop.
    steptable = 0
    adv = 0
-   jump1 = 0
-   jump2 = 0
-   jump3 = 0
-   jump4 = 0
-   jump5 = 0
-   jump6 = 0
-   jump7 = 0
-   jump8 = 0
-   jump9 = 0
-   jump10 = 0
-   jump11 = 0
-   jump12 = 0
-   jump13 = 0
-   jump14 = 0
-   jump15 = 0
-   jump16 = 0
-   jump17 = 0
-   jump18 = 0
-   jump19 = 0
-   jump20 = 0
    if mdword(storage) == 1 and delay > 3 and mdword(storage + 0x4 * 2) ~= 0 then
     print(""..string.format("Restoring session. Please Wait..."))
     steptable = mdword(storage + 0x4 * 1)				-- restore mt
@@ -291,28 +250,6 @@ function main()
    adv = adv + 1
 
   elseif test == seed1 then
-   if adv > 0 then 					-- Refresh Frame Advancement Table if there's more than one advancement this frame.
-    jump20 = jump19
-    jump19 = jump18
-    jump18 = jump17
-    jump17 = jump16
-    jump16 = jump15
-    jump15 = jump14
-    jump14 = jump13
-    jump13 = jump12
-    jump12 = jump11
-    jump11 = jump10
-    jump10 = jump9
-    jump9 = jump8
-    jump8 = jump7
-    jump7 = jump6
-    jump6 = jump5
-    jump5 = jump4
-    jump4 = jump3
-    jump3 = jump2
-    jump2 = jump1
-    jump1 = adv
-   end
    break 							-- last frame's advanced RNG value matches the current. Stop loop.
   end
  end
@@ -374,8 +311,6 @@ function main()
     initm = tempcgear
     print(""..string.format("C-Gear Seed: %08X    Delay: %d", tempcgear, cgd))
     print(""..string.format(""))				-- Visual Blank Line
-    cgearenabled = 2
-    wdword(storage + 0x4 * 8, cgearenabled)
     if initm > 0x7FFFFFFF then wdword(storage + 0x4 * 2, initm - 0x100000000) else wdword(storage + 0x4 * 2, initm) end
     i = 0
     while i ~= 624 do									-- get the next untempered for the cgear
@@ -411,15 +346,6 @@ function main()
  gui.text(1, 30, string.format("Frame: %d", total))			-- Display PRNG Frame; total advancements since the initial seed
 
  -- If the user specifies they want to use the C-Gear
-
- -- If user specifies they want to see the frame advancement chart
- if research == 0 then									-- Display framebased advancement table
-  gui.text(1, 47, string.format("%d", jump1)) gui.text(1, 56, string.format("%d", jump2)) gui.text(1, 65, string.format("%d", jump3)) gui.text(1, 74, string.format("%d", jump4))
-  gui.text(1, 83, string.format("%d", jump5)) gui.text(1, 92, string.format("%d", jump6)) gui.text(1, 101, string.format("%d", jump7)) gui.text(1, 110, string.format("%d", jump8))
-  gui.text(1, 119, string.format("%d", jump9)) gui.text(1, 128, string.format("%d", jump10)) gui.text(20, 47, string.format("%d", jump11)) gui.text(20, 56, string.format("%d", jump12))
-  gui.text(20, 65, string.format("%d", jump13)) gui.text(20, 74, string.format("%d", jump14))	gui.text(20, 83, string.format("%d", jump15))	gui.text(20, 92, string.format("%d", jump16))
-  gui.text(20, 101, string.format("%d", jump17)) gui.text(20, 110, string.format("%d", jump18)) gui.text(20, 119, string.format("%d", jump19)) gui.text(20, 128, string.format("%d", jump20))
- end
 
  -- Set Up variables for next frame's pass
  lmtp = mtp
