@@ -10,7 +10,6 @@ local game = 0 -- 0 for white, 1 for black
 local rng = 0x02216244 - 0x20 * game -- PRNG Seed Location
 local mtrng = 0x02215374 - 0x20 * game -- Mersenne Twister Table Top
 local mac = 0x123456 -- MAC Address of Emulator
-local pos_m = 0x0224F92C - 0x20 * game -- Map Position -> XYZ
 local storage = 0x02000200
 local trackcgear = 0 -- 0 on, 1 off; disable for Standard Abuse, enable for Entralink Abuse
 local research = 0 -- 0 on, 1 off; only enable for dev features (unneeded)
@@ -168,9 +167,8 @@ function main()
  day = string.format("%02X", (mbyte(0x02FFFDEA)))
 
  -- display seeds every loop
- gui.text(1, 10, string.format("Current: %08X%08X", seed2, seed1))
- gui.text(1, 180, string.format("Initial: %08X%08X", inith, initl))
- gui.text(1, 170, string.format("M: %d, X: %d, Y: %d, Z: %d", mword(pos_m), mword(pos_m + 0x6), mword(pos_m + 0xE), mword(pos_m + 0xA)))
+ gui.text(1, 10, string.format("Initial: %08X%08X", inith, initl))
+ gui.text(1, 20, string.format("Current: %08X%08X", seed2, seed1))
 
  -- Check to see if the RNG advanced from the last value
  while seed1 ~= 0 and seed2 ~= 0 and delay > 2 do
@@ -320,7 +318,7 @@ function main()
  end
 
  gui.text(180, 10, string.format("%d/%d/%d", month, day, 2000 + year))					-- Display Date
- gui.text(180, 19, string.format("%02d:%02d:%02d", hour, minute, second, delay))		-- Display Time
+ gui.text(180, 20, string.format("%02d:%02d:%02d", hour, minute, second, delay))		-- Display Time
 
  -- Check to see if the MTRNG changed, only if tracking is enabled.
  if mttrack == 1 and notrestored == 0 then
@@ -398,8 +396,8 @@ function main()
     wdword(storage + 0x4 * 1, steptable)				-- save state storage of table refreshes
    end
   end
-  gui.text(1, 160, string.format("MTRNG Seed: %08X", initm))
-  gui.text(1, 150, string.format("Frame: %d", mtf))
+  gui.text(1, 160, string.format("Frame: %d", mtf))
+  gui.text(1, 170, string.format("MTRNG Seed: %08X", initm))
   -- gui.text(1, 38, string.format("next mt: %08X", nextmt)) -- debug
  end
 
@@ -410,7 +408,7 @@ function main()
  end
  mtf = mtp + (steptable - 1) * 624							-- Mersenne Twister Frame = Pointer Value + (TableRefresh - 1) * 624 ; this accounts for the initial value of 0x270 which is actually zero
 
- gui.text(1, 19, string.format("Frame: %d", total))			-- Display PRNG Frame; total advancements since the initial seed
+ gui.text(1, 30, string.format("Frame: %d", total))			-- Display PRNG Frame; total advancements since the initial seed
 
  -- If the user specifies they want to use the C-Gear
  if trackcgear == 0 then											-- C-Gear Seed Generation Loop
@@ -421,19 +419,19 @@ function main()
   efgh = (year + cgd) % 0x10000
   betaseed = ab * 0x1000000 + cd * 0x10000 + efgh					-- Seed before MAC applied
   cgearseed = betaseed + mac										-- Seed after MAC applied, return this value.
-  gui.text(1, 130, string.format("Next C-Gear: %08X", cgearseed))	-- Display the C-Gear Seed of the next frame
-  gui.text(1, 140, string.format("Delay: %d", delay))				-- Display Current Delay
+  gui.text(1, 140, string.format("Next C-Gear: %08X", cgearseed))	-- Display the C-Gear Seed of the next frame
+  gui.text(1, 150, string.format("Delay: %d", delay))				-- Display Current Delay
  elseif cgearenabled == 2 then
-  gui.text(1, 130, string.format(" C-GEAR WAS TURNED ON: SEE NEW MTRNG SEED"))
+  gui.text(1, 140, string.format(" C-GEAR WAS TURNED ON: SEE NEW MTRNG SEED"))
  end
 
  -- If user specifies they want to see the frame advancement chart
  if research == 0 then									-- Display framebased advancement table
-  gui.text(1, 37, string.format("%d", jump1)) gui.text(1, 46, string.format("%d", jump2)) gui.text(1, 55, string.format("%d", jump3)) gui.text(1, 64, string.format("%d", jump4))
-  gui.text(1, 73, string.format("%d", jump5)) gui.text(1, 82, string.format("%d", jump6)) gui.text(1, 91, string.format("%d", jump7)) gui.text(1, 100, string.format("%d", jump8))
-  gui.text(1, 109, string.format("%d", jump9)) gui.text(1, 118, string.format("%d", jump10)) gui.text(20, 37, string.format("%d", jump11)) gui.text(20, 46, string.format("%d", jump12))
-  gui.text(20, 55, string.format("%d", jump13)) gui.text(20, 64, string.format("%d", jump14))	gui.text(20, 73, string.format("%d", jump15))	gui.text(20, 82, string.format("%d", jump16))
-  gui.text(20, 91, string.format("%d", jump17)) gui.text(20, 100, string.format("%d", jump18)) gui.text(20, 109, string.format("%d", jump19)) gui.text(20, 118, string.format("%d", jump20))
+  gui.text(1, 47, string.format("%d", jump1)) gui.text(1, 56, string.format("%d", jump2)) gui.text(1, 65, string.format("%d", jump3)) gui.text(1, 74, string.format("%d", jump4))
+  gui.text(1, 83, string.format("%d", jump5)) gui.text(1, 92, string.format("%d", jump6)) gui.text(1, 101, string.format("%d", jump7)) gui.text(1, 110, string.format("%d", jump8))
+  gui.text(1, 119, string.format("%d", jump9)) gui.text(1, 128, string.format("%d", jump10)) gui.text(20, 47, string.format("%d", jump11)) gui.text(20, 56, string.format("%d", jump12))
+  gui.text(20, 65, string.format("%d", jump13)) gui.text(20, 74, string.format("%d", jump14))	gui.text(20, 83, string.format("%d", jump15))	gui.text(20, 92, string.format("%d", jump16))
+  gui.text(20, 101, string.format("%d", jump17)) gui.text(20, 110, string.format("%d", jump18)) gui.text(20, 119, string.format("%d", jump19)) gui.text(20, 128, string.format("%d", jump20))
  end
 
  -- Set Up variables for next frame's pass
