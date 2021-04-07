@@ -188,16 +188,16 @@ function setInfo(start, partyStart, boxStart, i)
   PIDs = string.format("\nPID: %08X            PID: %08X            PID: %08X", pid, partyPid, boxPid)
   naturesText = string.format("\nNature: %sNature: %sNature: %s", nature, partyNature, boxNature)
   ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d   IVs: %02d/%02d/%02d/%02d/%02d/%02d   IVs: %02d/%02d/%02d/%02d/%02d/%02d", hpiv, atkiv, defiv, spdefiv, spatkiv, spdiv, partyHpiv, partyAtkiv, partyDefiv, partySpdefiv, partySpatkiv, partySpdiv, boxHpiv, boxAtkiv, boxDefiv, boxSpdefiv, boxSpatkiv, boxSpdiv)
-  hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[hidpowtype + 1], hidpowbase))..string.format("HP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase))..string.format("HP: %s %02d", typeOrder[boxHidpowtype + 1], boxHidpowbase).."\n"
-  catchRngText = string.format("Catch Rate Value: %.0f", catchValue)
+  hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[hidpowtype + 1], hidpowbase))..string.format("HP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase))..string.format("HP: %s %02d", typeOrder[boxHidpowtype + 1], boxHidpowbase)
+  catchRngText = string.format("\nCatch Rate Value: %.0f", catchValue)
   infoText = speciesText..PIDs..naturesText..ivs..hiddenPower..catchRngText
  else
   speciesText = string.format("Species: %sSpecies: %s", species, partySpecies)
   PIDs = string.format("\nPID: %08X            PID: %08X", pid, partyPid)
   naturesText = string.format("\nNature: %sNature: %s", nature, partyNature)
   ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d   IVs: %02d/%02d/%02d/%02d/%02d/%02d", hpiv, atkiv, defiv, spdefiv, spatkiv, spdiv, partyHpiv, partyAtkiv, partyDefiv, partySpdefiv, partySpatkiv, partySpdiv)
-  hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[hidpowtype + 1], hidpowbase))..string.format("HP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase).."\n"
-  catchRngText = string.format("Catch Rate Value: %.0f", catchValue)
+  hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[hidpowtype + 1], hidpowbase))..string.format("HP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)
+  catchRngText = string.format("\nCatch Rate Value: %.0f", catchValue)
   infoText = speciesText..PIDs..naturesText..ivs..hiddenPower..catchRngText
  end
  return infoText
