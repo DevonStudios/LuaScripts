@@ -7,78 +7,78 @@ local game = 0
 local language = 0
 local seedsOffset = 0
 local delayOffset = 0
-local ivrngOffset = 0
+local ivsRngOffset = 0
 console.clear()
 
 if mbyte(0x02FFFE0F) == 0x4A then  -- Check game language
- language = 'JPN'
+ language = "JPN"
  seedsOffset = 0
  delayOffset = 0
- ivrngOffset = 0
+ ivsRngOffset = 0
 elseif mbyte(0x02FFFE0F) == 0x45 then
- language = 'USA'
+ language = "USA"
  seedsOffset = 0xC00
  delayOffset = 0xC00
- ivrngOffset = 0xC08
+ ivsRngOffset = 0xC08
 elseif mbyte(0x02FFFE0F) == 0x49 then
- language = 'ITA'
+ language = "ITA"
  seedsOffset = 0xD60
  delayOffset = 0xD60
- ivrngOffset = 0xD68
+ ivsRngOffset = 0xD68
 elseif mbyte(0x02FFFE0F) == 0x44 then
- language = 'GER'
+ language = "GER"
  seedsOffset = 0xDA0
  delayOffset = 0xDA0
- ivrngOffset = 0xDA8
+ ivsRngOffset = 0xDA8
 elseif mbyte(0x02FFFE0F) == 0x46 then
- language = 'FRE'
+ language = "FRE"
  seedsOffset = 0xDE0
  delayOffset = 0xDE0
- ivrngOffset = 0xDE8
+ ivsRngOffset = 0xDE8
 elseif mbyte(0x02FFFE0F) == 0x53 then
- language = 'SPA'
+ language = "SPA"
  seedsOffset = 0xE00
  delayOffset = 0xE00
- ivrngOffset = 0xE08
+ ivsRngOffset = 0xE08
 elseif mbyte(0x02FFFE0F) == 0x4B then
- language = 'KOR'
+ language = "KOR"
  seedsOffset = 0x1B00
  delayOffset = 0x1B00
- ivrngOffset = 0x1AE8
+ ivsRngOffset = 0x1AE8
 end
 
 if mword(0x02FFFE08) == 0x4C50 then  -- Check game version
- game = 'Platinum'
+ game = "Platinum"
 elseif mbyte(0x02FFFE08) == 0x44 then
- game = 'Diamond'
+ game = "Diamond"
 elseif mbyte(0x02FFFE08) == 0x50 then
- game = 'Pearl'
+ game = "Pearl"
 elseif mword(0x02FFFE08) == 0x4748 then
- game = 'HeartGold'
+ game = "HeartGold"
 elseif mword(0x02FFFE08) == 0x5353 then
- game = 'SoulSilver'
+ game = "SoulSilver"
 end
 
 idsPointer = 0x021BFB94 + seedsOffset
 
-if game ~= 'Platinum' then
- warning = ' - Wrong game version! Use Platinum instead'
+if game ~= "Platinum" then
+ warning = " - Wrong game version! Use Platinum instead"
 else
- warning = ''
+ warning = ""
 end
 
-print('Game Version: '..game..warning)
-print('Language: '..language)
+print("Game Version: "..game..warning)
+print("Language: "..language)
 
 local initSeed = 0
-local currseed = 0
+local currSeed = 0
 local tempCurr = 0
 local delay = 0
-local ivRngframe = 0
+local ivsRngFrame = 0
 local frame = 0
 client.reboot_core()
 
-function buildseed()  -- Predict Initial Seed
+function buildSeed()  -- Predict Initial Seed
  timehex = mdword(0x023FFDEC)
  datehex = mdword(0x023FFDE8)
  hour = string.format("%02X", (timehex % 0x100) % 0x40)
@@ -87,13 +87,15 @@ function buildseed()  -- Predict Initial Seed
  year = string.format("%02X", (mbyte(0x02FFFDE8)))
  month = string.format("%02X", (mbyte(0x02FFFDE9)))
  day = string.format("%02X", (mbyte(0x02FFFDEA)))
+ gui.text(0, 335, string.format(day.."/"..month.."/20"..year))
+ gui.text(0, 350, string.format(hour..":"..minute..":"..second))
  ab = (month * day + minute + second) % 256  -- Build Seed
  cd = hour
  cgd = delay % 65536 + 1  -- can tweak for calibration
  abcd = ab * 0x100 + cd
  efgh = (year + cgd) % 0x10000
- nextseed = ab * 0x1000000 + cd * 0x10000 + efgh  -- Seed is built
- return nextseed
+ nextSeed = ab * 0x1000000 + cd * 0x10000 + efgh  -- Seed is built
+ return nextSeed
 end
 
 function next(s) -- LCRNG
@@ -112,9 +114,9 @@ end
 
 function calcPIDFrameJump()  -- PIDRNG Frame Counting
  difference = 0
- if (currseed ~= 0 or frame ~= 0) and tempCurr ~= currseed then
+ if (currSeed ~= 0 or frame > 0) and tempCurr ~= currSeed then
   tempCurr2 = tempCurr
-  while tempCurr ~= currseed and tempCurr2 ~= currseed do
+  while tempCurr ~= currSeed and tempCurr2 ~= currSeed do
    tempCurr = next(tempCurr)
    tempCurr2 = back(tempCurr2)
    difference = difference + 1
@@ -122,63 +124,63 @@ function calcPIDFrameJump()  -- PIDRNG Frame Counting
     break
    end
   end
-  if tempCurr2 == currseed then
+  if tempCurr2 == currSeed then
    difference = difference * (-1)
   end
  end
- if tempCurr ~= currseed then
-  tempCurr = currseed
+ if tempCurr ~= currSeed then
+  tempCurr = currSeed
  end
- userdata.set('temp', tempCurr)
+ userdata.set("temp", tempCurr)
  return difference
 end
 
-function getIVFrame()  -- IVRNG Frame Counting
- if ivRngframe >= 624 then
-  ivframe = 1
+function getIVsFrame()  -- IVRNG Frame Counting
+ if ivsRngFrame >= 624 then
+  ivsFrame = 1
  else
-  ivframe = ivRngframe + 1
+  ivsFrame = ivsRngFrame + 1
  end
- return ivframe
+ return ivsFrame
 end
 
-function setinitSeed()
- initSeed = userdata.get('seed')
- frame = userdata.get('frame')
- tempCurr = userdata.get('temp')
+function setInitSeed()
+ initSeed = userdata.get("seed")
+ frame = userdata.get("frame")
+ tempCurr = userdata.get("temp")
 end
 
-event.onloadstate(setinitSeed)
+event.onloadstate(setInitSeed)
 
 while true do
- currseed = mdword(0x021BEF14 + seedsOffset)
- ivRngframe = mdword(0x020FFC28 + ivrngOffset)
+ currSeed = mdword(0x021BEF14 + seedsOffset)
+ ivsRngFrame = mdword(0x020FFC28 + ivsRngOffset)
  ids = mdword(mdword(idsPointer) + 0x8C)
  sid = math.floor(ids / 0x10000)
  tid = ids % 0x10000
 
- if mdword(0x021BEF18 + seedsOffset) == currseed then
+ if mdword(0x021BEF18 + seedsOffset) == currSeed then
   initSeed = mdword(0x021BEF18 + seedsOffset)
   tempCurr = initSeed
   frame = 0
-  userdata.set('seed', initSeed)
+  userdata.set("seed", initSeed)
  end
 
  frame = frame + calcPIDFrameJump()
- userdata.set('frame', frame)
+ userdata.set("frame", frame)
 
  if frame == 0 then
   delay = mdword(0x021BEAA8 + delayOffset) + 21
-  gui.text(0, 365, string.format("Next Seed: %08X", buildseed()))
+  gui.text(0, 365, string.format("Next Seed: %08X", buildSeed()))
   gui.text(0, 690, "Delay: "..delay)
  end
 
  gui.text(0, 705, "Frame: "..frame)
- gui.text(0, 720, string.format("Egg Frame: %d", getIVFrame()))
+ gui.text(0, 720, string.format("Egg Frame: %d", getIVsFrame()))
  gui.text(0, 735, string.format("Initial Seed: %08X", initSeed))
- gui.text(0, 750, string.format("Current Seed: %08X", currseed))
+ gui.text(0, 750, string.format("Current Seed: %08X", currSeed))
  gui.text(410, 735, string.format("TID: %05d", tid))
  gui.text(410, 750, string.format("SID: %05d", sid))
- 
+
  emu.frameadvance()
 end
