@@ -1,56 +1,109 @@
--- Setup Terminology abbreviations; from FractalFusion
-local band, bor, bxor, tobit, floor = bit.band, bit.bor, bit.bxor, bit.tobit, math.floor
-local rshift, lshift = bit.rshift, bit.lshift
-local mdword = memory.readdwordunsigned
-local mword = memory.readwordunsigned
-local mbyte = memory.readbyteunsigned
-local wdword = memory.writedword
+mdword = memory.readdwordunsigned
+mword = memory.readword
+mbyte = memory.readbyte
+rshift = bit.rshift
+lshift = bit.lshift
+band = bit.band
+bxor = bit.bxor
+bor = bit.bor
+tobit = bit.tobit
 
-local game = 0 -- 0 for white, 1 for black
-local rng = 0x02216244 - 0x20 * game -- PRNG Seed Location
-local mtrng = 0x02215374 - 0x20 * game -- Mersenne Twister Table Top
+local mode = {"Normal", "C-Gear"}
+local index = 1
+local key = {}
+local prevKey = {}
+local prngAddr = 0
+local mtSeedAddr = 0
+local delay = 0
+local initSeedHigh = 0
+local initSeedLow = 0
+local mtSeed = 0
+local hitMtSeed = 0
+local hitDelay = 0
+local currSeedHigh = 0
+local currSeedLow = 0
+local tempCurrLow = 0
+local ivsFrame = 0
+local prevMtSeed = 0
+local frame = 0
+local initSet = 0
+local idsAddr = 0
 local mac = 0x123456 -- MAC Address of Emulator
-local storage = 0x02000200
-local trackcgear = 0 -- 0 on, 1 off; disable for Standard Abuse, enable for Entralink Abuse
-
--- Setup initial variables, rest of script detection will take care of them
-local initl = 0
-local inith = 0
-local initm = 0
-local adv = 0
-local total = 0
-local last = 0
-local lastm = 0
-local lmtp = 0
-local steptable = 0
-local mtf = 0
-local mttrack = 0
-local nextmt = 0
-local second = 0
-local minute = 0
+local timehex = 0
+local datehex = 0
 local hour = 0
-local cgearoff = 0
-local cachevalue = 0
-local notrestored = 0
-local wasrestored = 0
+local minute = 0
+local second = 0
+local year = 0
+local month = 0
+local day = 0
 
--- S frame detection function; works off of seeing how many times the lower half was advanced
--- Lua sucks and only allows 16 bit multiplication, so 32 bit multiplication can't be used
--- The lower seed is advanced as follows, if observed as a standalone 32 bit number:
--- SEED1 = (0x6C078965 * SEED1) + 0x00269EC3; from Kazo
-function next(s)
- local a = 0x6C07 * (s % 65536) + rshift(s, 16) * 0x8965
- local b = 0x8965 * (s % 65536) + (a % 65536) * 65536 + 0x00269EC3
- local c = b % 4294967296
- return c
+local game = ""
+local language = ""
+local warning = ""
+
+if mbyte(0X02FFFE0F) == 0x4A then  -- Check game language
+ language = "JPN"
+ prngAddr = 0x02216084
+ mtSeedAddr = 0x022151B4
+ idsAddr = 0x02234E20
+elseif mbyte(0X02FFFE0F) == 0x4F then
+ language = "USA"
+ prngAddr = 0x02216224
+ mtSeedAddr = 0x02215354
+ idsAddr = 0x02234FC0
+elseif mbyte(0X02FFFE0F) == 0x49 then
+ language = "ITA"
+ prngAddr = 0x02216124
+ mtSeedAddr = 0x2215254
+ idsAddr = 0x02234EC0
+elseif mbyte(0X02FFFE0F) == 0x44 then
+ language = "GER"
+ prngAddr = 0x02216164
+ mtSeedAddr = 0x02215294
+ idsAddr = 0x02234F00
+elseif mbyte(0X02FFFE0F) == 0x46 then
+ language = "FRE"
+ prngAddr = 0x022161A4
+ mtSeedAddr = 0x022152D4
+ idsAddr = 0x02234F40
+elseif mbyte(0X02FFFE0F) == 0x53 then
+ language = "SPA"
+ prngAddr = 0x022161E4
+ mtSeedAddr = 0x02215314
+ idsAddr = 0x02234F80
+elseif mbyte(0X02FFFE0F) == 0x4B then
+ language = "KOR"
+ prngAddr = 0x02216924
+ mtSeedAddr = 0x02215A54
+ idsAddr = 0x022356C0
 end
 
--- To predict Mersenne advancement, it's a little harder. Copied and adapted pre-existing Lua
--- http://code.google.com/p/gocha-tas/source/browse/trunk/Scripts/mt19937.lua?r=117
--- Mersenne Twister: A random number generator
--- ported to Lua by gocha, based on mt19937ar.c
-module("mt19937", package.seeall)
+if mbyte(0x02FFFE0E) == 0x41 then  -- Check game version
+ game = "White"
+ if language ~= "KOR" and language ~= "SPA" then
+  prngAddr = prngAddr + 0x20
+  mtSeedAddr = mtSeedAddr + 0x20
+  idsAddr = idsAddr + 0x20
+ end
+elseif mbyte(0x02FFFE0E) == 0x42 then
+ game = "Black"
+elseif mbyte(0x02FFFE0E) == 0x44 then
+ game = "White 2"
+elseif mbyte(0x02FFFE0E) == 0x45 then
+ game = "Black 2"
+end
 
+if game ~= "Black" and game ~= "White" then
+ warning = " - Wrong game version! Use Black/White instead"
+else
+ warning = ""
+end
+
+print("Game Version: "..game..warning)
+print("Language: "..language)
+
+module("mt19937", package.seeall)
 require "bit"
 
 -- Period parameters
@@ -77,7 +130,7 @@ function randomseed(s)
   s = bor(lshift(rshift(s_lo2, 16) + s_hi2, 16), band(s_lo2, 0xFFFF))
   -- s = band(s + i, 0xFFFFFFFF)
   local s_lim = -tobit(s)
-  -- assumes i<2^31
+  -- assumes i < 2^31
   if (s_lim > 0 and s_lim <= i) then
    s = i - s_lim
   else
@@ -89,10 +142,11 @@ function randomseed(s)
   -- only MSBs of the array mt[].
   -- 2002/01/09 modified by Makoto Matsumoto
  end
+
  mti = N
 end
 
-local mag01 = { 0, MATRIX_A }   -- mag01[x] = x * MATRIX_A  for x = 0, 1
+local mag01 = { 0, MATRIX_A } -- mag01[x] = x * MATRIX_A  for x = 0, 1
 
 -- generates a random number on [0, 0xFFFFFFFF] - interval
 function random_int32()
@@ -125,249 +179,181 @@ function random_int32()
  return y
 end
 
--- Lua script begin!
+function buildSeed() -- Predict C-Gear Seed
+ ab = (month * day + minute + second) % 256							-- Build Seed
+ cd = hour
+ cgd = delay % 65536 + 1
+ abcd = ab * 0x100 + cd
+ efgh = (year + cgd) % 0x10000
+ betaseed = ab * 0x1000000 + cd * 0x10000 + efgh					-- Seed before MAC applied
+ cgearseed = betaseed + mac											-- Seed after MAC applied, return this value.
+
+ return cgearseed
+end
+
+function getCGearSeed()  -- C-Gear Seed Generation Loop
+ strmtv = string.format("%08X", mtSeed)  -- Mersenne Twister untempered is in one format while the memory is in another
+ ab = (month * day + minute + second) % 256  -- Build Seed
+ cd = hour
+ cgd = delay % 65536 - 1
+ abcd = ab * 0x100 + cd
+ efgh = (year + cgd) % 0x10000
+ nextseed = ab * 0x1000000 + cd * 0x10000 + efgh  -- Seed is built
+ tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000
+ randomseed(tempcgear)
+ trialseed = random_int32()
+ tempcgearuntemp = string.format("%08X", trialseed)
+
+ if strmtv ~= tempcgearuntemp then
+  newsecond = second - 1  -- Subtract a second to check a different set.
+  newminute = minute
+  newhour = hour
+  if newsecond < 0 then  -- Balaning minutes
+   newsecond = 59
+   newminute = newminute - 1
+   if newminute < 0 then  -- Balancing Hours
+    newminute = 59
+    newhour = newhour - 1
+	if newhour < 0 then
+	 newhour = 23
+	end
+   end
+  end
+
+  ab = (month * day + newminute + newsecond) % 256  -- Rebuild seed, try again.
+  cd = newhour
+  abcd = ab * 0x100 + cd
+  efgh = (year + cgd) % 0x10000
+  tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000
+  randomseed(tempcgear)
+  trialseed = random_int32()
+  tempcgearuntemp = string.format("%08X", trialseed)
+ end
+
+ hitMtSeed = tempcgear
+ hitDelay = cgd
+end
+
+function next(s)
+ local a = 0x6C07 * (s % 65536) + rshift(s, 16) * 0x8965
+ local b = 0x8965 * (s % 65536) + (a % 65536) * 65536 + 0x00269EC3
+ local c = b % 4294967296
+ return c
+end
+
+function back(s)
+ local a = 0x9638 * (s % 65536) + rshift(s, 16) * 0x806D
+ local b = 0x806D * (s % 65536) + (a % 65536) * 65536 + 0xA384E6F9
+ local c = b % 4294967296
+ return c
+end
+
+function calcFrameJump(tempCurr, curr)
+ calibrationFrame = 0
+ if tempCurr ~= curr then
+  tempCurr2 = tempCurr
+  while tempCurr ~= curr and tempCurr2 ~= curr do
+   tempCurr = next(tempCurr)
+   tempCurr2 = back(tempCurr2)
+   calibrationFrame = calibrationFrame + 1
+   if calibrationFrame > 99999 then
+    calibrationFrame = 0
+    break
+   end
+  end
+  if tempCurr2 == curr then
+    calibrationFrame = (-1) * calibrationFrame
+	tempCurrLow = tempCurr2
+  else
+	tempCurrLow = tempCurr
+  end
+ end
+ return calibrationFrame
+end
+
 function main()
- wdword(storage, 1)
- -- setup every loop
- seed2 = mdword(rng + 4)
- seed1 = mdword(rng)
- adv = 0
- test = last
- mtv = mdword(mtrng)
- mtp = mdword(mtrng + 0x9C0)
+ if mdword(prngAddr) ~= 0 and initSet == 0 then
+  initSeedHigh = mdword(prngAddr + 0x4)
+  initSeedLow = mdword(prngAddr)
+  print()
+  print(string.format("Initial Seed: %08X%08X", initSeedHigh, initSeedLow))
+  tempCurrLow = initSeedLow
+  prevMtSeed = mdword(mtSeedAddr)
+  initSet = 1
+ elseif mdword(prngAddr) == 0 then
+  initSeedHigh = 0
+  initSeedLow = 0
+  frame = 0
+  initSet = 0
+  frame = 0
+  hitMtSeed = 0
+  hitDelay = 0
+ end
+
+ currSeedHigh = mdword(prngAddr + 0x4)
+ currSeedLow = mdword(prngAddr)
+ mtSeed = mdword(mtSeedAddr)
+
+ if mdword(mtSeedAddr + 0x9C0) == 624 then
+  ivsFrame = 0
+ else
+  ivsFrame = mdword(mtSeedAddr + 0x9C0)
+ end
+
+ frame = frame + calcFrameJump(tempCurrLow, currSeedLow)
+ sid = math.floor(mdword(idsAddr) / 0x10000)
+ tid = mdword(idsAddr) % 0x10000
+
  delay = mdword(0x02FFFC3C)
  timehex = mdword(0x023FFDEC)
  datehex = mdword(0x023FFDE8)
- hour = string.format("%02X", (timehex % 0x100) % 0x40)				-- memory stores as decimal, but Lua reads as hex. Convert.
+ hour = string.format("%02X", (timehex % 0x100) % 0x40)
  minute = string.format("%02X", (rshift(timehex % 0x10000, 8)))
  second = string.format("%02X", (mbyte(0x02FFFDEE)))
  year = string.format("%02X", (mbyte(0x02FFFDE8)))
  month = string.format("%02X", (mbyte(0x02FFFDE9)))
  day = string.format("%02X", (mbyte(0x02FFFDEA)))
 
- -- display seeds every loop
- gui.text(1, 10, string.format("Initial: %08X%08X", inith, initl))
- gui.text(1, 20, string.format("Current: %08X%08X", seed2, seed1))
+ if prevMtSeed ~= mtSeed and delay > 200 then
+  prevMtSeed = mdword(mtSeedAddr)
+  getCGearSeed()
+ end
 
- -- Check to see if the RNG advanced from the last value
- while seed1 ~= 0 and seed2 ~= 0 and delay > 2 do
-  if adv > 200 then -- RNG advanced a bunch, or the game/script was reset. Reset variables then stop loop.
-   steptable = 0
-   adv = 0
-   if mdword(storage) == 1 and delay > 3 and mdword(storage + 0x4 * 2) ~= 0 then
-    print(""..string.format("Restoring session. Please Wait..."))
-    steptable = mdword(storage + 0x4 * 1)				-- restore mt
-    initm = mdword(storage + 0x4 * 2)
-    lastm = mdword(storage + 0x4 * 7)
-    randomseed(initm)
-    i = 624 * steptable + 1
-    while i > 0 do										-- restore internal mt frame
-     nextmt = floor(random_int32())
-     i = i - 1
-    end
+ prevMtSeed = mtSeed
 
-    mttrack = 1											-- turn on tracking
-
-    inith = mdword(storage + 0x4 * 4)					-- restore PRNG
-    initl = mdword(storage + 0x4 * 3)
-
-    cacheseed = mdword(storage + 0x4 * 5)
-    cachevalue = mdword(storage + 0x4 * 6)
-    lastm = mtv
-    mtv = lastm
-    lmtp = mtp
-
-    if initm == 0 or inith == 0 or initl == 0 then
-     print(""..string.format("Save state's session did not start with script."))
-     print(""..string.format("Either load a valid save state or resume with this one."))
-     initl = mdword(rng)						-- reset to session
-     inith = mdword(rng + 4)
-     mttrack = 0
-     emu.pause()
-     total = 0
-     steptable = 0
-     mtf = 0
-     lmtp = mtp
-     steptable = 0
-    else
-     print(""..string.format("PRNG: %08X%08X", inith, initl))
-     print(""..string.format("MTRNG: %08X", initm))
-     last = cacheseed
-     total = cachevalue								-- restored frame
-    end
-    cgearoff = mdword(storage + 0x4 * 8)			-- remember if c-gear was turned on or not
-    notrestored = 1
-    wasrestored = 1
-   elseif initm == inith then
-    print(""..string.format("Game Reset. Re-initializing."))
-    total = 0
-    steptable = 0
-    mtf = 0
-    lmtp = mtp
-    initl = mdword(rng)
-    inith = mdword(rng + 4)
-    initm = mdword(mtrng)
-    if inith > 0x7FFFFFFF then wdword(storage + 0x4 * 4, inith - 0x100000000) else wdword(storage + 0x4 * 4, inith) end  -- dumb storage problems, have to make sure they are recognized as the right number type before storage
-    if initl > 0x7FFFFFFF then wdword(storage + 0x4 * 3, initl - 0x100000000) else wdword(storage + 0x4 * 3, initl) end
-    if initm > 0x7FFFFFFF then wdword(storage + 0x4 * 2, initm - 0x100000000) else wdword(storage + 0x4 * 2, initm) end
-    lastm = initm
-    randomseed(initm)
-    mttrack = 1						-- enable mersenne tracking
-    nextmt = random_int32()			-- get first untempered mersenne value, this is the value that will replace the MTRNG seed in the memory when the table is redone
-    cgearenoff = 0
-    wasrestored = 0
-
-    print(""..string.format("Session Initial Seed: %08X%08X", inith, initl))
-    --print(""..string.format("Next: %08X", nextmt)) -- debug
-
-    -- see if initial seeding happened (high32 = mtseed)
-    mttrack = 1					-- enable tracking
-    print(""..string.format("Initial Seeding Detected. MTRNG Seed: %08X", initm))
-   else
-    print(""..string.format("Foreign Save State Detected, or Restart didn't refresh. Reset again."))
-    total = 0
-    steptable = 0
-    mtf = 0
-    lmtp = mtp
-    initl = mdword(rng)
-    inith = mdword(rng + 4)
-    initm = mdword(mtrng)
-    if inith > 0x7FFFFFFF then wdword(storage + 0x4 * 4, inith - 0x100000000) else wdword(storage + 0x4 * 4, inith) end
-    if initl > 0x7FFFFFFF then wdword(storage + 0x4 * 3, initl - 0x100000000) else wdword(storage + 0x4 * 3, initl) end
-    if initm > 0x7FFFFFFF then wdword(storage + 0x4 * 2, initm - 0x100000000) else wdword(storage + 0x4 * 2, initm) end
-    lastm = initm
-    randomseed(initm)
-    mttrack = 0						-- disable mersenne tracking
-    nextmt = random_int32()			-- get first untempered mersenne value, this is the value that will replace the MTRNG seed in the memory when the table is redone
-    cgearenoff = 0
-    wasrestored = 0
-   end
-   print(""..string.format(""))		-- Visual Line to separate.
-   break
-
-  elseif test ~= seed1 then 		-- RNG advanced at least once. Lets advance once and repeat the loop.
-   test = next(test)
-   adv = adv + 1
-
-  elseif test == seed1 then
-   break 							-- last frame's advanced RNG value matches the current. Stop loop.
+ key = input.get()
+ if key["1"] and not prevKey["1"] then
+  index = index - 1
+  if index < 1 then
+   index = 2
+  end
+ elseif key["2"] and not prevKey["2"] then
+  index = index + 1
+  if index > 2 then
+   index = 1
   end
  end
 
- gui.text(180, 10, string.format("%d/%d/%d", month, day, 2000 + year))					-- Display Date
- gui.text(180, 20, string.format("%02d:%02d:%02d", hour, minute, second, delay))		-- Display Time
+ prevKey = key
 
- -- Check to see if the MTRNG changed, only if tracking is enabled.
- if mttrack == 1 and notrestored == 0 then
-  if (lmtp > mtp and delay > 50 and notrestored == 0) or (lmtp == mtp and lastm ~= mtv) then
-   strmtv = string.format("%08X", mtv)			-- Mersenne Twister untempered is in one format while the memory is in another
-   strnmt = string.format("%08X", nextmt)		-- Convert to a string hex so that they can be equated when their decimal isn't
-   if strmtv ~= strnmt  then 					-- New untempered table value isn't as predicted, so the c-gear was turned on!
-    mttrack = 1
-    -- print(strmtv, strnmt, string.format("%08X", lastm)) -- debug for bad initialize
-    if wasrestored == 1 then print(""..string.format("Earlier restoration may have failed. Double Check.")) print(""..string.format("If C-Gear was just turned on this frame, ignore.")) print(""..string.format("")) wasrestored = 0 end
-    -- mttrack = 0
-    --else
-    print(""..string.format("C-Gear turned on. Determining C-Gear Seed and restarting tracking."))
-    steptable = 1
-    wdword(storage + 0x4 * 1, steptable)
-    -- Finding the C-Gear seed you hit
-    -- Load Time Values
-    hour = string.format("%02X", (timehex % 0x100) % 0x40)				-- Memory stores as decimal, but Lua reads as hex. Convert.
-    minute = string.format("%02X", (rshift(timehex % 0x10000, 8)))
-    second = string.format("%02X", (mbyte(0x02FFFDEE)))
-    year = string.format("%02X", (mbyte(0x02FFFDE8)))
-    month = string.format("%02X", (mbyte(0x02FFFDE9)))
-    day = string.format("%02X", (mbyte(0x02FFFDEA)))
-    ab = (month * day + minute + second) % 256
-    cd = hour
-    cgd = delay % 65536 - 1												-- Delay from a frame before is used.
-    abcd = ab * 0x100 + cd
-    efgh = (year + cgd) % 0x10000
-    tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000
-    randomseed(tempcgear)
-    trialseed = random_int32()
-    tempcgearuntemp = string.format("%08X", trialseed)
-    if strmtv ~= tempcgearuntemp then
-     second = second - 1					-- Subtract a second to check a different set.
-     if second < 0 then						-- Balaning minutes
-      second = 59
-      minute = minute - 1
-      if minute < 0 then					-- Balancing Hours
-       minute = 59
-       hour = hour - 1
-      end
-     end
-     ab = (month * day + minute + second) % 256	-- Rebuild seed, try again.
-     cd = hour
-     abcd = ab * 0x100 + cd
-     efgh = (year + cgd) % 0x10000
-     tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000
-     randomseed(tempcgear)
-     trialseed = random_int32()
-     tempcgearuntemp = string.format("%08X", trialseed)
-    end
+ gui.text(0, 0, "Mode: "..mode[index])
+ gui.text(110, 1, "<- 1 - 2 ->")
+ gui.text(0, 15, string.format("Initial Seed: %08X%08X", initSeedHigh, initSeedLow))
+ gui.text(0, 25, string.format("Current Seed: %08X%08X", currSeedHigh, currSeedLow))
+ gui.text(0, 35, string.format("PID Frame: %d", frame))
+ gui.text(0, 45, string.format("IVs Frame: %d", ivsFrame))
 
-    initm = tempcgear
-    print(""..string.format("C-Gear Seed: %08X    Delay: %d", tempcgear, cgd))
-    print(""..string.format(""))				-- Visual Blank Line
-    if initm > 0x7FFFFFFF then wdword(storage + 0x4 * 2, initm - 0x100000000) else wdword(storage + 0x4 * 2, initm) end
-    i = 0
-    while i ~= 624 do									-- get the next untempered for the cgear
-     nextmt = floor(random_int32())
-     i = i + 1
-    end --end
-   else													-- untempered is as predicted -> predict next one for when the time rolls around
-
-    i = 0
-    while i ~= 624 do									-- do 624 iterations to build the remaining 623 and the first of the next.
-     nextmt = floor(random_int32())
-     i = i + 1
-    end
-    --print(""..string.format("Next: %08X", nextmt)) 	-- debug
-
-    steptable = steptable + 1 							-- mersenne twister has a new table as the counter is reset to 0; tables +  +
-
-    wdword(storage + 0x4 * 1, steptable)				-- save state storage of table refreshes
-   end
-  end
-  gui.text(1, 160, string.format("Frame: %d", mtf))
-  gui.text(1, 170, string.format("MTRNG Seed: %08X", initm))
-  -- gui.text(1, 38, string.format("next mt: %08X", nextmt)) -- debug
+ if mode[index] == "C-Gear" then
+  gui.text(1, 120, string.format("Next C-Gear: %08X", buildSeed()))
+  gui.text(1, 130, string.format("Delay: %d", delay))
+  gui.text(1, 140, string.format("C-Gear Seed: %08X", hitMtSeed))
+  gui.text(1, 150, string.format("Hit Delay: %d", hitDelay))
  end
 
- -- Advancement Tracking for the PRNG and Mersenne Twister
- total = adv + total										-- total advancements = advancements on this frame + total advancements from previous frames
- if total - cachevalue > 200 then							-- check to see if we should refresh the cached value
-  cachevalue = total
- end
- mtf = mtp + (steptable - 1) * 624							-- Mersenne Twister Frame = Pointer Value + (TableRefresh - 1) * 624 ; this accounts for the initial value of 0x270 which is actually zero
-
- gui.text(1, 30, string.format("Frame: %d", total))			-- Display PRNG Frame; total advancements since the initial seed
-
- -- If the user specifies they want to use the C-Gear
- if trackcgear == 0 then											-- C-Gear Seed Generation Loop
-  ab = (month * day + minute + second)%256							-- Build Seed
-  cd = hour
-  cgd = delay % 65536 + 1
-  abcd = ab * 0x100 + cd
-  efgh = (year + cgd) % 0x10000
-  betaseed = ab * 0x1000000 + cd * 0x10000 + efgh					-- Seed before MAC applied
-  cgearseed = betaseed + mac										-- Seed after MAC applied, return this value.
-  gui.text(1, 140, string.format("Next C-Gear: %08X", cgearseed))	-- Display the C-Gear Seed of the next frame
-  gui.text(1, 150, string.format("Delay: %d", delay))				-- Display Current Delay
- end
-
- -- Set Up variables for next frame's pass
- lmtp = mtp
- last = seed1
- lastm = mtv
- if lastm > 0x7FFFFFFF then wdword(storage + 0x4 * 7, lastm - 0x100000000) else wdword(storage + 0x4 * 7, lastm) end
- wdword(storage + 0x4 * 6, total)
- if seed1 > 0x7FFFFFFF then wdword(storage + 0x4 * 5, seed1 - 0x100000000) else wdword(storage + 0x4 * 5, seed1) end
-
- notrestored = 0
- -- End Lua
+ gui.text(195, 15, string.format("%d/%d/%d", month, day, 2000 + year))
+ gui.text(207, 25, string.format("%02d:%02d:%02d", hour, minute, second))
+ gui.text(195, 173, string.format("TID: %05d", tid))
+ gui.text(195, 183, string.format("SID: %05d", sid))
 end
 
 gui.register(main)
