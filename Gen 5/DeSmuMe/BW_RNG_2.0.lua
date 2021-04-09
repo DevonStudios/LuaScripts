@@ -28,7 +28,7 @@ local prevMtSeed = 0
 local frame = 0
 local initSet = 0
 local idsAddr = 0
-local mac = 0x123456 -- MAC Address of Emulator
+local mac = 0x123456  -- default MAC Address of DeSmuMe
 local timehex = 0
 local datehex = 0
 local hour = 0
@@ -109,12 +109,12 @@ require "bit"
 -- Period parameters
 local N = 624
 local M = 397
-local MATRIX_A = 0x9908B0DF   -- constant vector a
-local UPPER_MASK = 0x80000000 -- most significant w-r bits
-local LOWER_MASK = 0x7FFFFFFF -- least significant r bits
+local MATRIX_A = 0x9908B0DF  -- constant vector a
+local UPPER_MASK = 0x80000000  -- most significant w-r bits
+local LOWER_MASK = 0x7FFFFFFF  -- least significant r bits
 
-local mt = {}     -- the array for the state vector
-local mti = N + 1 -- mti == N + 1 means mt[N] is not initialized
+local mt = {}  -- the array for the state vector
+local mti = N + 1  -- mti == N + 1 means mt[N] is not initialized
 
 -- initializes mt[N] with a seed
 function randomseed(s)
@@ -146,17 +146,17 @@ function randomseed(s)
  mti = N
 end
 
-local mag01 = { 0, MATRIX_A } -- mag01[x] = x * MATRIX_A  for x = 0, 1
+local mag01 = {0, MATRIX_A}  -- mag01[x] = x * MATRIX_A  for x = 0, 1
 
 -- generates a random number on [0, 0xFFFFFFFF] - interval
 function random_int32()
  local y
 
- if (mti >= N) then -- generate N words at one time
+ if (mti >= N) then  -- generate N words at one time
   local kk
 
-  if (mti == N + 1) then -- if init_genrand() has not been called,
-   mt19937.randomseed(5489) -- a default initial seed is used
+  if (mti == N + 1) then  -- if init_genrand() has not been called,
+   mt19937.randomseed(5489)  -- a default initial seed is used
   end
 
   for kk = 1, N - M do
@@ -179,32 +179,32 @@ function random_int32()
  return y
 end
 
-function buildSeed() -- Predict C-Gear Seed
- ab = (month * day + minute + second) % 256							-- Build Seed
+function buildSeed()  -- Predict C-Gear Seed
+ ab = (month * day + minute + second) % 256  -- Build Seed
  cd = hour
  cgd = delay % 65536 + 1
  abcd = ab * 0x100 + cd
  efgh = (year + cgd) % 0x10000
- betaseed = ab * 0x1000000 + cd * 0x10000 + efgh					-- Seed before MAC applied
- cgearseed = betaseed + mac											-- Seed after MAC applied, return this value.
+ betaseed = ab * 0x1000000 + cd * 0x10000 + efgh  -- Seed before MAC applied
+ cgearseed = betaseed + mac  -- Seed after MAC applied, return this value.
 
  return cgearseed
 end
 
-function getCGearSeed()  -- C-Gear Seed Generation Loop
+function getCGearSeed()  -- C-Gear Seed Generation
  strmtv = string.format("%08X", mtSeed)  -- Mersenne Twister untempered is in one format while the memory is in another
  ab = (month * day + minute + second) % 256  -- Build Seed
  cd = hour
  cgd = delay % 65536 - 1
  abcd = ab * 0x100 + cd
  efgh = (year + cgd) % 0x10000
- nextseed = ab * 0x1000000 + cd * 0x10000 + efgh  -- Seed is built
- tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000
+ nextseed = ab * 0x1000000 + cd * 0x10000 + efgh
+ tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000  -- Seed is built
  randomseed(tempcgear)
  tempcgearuntemp = string.format("%08X", random_int32())
 
  if strmtv ~= tempcgearuntemp then
-  cgd = cgd - 1 -- Subtract 1 from delay to check a different set.
+  cgd = cgd - 1  -- Subtract 1 from delay to check a different set.
   ab = (month * day + minute + second) % 256  -- Rebuild seed, try again.
   cd = hour
   abcd = ab * 0x100 + cd
