@@ -6,12 +6,60 @@ local mword = memory.readwordunsigned
 local mbyte = memory.readbyteunsigned
 local wdword = memory.writedword
 
-local game = 0 -- 0 for white2, 1 for black2
-local rng = 0x021FFC58 - 0x40 * game -- PRNG Seed Location
-local mtrng = 0x021FED68 - 0x40 * game -- Mersenne Twister Table Top
+local game = ""
+local rng = 0 -- PRNG Seed Location
+local mtrng = 0 -- Mersenne Twister Table Top
 local mac = 0x123456 -- MAC Address of Emulator
 local storage = 0x02000200
 local trackcgear = 0 -- 0 on, 1 off; disable for Standard Abuse, enable for Entralink Abuse
+local language = ""
+
+if mbyte(0X02FFFE0F) == 0x4A then  -- Check game language
+ language = "JPN"
+ rng = 0x021FF5B8
+ mtrng = 0x021FE6C8
+elseif mbyte(0X02FFFE0F) == 0x4F then
+ language = "USA"
+ rng = 0x021FFC18
+ mtrng = 0x021FED28
+elseif mbyte(0X02FFFE0F) == 0x49 then
+ language = "ITA"
+ rng = 0x021FFB18
+ mtrng = 0x021FEC28
+elseif mbyte(0X02FFFE0F) == 0x44 then
+ language = "GER"
+ rng = 0x021FFB58
+ mtrng = 0x021FEC68
+elseif mbyte(0X02FFFE0F) == 0x46 then
+ language = "FRE"
+ rng = 0x021FFC38
+ mtrng = 0x021FED48
+elseif mbyte(0X02FFFE0F) == 0x53 then
+ language = "SPA"
+ rng = 0x021FFBD8
+ mtrng = 0x021FECE8
+elseif mbyte(0X02FFFE0F) == 0x4B then
+ language = "KOR"
+ rng = 0x02200358
+ mtrng = 0x021FF468
+end
+
+if mbyte(0x02FFFE0E) == 0x41 then  -- Check game version
+ game = "White"
+elseif mbyte(0x02FFFE0E) == 0x42 then
+ game = "Black"
+elseif mbyte(0x02FFFE0E) == 0x44 then
+ game = "White 2"
+ if language ~= "USA" and language ~= "ITA" then
+  rng = rng + 0x20
+  mtrng = mtrng + 0x20
+ else
+  rng = rng + 0x40
+  mtrng = mtrng + 0x40
+ end
+elseif mbyte(0x02FFFE0E) == 0x45 then
+ game = "Black 2"
+end
 
 -- Setup initial variables, rest of script detection will take care of them
 local initl = 0
@@ -331,7 +379,7 @@ function main()
     wdword(storage + 0x4 * 1, steptable)				-- save state storage of table refreshes
    end
   end
-  gui.text(1, 160, string.format("Frame: %d", mtf))
+  gui.text(1, 160, string.format("IVs Frame: %d", mtf))
   gui.text(1, 170, string.format("MTRNG Seed: %08X", initm))
   -- gui.text(1, 38, string.format("next mt: %08X", nextmt)) -- debug
  end
@@ -343,7 +391,7 @@ function main()
  end
  mtf = mtp + (steptable - 1) * 2							-- Mersenne Twister Frame = Pointer Value + (TableRefresh - 1) * 2 ; this accounts for the initial value of 0x2 which is actually zero
 
- gui.text(1, 30, string.format("Frame: %d", total))			-- Display PRNG Frame; total advancements since the initial seed
+ gui.text(1, 30, string.format("PID Frame: %d", total))			-- Display PRNG Frame; total advancements since the initial seed
 
  -- If the user specifies they want to use the C-Gear
 
