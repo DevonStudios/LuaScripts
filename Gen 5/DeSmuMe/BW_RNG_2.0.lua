@@ -201,33 +201,17 @@ function getCGearSeed()  -- C-Gear Seed Generation Loop
  nextseed = ab * 0x1000000 + cd * 0x10000 + efgh  -- Seed is built
  tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000
  randomseed(tempcgear)
- trialseed = random_int32()
- tempcgearuntemp = string.format("%08X", trialseed)
+ tempcgearuntemp = string.format("%08X", random_int32())
 
  if strmtv ~= tempcgearuntemp then
-  newsecond = second - 1  -- Subtract a second to check a different set.
-  newminute = minute
-  newhour = hour
-  if newsecond < 0 then  -- Balaning minutes
-   newsecond = 59
-   newminute = newminute - 1
-   if newminute < 0 then  -- Balancing Hours
-    newminute = 59
-    newhour = newhour - 1
-	if newhour < 0 then
-	 newhour = 23
-	end
-   end
-  end
-
-  ab = (month * day + newminute + newsecond) % 256  -- Rebuild seed, try again.
-  cd = newhour
+  cgd = cgd - 1 -- Subtract 1 from delay to check a different set.
+  ab = (month * day + minute + second) % 256  -- Rebuild seed, try again.
+  cd = hour
   abcd = ab * 0x100 + cd
   efgh = (year + cgd) % 0x10000
   tempcgear = (ab * 0x1000000 + cd * 0x10000 + efgh + mac) % 0x100000000
   randomseed(tempcgear)
-  trialseed = random_int32()
-  tempcgearuntemp = string.format("%08X", trialseed)
+  tempcgearuntemp = string.format("%08X", random_int32())
  end
 
  hitMtSeed = tempcgear
