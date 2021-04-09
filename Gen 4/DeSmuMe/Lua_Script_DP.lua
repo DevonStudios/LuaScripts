@@ -92,7 +92,7 @@ function buildSeed()  -- Predict Initial Seed
  return nextSeed
 end
 
-function next(s) -- LCRNG
+function next(s)  -- LCRNG
  local a = 0x41C6 * (s % 65536) + rshift(s, 16) * 0x4E6D
  local b = 0x4E6D * (s % 65536) + (a % 65536) * 65536 + 0x6073
  local c = b % 4294967296
