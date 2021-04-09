@@ -334,7 +334,7 @@ function main()
   gui.text(1, 150, string.format("Hit Delay: %d", hitDelay))
  end
 
- gui.text(195, 15, string.format("%d/%d/%d", month, day, 2000 + year))
+ gui.text(195, 15, string.format("%02d/%02d/%d", month, day, 2000 + year))
  gui.text(207, 25, string.format("%02d:%02d:%02d", hour, minute, second))
  gui.text(195, 173, string.format("TID: %05d", tid))
  gui.text(195, 183, string.format("SID: %05d", sid))
