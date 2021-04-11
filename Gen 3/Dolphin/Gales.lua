@@ -228,6 +228,7 @@ function onScriptStart()
   startOff = 0
   boxIndexOff = 0
   boxPositionOff = 0
+  boxCheckOff = 0
   seedOff = 0
  elseif ReadValue32(0x0) == 0x47585845 then -- U
   IDsOff = 0x22B10
@@ -235,6 +236,7 @@ function onScriptStart()
   startOff = 0x22194
   boxIndexOff = 0x57CA0
   boxPositionOff = 0x22AB0
+  boxCheckOff = 0x22BA0
   seedOff = 0x22AE8
  else
   IDsOff = 0x5D0F8
@@ -242,6 +244,7 @@ function onScriptStart()
   startOff = 0x5C774
   boxIndexOff = 0x94800
   boxPositionOff = 0x5D088
+  boxCheckOff = 0x7B1A0
   seedOff = 0x5D0C8
  end
 
@@ -273,7 +276,11 @@ function onScriptUpdate()
   boxPosOff = 4
  end
 
- boxStart = boxFirstPosition + (boxIndex * (0xD8 + (0x1D * 0xC4))) + (0xC4 * (boxPosition - boxPosOff))
+ if ReadValue16(0x7EBB16 + boxCheckOff) == 0x391 then
+  boxStart = boxFirstPosition + (boxIndex * (0xD8 + (0x1D * 0xC4))) + (0xC4 * (boxPosition - boxPosOff))
+ else
+  boxStart = boxFirstPosition
+ end
 
  if IDsPointer ~= 0 then
   TID = ReadValue16(IDsPointer + 0x15E + TIDOff)
