@@ -227,27 +227,18 @@ function onScriptStart()
   startOff = 0
   boxOff = 0
   boxAddrOff = 0
-  boxCheckOff = 0
-  ex = 0x30823069
-  it = 0x308B0000
   seedOff = 0
  elseif ReadValue32(0x0) == 0x47433645 then -- U
   IDsOff = 0x91D44
   startOff = 0x14920
   boxOff = 0x13930
   boxAddrOff = 0x14950
-  boxCheckOff = 0x7834F
-  ex = 0x45007800
-  it = 0x69007400
   seedOff = 0x14930
  else
   IDsOff = 0x1AE278
   startOff = 0x61DB8
   boxOff = 0x60DB0
   boxAddrOff = 0x61E00
-  boxCheckOff = 0x1E3388
-  ex = 0x45005300
-  it = 0x43004900
   seedOff = 0x61DD0
  end
 
@@ -273,10 +264,10 @@ function onScriptUpdate()
   SID = ReadValue16(IDsPointer + 0x7FFE42E0)
   partyStart = IDsPointer + 0x7FFE42E8
 
-  if ReadValue32(0x9E00B4 + boxCheckOff) == ex and ReadValue32(0x9E00B8 + boxCheckOff) == it then
-   boxStart = boxNormalStart
-  else
+  if ReadValue16(0x4641EA + seedOff) == 0x391 then
    boxStart = ReadValue32(boxFirstPos) + 0xBA0
+  else
+   boxStart = boxNormalStart
   end
 
   info = string.format("\n\nOpponent                 Party                    Box\n\n")
