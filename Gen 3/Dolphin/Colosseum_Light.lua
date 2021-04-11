@@ -119,16 +119,16 @@ function setInfo(start, partyStart, boxStart)
  isShadow = 0
  i = 0
  while isShadow == 0 and i < 6 do -- get shadow opponent Pokémon stats
-  start = start + 0x138
-  pid = ReadValue32(start)
-  speciesAddr = start - 0x4
+  shadowStart = start + (0x138 * i)
+  pid = ReadValue32(shadowStart)
+  speciesAddr = shadowStart - 0x4
   index = nationalDexTable[ReadValue16(speciesAddr) + 1] + 1
   species = pokemon[index]
   nature = natureName[(pid % 25) + 1]
-  catchValue = calcRate(ReadValue16(start + 0x86), 1, catchRate[index])
-  isShadow = ReadValue8(start + 0xD5)
+  catchValue = calcRate(ReadValue16(shadowStart + 0x86), 1, catchRate[index])
+  isShadow = ReadValue8(shadowStart + 0xD5)
 
-  ivsAddr = start + 0xA1
+  ivsAddr = shadowStart + 0xA1
   hpiv = ReadValue8(ivsAddr)
   atkiv = ReadValue8(ivsAddr + 0x2)
   defiv = ReadValue8(ivsAddr + 0x4)
