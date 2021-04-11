@@ -257,6 +257,7 @@ function onScriptStart()
  currSeed = 0
  tempSeed = 0
  frame = 0
+ boxStart = 0
 end
 
 function onScriptUpdate()
