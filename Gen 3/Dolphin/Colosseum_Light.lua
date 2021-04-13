@@ -265,9 +265,9 @@ function onScriptUpdate()
   partyStart = IDsPointer + 0x7FFE42E8
 
   if ReadValue16(0x4641EA + seedOff) == 0x391 then
-   boxStart = ReadValue32(boxFirstPos) + 0xBA0
-  else
    boxStart = boxNormalStart
+  else
+   boxStart = ReadValue32(boxFirstPos) + 0xBA0
   end
 
   info = setInfo(start, partyStart, boxStart).."\n\n"
