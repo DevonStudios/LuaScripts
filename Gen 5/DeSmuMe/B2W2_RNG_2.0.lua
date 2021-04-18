@@ -134,7 +134,6 @@ function main()
   initSeedLow = 0
   frame = 0
   initSet = 0
-  frame = 0
  end
 
  currSeedHigh = mdword(prngAddr + 0x4)

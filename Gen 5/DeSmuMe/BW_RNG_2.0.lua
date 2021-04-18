@@ -269,7 +269,6 @@ function main()
   initSeedLow = 0
   frame = 0
   initSet = 0
-  frame = 0
   hitMtSeed = 0
   hitDelay = 0
  end
