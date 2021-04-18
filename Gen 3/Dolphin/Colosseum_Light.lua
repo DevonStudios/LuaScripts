@@ -171,7 +171,7 @@ function setInfo(start, partyStart, boxStart)
  PIDs = string.format("\nPID: %08X", partyPid)
  naturesText = string.format("\nNature: %s", partyNature)
  ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", partyHpiv, partyAtkiv, partyDefiv, partySpdefiv, partySpatkiv, partySpdiv)
- hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)
+ hiddenPower = string.format("\nHP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)
  partyInfoText = speciesText..PIDs..naturesText..ivs..hiddenPower
 
  boxPid = ReadValue32(boxStart)
@@ -195,7 +195,7 @@ function setInfo(start, partyStart, boxStart)
  PIDs = string.format("\nPID: %08X", boxPid)
  naturesText = string.format("\nNature: %s", boxNature)
  ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", boxHpiv, boxAtkiv, boxDefiv, boxSpdefiv, boxSpatkiv, boxSpdiv)
- hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)
+ hiddenPower = string.format("\nHP: %s %02d", typeOrder[boxHidpowtype + 1], boxHidpowbase)
  catchRngText = string.format("\nCatch Rate Value: %.0f", catchValue)
  boxInfoText = speciesText..PIDs..naturesText..ivs..hiddenPower
 
