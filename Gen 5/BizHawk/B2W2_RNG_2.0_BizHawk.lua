@@ -116,10 +116,10 @@ function calcFrameJump(tempCurr, curr)
    end
   end
   if tempCurr2 == curr then
-    calibrationFrame = (-1) * calibrationFrame
-	tempCurrLow = tempCurr2
+   calibrationFrame = (-1) * calibrationFrame
+   tempCurrLow = tempCurr2
   else
-	tempCurrLow = tempCurr
+   tempCurrLow = tempCurr
   end
  end
  userdata.set("temp", tempCurrLow)
