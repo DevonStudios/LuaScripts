@@ -19,6 +19,7 @@ local initSeedLow = 0
 local mtSeed = 0
 local hitMtSeed = 0
 local hitDelay = 0
+local hitDate = "01/01/2000\n00:00:00"
 local currSeedHigh = 0
 local currSeedLow = 0
 local tempCurrLow = 0
@@ -221,6 +222,7 @@ function getCGearSeed()  -- C-Gear Seed Generation
 
  hitMtSeed = tempcgear
  hitDelay = cgd
+ hitDate = string.format("%02d/%02d/%d\n%02d:%02d:%02d", month, day, 2000 + year, hour, minute, second)
 end
 
 function next(s)
@@ -251,10 +253,10 @@ function calcFrameJump(tempCurr, curr)
    end
   end
   if tempCurr2 == curr then
-    calibrationFrame = (-1) * calibrationFrame
-	tempCurrLow = tempCurr2
+   calibrationFrame = (-1) * calibrationFrame
+   tempCurrLow = tempCurr2
   else
-	tempCurrLow = tempCurr
+   tempCurrLow = tempCurr
   end
  end
  userdata.set("temp", tempCurrLow)
@@ -274,6 +276,7 @@ function setInitseed()
  prevMtSeed = userdata.get("prevMt")
  hitMtSeed = userdata.get("hitMtSeed")
  hitDelay = userdata.get("hitDelay")
+ hitDate = userdata.get("hitDate")
 end
 
 event.onloadstate(setInitseed)
@@ -294,6 +297,7 @@ while true do
   initSet = 0
   hitMtSeed = 0
   hitDelay = 0
+  hitDate = "01/01/2000\n00:00:00"
  end
 
  userdata.set("seedHigh", initSeedHigh)
@@ -331,6 +335,7 @@ while true do
 
  userdata.set("hitMtSeed", hitMtSeed)
  userdata.set("hitDelay", hitDelay)
+ userdata.set("hitDate", hitDate)
  prevMtSeed = mtSeed
 
  key = input.get()
@@ -360,10 +365,11 @@ while true do
   gui.text(0, 555, string.format("Delay: %d", delay))
   gui.text(0, 570, string.format("C-Gear Seed: %08X", hitMtSeed))
   gui.text(0, 585, string.format("Hit Delay: %d", hitDelay))
+  gui.text(0, 600, string.format("Hit Date:\n%s", hitDate))
  end
 
- gui.text(410, 383, string.format("%02d/%02d/%d", month, day, 2000 + year))
- gui.text(430, 398, string.format("%02d:%02d:%02d", hour, minute, second))
+ gui.text(410, 405, string.format("%02d/%02d/%d", month, day, 2000 + year))
+ gui.text(430, 420, string.format("%02d:%02d:%02d", hour, minute, second))
  gui.text(409, 735, string.format("TID: %05d", tid))
  gui.text(409, 750, string.format("SID: %05d", sid))
 

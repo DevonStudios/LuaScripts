@@ -20,6 +20,7 @@ local initSeedLow = 0
 local mtSeed = 0
 local hitMtSeed = 0
 local hitDelay = 0
+local hitDate = "01/01/2000\n00:00:00"
 local currSeedHigh = 0
 local currSeedLow = 0
 local tempCurrLow = 0
@@ -216,6 +217,7 @@ function getCGearSeed()  -- C-Gear Seed Generation
 
  hitMtSeed = tempcgear
  hitDelay = cgd
+ hitDate = string.format("%02d/%02d/%d\n%02d:%02d:%02d", month, day, 2000 + year, hour, minute, second)
 end
 
 function next(s)
@@ -246,10 +248,10 @@ function calcFrameJump(tempCurr, curr)
    end
   end
   if tempCurr2 == curr then
-    calibrationFrame = (-1) * calibrationFrame
-	tempCurrLow = tempCurr2
+   calibrationFrame = (-1) * calibrationFrame
+   tempCurrLow = tempCurr2
   else
-	tempCurrLow = tempCurr
+   tempCurrLow = tempCurr
   end
  end
  return calibrationFrame
@@ -271,6 +273,7 @@ function main()
   initSet = 0
   hitMtSeed = 0
   hitDelay = 0
+  hitDate = "01/01/2000\n00:00:00"
  end
 
  currSeedHigh = mdword(prngAddr + 0x4)
@@ -327,10 +330,11 @@ function main()
  gui.text(0, 45, string.format("IVs Frame: %d", ivsFrame))
 
  if mode[index] == "C-Gear" then
-  gui.text(1, 120, string.format("Next C-Gear: %08X", buildSeed()))
-  gui.text(1, 130, string.format("Delay: %d", delay))
-  gui.text(1, 140, string.format("C-Gear Seed: %08X", hitMtSeed))
-  gui.text(1, 150, string.format("Hit Delay: %d", hitDelay))
+  gui.text(1, 103, string.format("Next C-Gear: %08X", buildSeed()))
+  gui.text(1, 113, string.format("Delay: %d", delay))
+  gui.text(1, 123, string.format("C-Gear Seed: %08X", hitMtSeed))
+  gui.text(1, 133, string.format("Hit Delay: %d", hitDelay))
+  gui.text(0, 143, string.format("Hit Date:\n%s", hitDate))
  end
 
  gui.text(195, 15, string.format("%02d/%02d/%d", month, day, 2000 + year))
