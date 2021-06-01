@@ -14,9 +14,9 @@ Many Lua scripts useful for RNG abusing in Pokémon games on various emulators
 ### Colosseum/XD
 - Opponent Trainer/Gift RNG
 - 100% Catch RNG
-- Mt. Battle Ho-Oh RNG (C)
-- e-Reader (C)
-- IDs RNG
+- [Mt. Battle Ho-Oh](https://devonstudios.it/2021/05/22/colosseum-mt-battle-ho-oh/) (C) RNG
+- [e-Reader](https://devonstudios.it/2021/04/29/colosseum-e-reader-shadows/) (C) RNG
+- [IDs](https://devonstudios.it/2021/03/17/colosseum-ids/) (C) / [IDs](https://devonstudios.it/2021/05/30/xd-ids/) (G) RNG
 - RNG Info
 - Pokémon Info
 - IDs Info
