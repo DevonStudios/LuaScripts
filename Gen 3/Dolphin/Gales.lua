@@ -278,7 +278,7 @@ function onScriptUpdate()
  end
 
  if ReadValue16(0x7EBB16 + boxCheckOff) == 0x391 then
-  boxStart = boxFirstPosition + (boxIndex * (0xD8 + (0x1D * 0xC4))) + (0xC4 * (boxPosition - boxPosOff))
+  boxStart = boxFirstPosition + (0xC4 * (boxPosition - boxPosOff)) + (0x14 * boxIndex) + (0xC4 * boxIndex * 0x1E) 
  else
   boxStart = boxFirstPosition
  end
