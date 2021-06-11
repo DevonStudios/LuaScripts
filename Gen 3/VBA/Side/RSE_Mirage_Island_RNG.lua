@@ -69,21 +69,24 @@ function next(s, mul1, mul2, sum)
 end
 
 function getCurrMirageIslandSeed()
- off = 0
- pointer = saveBlockPointer
+ local mirageSeedPointer
+ local off
 
  if game == "Emerald" then
+  mirageSeedPointer = mdword(saveBlockPointer)
   off = 0x6C64
-  pointer = mdword(saveBlockPointer)
+ else
+  mirageSeedPointer = saveBlockPointer
+  off = 0
  end
 
- mirageHighSeed = mword(pointer + (2 * 0x4024) - off)
- mirageLowSeed = mword(pointer + (2 * 0x4025) - off)
+ mirageHighSeed = mword(mirageSeedPointer + (2 * 0x4024) - off)
+ mirageLowSeed = mword(mirageSeedPointer + (2 * 0x4025) - off)
 
  return bor(lshift(mirageHighSeed, 16), mirageLowSeed)
 end
 
-function findMirageIslandSeed(currMirageSeed)
+function findMirageIsland(currMirageSeed)
  pid = mdword(selectedBoxPID)
  lowPID = band(pid, 0xFFFF)
  days = 0
@@ -104,7 +107,7 @@ end
 while warning == "" do
  mirageSeed = getCurrMirageIslandSeed()
  mirageValue = rshift(mirageSeed, 16)
- mirageDaysAndSeed = findMirageIslandSeed(mirageSeed)
+ mirageDaysAndSeed = findMirageIsland(mirageSeed)
 
  gui.text(0, 115, string.format("Mirage Island Value: %04X", mirageValue))
  gui.text(0, 125, string.format("Mirage Island Seed: %08X", mirageSeed))

@@ -2,9 +2,6 @@ mdword = memory.readdwordunsigned
 mword = memory.readwordunsigned
 mbyte = memory.readbyte
 rshift = bit.rshift
-lshift = bit.lshift
-band = bit.band
-bor = bit.bor
 
 local gameVersion = mbyte(0x080000AE)
 local game
@@ -114,6 +111,9 @@ local tiles = {
 }
 
 local saveBlockPointer
+local currMapAddr
+local posXAddr
+local posYAddr
 
 if gameVersion == 0x56 then  -- Check game version
  game = "Ruby"
@@ -235,10 +235,13 @@ function getTileColor(tile, currTile)
  return "red"
 end
 
+function isRoute119()
+ return mbyte(currMapAddr) == 0x16
+end
+
 function showWaterTiles()
  posX = mbyte(posXAddr)
  posY = mbyte(posYAddr)
- --print(posX.." "..posY)
 
  if posY >= 25 and posY <= 119 then
   upTile = tiles[posY - 1][posX]
@@ -267,10 +270,6 @@ function showWaterTiles()
    gui.text(133, 77, rightTile, getTileColor(rightTile, ""))
   end
  end
-end
-
-function isRoute119()
- return mbyte(currMapAddr) == 0x16
 end
 
 while warning == "" do

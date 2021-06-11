@@ -12,6 +12,11 @@ local game
 local gameLang = mbyte(0x080000AF)
 local language = ""
 local warning
+
+local saveBlockPointer
+local prngAddr
+local idsAddr
+
 local itemPrize = {"PP-UP", "Exp. Share", "Max Revive", "Master Ball"}
 local itemIndex = 1
 local winningTicket = 0
@@ -21,9 +26,6 @@ local table = {}
 local arrowColumnIndex = 0
 local arrowRowIndex = 0
 local showLotteryPrizes = false
-
-local saveBlockPointer
-local selectedBoxPID
 
 if gameVersion == 0x56 then  -- Check game version
  game = "Ruby"
@@ -46,7 +48,7 @@ if game == "Ruby" or game == "Sapphire" then
  elseif gameLang == 0x45 then
   language = "USA"
   saveBlockPointer = 0x0201EA74
-  prngAddr = 0x3004818
+  prngAddr = 0x03004818
   idsAddr = 0x02024EAE
  else
   language = "EUR"
@@ -64,7 +66,7 @@ elseif game == "Emerald" then
   language = "USA/EUR"
   saveBlockPointer = 0x03005D8C
   prngAddr = 0x03005D80
-  idsAddr = 0x3005D90
+  idsAddr = 0x03005D90
  end
 end
 
@@ -85,6 +87,45 @@ function next(s, mul1, mul2, sum)
  local c = b % 4294967296
 
  return c
+end
+
+function getInput()
+ key = input.get()
+
+ if key["3"] and not prevKey["3"] then
+  showLotteryPrizes = true
+ elseif key["4"] and not prevKey["4"] then
+  showLotteryPrizes = false
+ end
+
+ if key["1"] and not prevKey["1"] then
+  arrowColumnIndex = arrowColumnIndex - 1
+  if arrowColumnIndex < 0 then
+   if arrowRowIndex > 0 then
+    arrowColumnIndex = 1
+    arrowRowIndex = arrowRowIndex - 1
+   else
+    arrowColumnIndex = 0
+   end
+  end
+  if itemIndex > 1 then
+   itemIndex = itemIndex - 1
+  end
+ elseif key["2"] and not prevKey["2"] then
+  arrowColumnIndex = arrowColumnIndex + 1
+  if arrowColumnIndex > 1 then
+   if arrowRowIndex < 1 then
+    arrowColumnIndex = 0
+    arrowRowIndex = arrowRowIndex + 1
+   else
+    arrowColumnIndex = 1
+   end
+  end
+  if itemIndex < 4 then
+   itemIndex = itemIndex + 1
+  end
+ end
+ prevKey = key
 end
 
 function nextCurrSeedForLottery(seed)
@@ -155,9 +196,17 @@ function getMatchingDigits(lotteryNumber)
  return matchingDigits == itemIndex + 1
 end
 
-function findWinningLotteryTicketSeed(seed)
+function getNextLotterySeed(seed)
+ return convertToLotterySeed(nextCurrSeedForLottery(seed))
+end
+
+function getLotteryNumber(seed)
+ return band(seed, 0xFFFF)
+end
+
+function findWinningLotteryTicket(seed)
  i = 0
- while not getMatchingDigits(band(convertToLotterySeed(nextCurrSeedForLottery(seed)), 0xFFFF)) do
+ while not getMatchingDigits(getLotteryNumber(getNextLotterySeed(seed))) do
   seed = next(seed, 0x41C6, 0x4E6D, 0x6073)
   i = i + 1
  end
@@ -169,72 +218,38 @@ function printItems()
  z = 0
  for i = 0, 1 do
   for j = 0, 1 do
-   gui.text(105 + (72 * j), 43 + (10 * i), itemPrize[i + j + z + 1])
+   gui.text(125 + (62 * j), 15 + (10 * i), itemPrize[i + j + z + 1])
   end
   z = z + 1
  end
- gui.text(98 + (72 * arrowColumnIndex), 43 + (10 * arrowRowIndex), ">")
+ gui.text(118 + (62 * arrowColumnIndex), 15 + (10 * arrowRowIndex), ">")
 end
 
 while warning == "" do
- key = input.get()
- if key["3"] and not prevKey["3"] then
-  showLotteryPrizes = true
- elseif key["4"] and not prevKey["4"] then
-  showLotteryPrizes = false
- end
-
- if key["1"] and not prevKey["1"] then
-  arrowColumnIndex = arrowColumnIndex - 1
-  if arrowColumnIndex < 0 then
-   if arrowRowIndex > 0 then
-    arrowColumnIndex = 1
-    arrowRowIndex = arrowRowIndex - 1
-   else
-    arrowColumnIndex = 0
-   end
-  end
-  if itemIndex > 1 then
-   itemIndex = itemIndex - 1
-  end
- elseif key["2"] and not prevKey["2"] then
-  arrowColumnIndex = arrowColumnIndex + 1
-  if arrowColumnIndex > 1 then
-   if arrowRowIndex < 1 then
-    arrowColumnIndex = 0
-    arrowRowIndex = arrowRowIndex + 1
-   else
-    arrowColumnIndex = 1
-   end
-  end
-  if itemIndex < 4 then
-   itemIndex = itemIndex + 1
-  end
- end
- prevKey = key
+ getInput()
 
  currSeed = mdword(prngAddr)
- nextLotterySeed = convertToLotterySeed(nextCurrSeedForLottery(currSeed))
- nextLotteryNumber = band(nextLotterySeed, 0xFFFF)
+ nextLotterySeed = getNextLotterySeed(currSeed)
+ nextLotteryNumber = getLotteryNumber(nextLotterySeed)
  lotterySeed = getCurrLotterySeed()
 
  table = joypad.get(1)
  if table.select then
-  winningTicket = findWinningLotteryTicketSeed(currSeed)
+  winningTicket = findWinningLotteryTicket(currSeed)
  end
 
  if showLotteryPrizes then
- gui.text(155, 25, "4 - Hide Items")
+ gui.text(175, 5, "4 - Hide Items")
  printItems()
  else
- gui.text(155, 25, "3 - Show Items")
+ gui.text(175, 5, "3 - Show Items")
  end
 
- gui.text(0, 85, string.format("Next Lottery Seed: %08X (%05d)", nextLotterySeed, nextLotteryNumber))
- gui.text(0, 95, string.format("Lottery Seed: %08X", lotterySeed))
- gui.text(0, 105, string.format("Lottery Number: %05d", band(lotterySeed, 0xFFFF)))
- gui.text(0, 115, string.format("Next Winning Lottery Ticket: "..winningTicket))
- gui.text(0, 125, "Item Prize: "..itemPrize[itemIndex])
+ gui.text(0, 68, string.format("Next Lottery Seed: %08X (%05d)", nextLotterySeed, nextLotteryNumber))
+ gui.text(0, 78, string.format("Lottery Seed: %08X", lotterySeed))
+ gui.text(0, 88, string.format("Lottery Number: %05d", band(lotterySeed, 0xFFFF)))
+ gui.text(0, 98, string.format("Next Winning Lottery Ticket: "..winningTicket))
+ gui.text(0, 108, "Item Prize: "..itemPrize[itemIndex])
 
  if winningTicket ~= 0 then
   winningTicket = winningTicket - 1

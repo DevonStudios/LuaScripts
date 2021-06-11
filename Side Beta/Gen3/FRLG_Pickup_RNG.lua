@@ -119,7 +119,7 @@ function searchItem(startingSeed, delayFound, lowLimit, highLimit, meowth)
  return false
 end
 
-function printItems(i, j)
+function printItems()
  z = 0
  for i = 0, 7 do
   for j = 0, 1 do
@@ -254,7 +254,7 @@ while true do
 
  if pickupInstructions then
   gui.text(98+(72*arrowColumnIndex),43+(10*arrowRowIndex), ">")
-  printItems(i, j)
+  printItems()
  end
 
  gui.text(0,105, "N of Meowth: "..meowth)
