@@ -515,7 +515,7 @@ while true do
 
   battleScreen = mdword(0x0600D000) ~= 0 and mdword(0x0600CFFC) == 0
   species = nationalDexTable[mword(0x020241C4 + pointers) + 1]
-  bagScreen = screenCheck == 0x00004000
+  bagScreen = screenCheck == 0x00004000 or rshift(screenCheck, 0x4) == 0x00A4400
   ballSelector = mword(0x0203825C + catchInfo) + 1
   isBallSelected = ballSelector > 0 and ballSelector < 0xD
   status = mbyte(wildStart + 80)
