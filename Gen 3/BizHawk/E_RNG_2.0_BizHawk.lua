@@ -501,7 +501,7 @@ while true do
   species = nationalDexTable[mword(0x0202370C + monInfo) + 1]
   bagScreen = screenCheck == 0x0F020E00
   ballSelector = mword(0x0203CB48 + battleSeedInfo) + 1
-  isBallSelected = ballSelector > 0 and ballSelector < 0xD
+  isBallSelected = ballSelector > 0 and ballSelector < 0xE
   status = mbyte(wildStart + 80)
   level = mbyte(start + 84)
   wildType = mbyte(0x02023DA1 + monInfo)
