@@ -19,13 +19,14 @@ local idsAddr
 
 local itemPrize = {"PP-UP", "Exp. Share", "Max Revive", "Master Ball"}
 local itemIndex = 1
-local winningTicket = 0
-local key = {}
 local prevKey = {}
-local table = {}
+local leftArrowColor
+local rightArrowColor
+
 local arrowColumnIndex = 0
 local arrowRowIndex = 0
 local showLotteryPrizes = false
+local winningTicket = 0
 
 if gameVersion == 0x56 then  -- Check game version
  game = "Ruby"
@@ -40,7 +41,7 @@ elseif gameVersion == 0x45 then
 end
 
 if game == "Ruby" or game == "Sapphire" then
- if gameLang == 0x4A then
+ if gameLang == 0x4A then  -- Check game language
   language = "JPN"
   saveBlockPointer = 0x0201E7D4
   prngAddr = 0x03004748
@@ -90,7 +91,10 @@ function next(s, mul1, mul2, sum)
 end
 
 function getInput()
- key = input.get()
+ leftArrowColor = "gray"
+ rightArrowColor = "gray"
+
+ local key = input.get()
 
  if key["3"] and not prevKey["3"] then
   showLotteryPrizes = true
@@ -99,6 +103,7 @@ function getInput()
  end
 
  if key["1"] and not prevKey["1"] then
+  leftArrowColor = "orange"
   arrowColumnIndex = arrowColumnIndex - 1
   if arrowColumnIndex < 0 then
    if arrowRowIndex > 0 then
@@ -112,6 +117,7 @@ function getInput()
    itemIndex = itemIndex - 1
   end
  elseif key["2"] and not prevKey["2"] then
+  rightArrowColor = "orange"
   arrowColumnIndex = arrowColumnIndex + 1
   if arrowColumnIndex > 1 then
    if arrowRowIndex < 1 then
@@ -125,12 +131,25 @@ function getInput()
    itemIndex = itemIndex + 1
   end
  end
+
  prevKey = key
+end
+
+function drawArrowLeft(a, b, c)
+ gui.line(a, b + 3, a + 2, b + 5, c)
+ gui.line(a, b + 3, a + 2, b + 1, c)
+ gui.line(a, b + 3, a + 6, b + 3, c)
+end
+
+function drawArrowRight(a, b, c)
+ gui.line(a, b + 3, a - 2, b + 5, c)
+ gui.line(a, b + 3, a - 2, b + 1, c)
+ gui.line(a, b + 3, a - 6, b + 3, c)
 end
 
 function nextCurrSeedForLottery(seed)
  local lotteryDelay
- 
+
  if game == "Emerald" then
   lotteryDelay = 84
  else
@@ -160,26 +179,26 @@ function getCurrLotterySeed()
   off = 0
  end
 
- lotteryHighSeed = mword(pointer + (2 * 0x404B) - off)
- lotteryLowSeed = mword(pointer + (2 * 0x404C) - off)
+ local lotteryHighSeed = mword(pointer + (2 * 0x404B) - off)
+ local lotteryLowSeed = mword(pointer + (2 * 0x404C) - off)
 
  return bor(lshift(lotteryLowSeed, 16), lotteryHighSeed)
 end
 
 function getMatchingDigits(lotteryNumber)
  local idsPointer
- 
+
  if game == "Emerald" then
   idsPointer = mdword(idsAddr) + 0xA
  else
   idsPointer = idsAddr
  end
 
- ids = mdword(idsPointer)
- tid = ids % 0x10000
+ local ids = mdword(idsPointer)
+ local tid = ids % 0x10000
 
- matchingDigits = 0
- 
+ local matchingDigits = 0
+
  for i = 1, 5 do
   checkedLotteryNumber = lotteryNumber % 10
   checkedTid = tid % 10
@@ -192,7 +211,7 @@ function getMatchingDigits(lotteryNumber)
    break
   end
  end
- 
+
  return matchingDigits == itemIndex + 1
 end
 
@@ -205,7 +224,7 @@ function getLotteryNumber(seed)
 end
 
 function findWinningLotteryTicket(seed)
- i = 0
+ local i = 0
  while not getMatchingDigits(getLotteryNumber(getNextLotterySeed(seed))) do
   seed = next(seed, 0x41C6, 0x4E6D, 0x6073)
   i = i + 1
@@ -215,18 +234,22 @@ function findWinningLotteryTicket(seed)
 end
 
 function printItems()
- z = 0
+ local z = 0
  for i = 0, 1 do
   for j = 0, 1 do
    gui.text(125 + (62 * j), 15 + (10 * i), itemPrize[i + j + z + 1])
   end
   z = z + 1
  end
+
  gui.text(118 + (62 * arrowColumnIndex), 15 + (10 * arrowRowIndex), ">")
 end
 
 while warning == "" do
  getInput()
+ drawArrowLeft(110, 1, leftArrowColor)
+ gui.text(120, 1, "1 - 2")
+ drawArrowRight(148, 1, rightArrowColor)
 
  currSeed = mdword(prngAddr)
  nextLotterySeed = getNextLotterySeed(currSeed)
@@ -239,10 +262,10 @@ while warning == "" do
  end
 
  if showLotteryPrizes then
- gui.text(175, 5, "4 - Hide Items")
- printItems()
+  gui.text(175, 1, "4 - Hide Items")
+  printItems()
  else
- gui.text(175, 5, "3 - Show Items")
+  gui.text(175, 1, "3 - Show Items")
  end
 
  gui.text(0, 68, string.format("Next Lottery Seed: %08X (%05d)", nextLotterySeed, nextLotteryNumber))

@@ -28,7 +28,7 @@ elseif gameVersion == 0x45 then
 end
 
 if game == "Ruby" or game == "Sapphire" then
- if gameLang == 0x4A then
+ if gameLang == 0x4A then  -- Check game language
   language = "JPN"
   saveBlockPointer = 0x0201E7D4
   selectedBoxPID = 0x02000C1C
@@ -80,16 +80,16 @@ function getCurrMirageIslandSeed()
   off = 0
  end
 
- mirageHighSeed = mword(mirageSeedPointer + (2 * 0x4024) - off)
- mirageLowSeed = mword(mirageSeedPointer + (2 * 0x4025) - off)
+ local mirageHighSeed = mword(mirageSeedPointer + (2 * 0x4024) - off)
+ local mirageLowSeed = mword(mirageSeedPointer + (2 * 0x4025) - off)
 
  return bor(lshift(mirageHighSeed, 16), mirageLowSeed)
 end
 
 function findMirageIsland(currMirageSeed)
- pid = mdword(selectedBoxPID)
- lowPID = band(pid, 0xFFFF)
- days = 0
+ local pid = mdword(selectedBoxPID)
+ local lowPID = band(pid, 0xFFFF)
+ local days = 0
 
  while lowPID ~= rshift(currMirageSeed, 16) and days <= 10000 do
   currMirageSeed = next(currMirageSeed, 0x41C6, 0x4E6D, 0x3039)

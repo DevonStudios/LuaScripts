@@ -128,7 +128,7 @@ elseif gameVersion == 0x45 then
 end
 
 if game == "Ruby" or game == "Sapphire" then
- if gameLang == 0x4A then
+ if gameLang == 0x4A then  -- Check game language
   language = "JPN"
   saveBlockPointer = 0x02025494
   currMapAddr = 0x02029A84
@@ -195,7 +195,7 @@ function getFeebasSeed()
 end
 
 function findFeebasTiles(seed)
- i = 1
+ local i = 1
  while i <= 6 do
   seed = next(seed, 0x41C6, 0x4E6D, 0x3039)
   feebasTiles[i] = (rshift(seed, 16)) % 0x1BF
@@ -240,8 +240,8 @@ function isRoute119()
 end
 
 function showWaterTiles()
- posX = mbyte(posXAddr)
- posY = mbyte(posYAddr)
+ local posX = mbyte(posXAddr)
+ local posY = mbyte(posYAddr)
 
  if posY >= 25 and posY <= 119 then
   upTile = tiles[posY - 1][posX]
