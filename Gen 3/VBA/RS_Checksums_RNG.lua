@@ -22,7 +22,7 @@ elseif gameVersion == 0x45 then
 end
 
 if game == "Ruby" or game == "Sapphire" then
- if gameLang == 0x4A then
+ if gameLang == 0x4A then  -- Check game language
   language = "JPN"
  elseif gameLang == 0x45 then
   language = "USA"
@@ -45,6 +45,7 @@ print("Language: "..language)
 local time = 0x02F64EB3
 local mode = {"Jirachi", "10th Anniv/Aura Mew"}
 local index = 1
+local prevKey = {}
 local leftArrowColor
 local rightArrowColor
 
@@ -99,7 +100,7 @@ function getInput()
  leftArrowColor = "gray"
  rightArrowColor = "gray"
 
- key = input.get()
+ local key = input.get()
 
  if key["1"] and not prevKey["1"] then
   leftArrowColor = "orange"
@@ -135,24 +136,25 @@ function isSeedGenerated()
 end
 
 function getSaveBlockSeedAddr()
- startingCheckSeed = 0x0E0022F6
- addOffset = 0x1000
+ local startingCheckSeed = 0x0E0022F6
+ local addOffset = 0x1000
 
  while mdword(startingCheckSeed) ~= 0x1000 and addOffset <= 0xF000 do
   startingCheckSeed = startingCheckSeed + addOffset
   addOffset = addOffset + 0x1000
  end
 
- saveBlockSeedAddr = startingCheckSeed - 0x1300
+ local saveBlockSeedAddr = startingCheckSeed - 0x1300
+
  return saveBlockSeedAddr
 end
 
 function getAllChecksums()
- saveFile = assert(io.open(savePath, "rb"))
- bytes = saveFile:read(0x20000)
+ local saveFile = assert(io.open(savePath, "rb"))
+ local bytes = saveFile:read(0x20000)
  saveFile:close()
- saveBlockStart = 0xFF7
- saveBlockChecksums = {}
+ local saveBlockStart = 0xFF7
+ local saveBlockChecksums = {}
 
  for i = 0, 0x1F000, 0x1000 do
   checkSumAddr = saveBlockStart + i
@@ -165,7 +167,7 @@ function getAllChecksums()
 end
 
 function clalcXorSeed(checkSums)
- xorSeed = 0
+ local xorSeed = 0
  
  for i = 1, table.getn(checkSums) do
   xorSeed = bxor(xorSeed, checkSums[i])
@@ -175,9 +177,9 @@ function clalcXorSeed(checkSums)
 end
 
 --[[function printCheckSums(checkSums)
- x = 145
- y = 55
- line = 0
+ local x = 145
+ local y = 55
+ local line = 0
  gui.text(x - 40, y - 10, "Checksums:")
 
  for i = 1, 32 do
