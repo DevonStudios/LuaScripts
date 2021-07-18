@@ -85,8 +85,20 @@ function getHP(ivs)
  return hiddenPower
 end
 
+function shinyCheck(highPID, lowPID, trainerID, trainerSID)
+ local shinyType = trainerID ~ trainerSID ~ highPID ~ lowPID
+
+ if shinyType == 0 then
+  return "- Square Shiny"
+ elseif shinyType < 8 then
+  return "- Star Shiny"
+ else
+  return ""
+ end
+end
+
 function getJirachiStats(seed)
- --local tid = 40122
+ local tid = 40122
  seed = next(seed)
  local sid = seed >> 16
  seed = next(seed)
@@ -94,17 +106,18 @@ function getJirachiStats(seed)
  seed = next(seed)
  local low = seed >> 16
 
- if low > 7 and 0 or 1 ~= (high ~ 40122 ~ sid) then
+ if low > 7 and 0 or 1 ~= (high ~ tid ~ sid) then
   high = high ~ 0x8000
  end
 
  local pid = (high << 16) + low
+ local isShiny = shinyCheck(high, low, tid, sid)
  local ability = low & 1
  local nature = natureName[(pid % 25) + 1]
 
  local ivs = getIVs(seed)
  local stats = "\nJirachi Stats:\n"
- stats = stats..string.format("PID: %08X\nNature: %s\nIVs: %02d", pid, nature, ivs[1])
+ stats = stats..string.format("PID: %08X %s\nNature: %s\nIVs: %02d", pid, isShiny, nature, ivs[1])
 
  for i = 2, 6 do
   stats = stats.."/"..string.format("%02d", ivs[i])
