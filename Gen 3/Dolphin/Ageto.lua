@@ -76,6 +76,24 @@ function getHP(ivs)
  return hiddenPower
 end
 
+function getPID(seed)
+ local trainerID = 31121
+ local trainerSID = 0
+ seed = next(seed)
+ local highPID = seed >> 16
+ seed = next(seed)
+ local lowPID = seed >> 16
+
+ while (trainerID ~ trainerSID ~ highPID ~ lowPID) < 8 do
+  seed = next(seed)
+  highPID = seed >> 16
+  seed = next(seed)
+  lowPID = seed >> 16
+ end
+
+ return (highPID << 16) + lowPID
+end
+
 function getCelebiStats(seed)
  for i = 1, 23 do
   seed = next(seed)
@@ -86,11 +104,7 @@ function getCelebiStats(seed)
  local iv2 = seed >> 16
  seed = next(seed)
  local ability = (seed >> 16) & 1
- seed = next(seed)
- local high = seed >> 16
- seed = next(seed)
- local low = seed >> 16
- local pid = (high << 16) + low
+ local pid = getPID(seed)
  local nature = natureName[(pid % 25) + 1]
 
  local ivs = getIVs(iv1, iv2)
