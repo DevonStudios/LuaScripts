@@ -1,6 +1,7 @@
 mdword = memory.readdwordunsigned
 mword = memory.readwordunsigned
 mbyte = memory.readbyte
+mrwrite = memory.registerwrite
 rshift = bit.rshift
 lshift = bit.lshift
 bxor = bit.bxor
@@ -8,22 +9,79 @@ band = bit.band
 floor = math.floor
 sqrt = math.sqrt
 
-local natureOrder = {"Atk", "Def", "Spd", "SpAtk", "SpDef"}
-
-local natureName = {
+local natureNamesList = {
  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
  "Bold", "Docile", "Relaxed", "Impish", "Lax",
  "Timid", "Hasty", "Serious", "Jolly", "Naive",
  "Modest", "Mild", "Quiet", "Bashful", "Rash",
  "Calm", "Gentle", "Sassy", "Careful", "Quirky"}
 
-local typeOrder = {
+local HPTypeNamesList = {
  "Fighting", "Flying", "Poison", "Ground",
  "Rock", "Bug", "Ghost", "Steel",
  "Fire", "Water", "Grass", "Electric",
  "Psychic", "Ice", "Dragon", "Dark"}
 
-local moveName = {
+local speciesNamesList = {
+ -- Gen 1
+ "Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmeleon", "Charizard", "Squirtle", "Wartortle", "Blastoise",
+ "Caterpie", "Metapod", "Butterfree", "Weedle", "Kakuna", "Beedrill", "Pidgey", "Pidgeotto", "Pidgeot", "Rattata",
+ "Raticate", "Spearow", "Fearow", "Ekans", "Arbok", "Pikachu", "Raichu", "Sandshrew", "Sandslash", "Nidoran♀",
+ "Nidorina", "Nidoqueen", "Nidoran♂", "Nidorino", "Nidoking", "Clefairy", "Clefable", "Vulpix", "Ninetales",
+ "Jigglypuff", "Wigglytuff", "Zubat", "Golbat", "Oddish", "Gloom", "Vileplume", "Paras", "Parasect", "Venonat",
+ "Venomoth", "Diglett", "Dugtrio", "Meowth", "Persian", "Psyduck", "Golduck", "Mankey", "Primeape", "Growlithe",
+ "Arcanine", "Poliwag", "Poliwhirl", "Poliwrath", "Abra", "Kadabra", "Alakazam", "Machop", "Machoke", "Machamp",
+ "Bellsprout", "Weepinbell", "Victreebel", "Tentacool", "Tentacruel", "Geodude", "Graveler", "Golem", "Ponyta",
+ "Rapidash", "Slowpoke", "Slowbro", "Magnemite", "Magneton", "Farfetch'd", "Doduo", "Dodrio", "Seel", "Dewgong",
+ "Grimer", "Muk", "Shellder", "Cloyster", "Gastly", "Haunter", "Gengar", "Onix", "Drowzee", "Hypno", "Krabby",
+ "Kingler", "Voltorb", "Electrode", "Exeggcute", "Exeggutor", "Cubone", "Marowak", "Hitmonlee", "Hitmonchan",
+ "Lickitung", "Koffing", "Weezing", "Rhyhorn", "Rhydon", "Chansey", "Tangela", "Kangaskhan", "Horsea", "Seadra",
+ "Goldeen", "Seaking", "Staryu", "Starmie", "Mr. Mime", "Scyther", "Jynx", "Electabuzz", "Magmar", "Pinsir", "Tauros",
+ "Magikarp", "Gyarados", "Lapras", "Ditto", "Eevee", "Vaporeon", "Jolteon", "Flareon", "Porygon", "Omanyte", "Omastar",
+ "Kabuto", "Kabutops", "Aerodactyl", "Snorlax", "Articuno", "Zapdos", "Moltres", "Dratini", "Dragonair", "Dragonite",
+ "Mewtwo", "Mew",
+ -- Gen 2
+ "Chikorita", "Bayleef", "Meganium", "Cyndaquil", "Quilava", "Typhlosion", "Totodile", "Croconaw", "Feraligatr",
+ "Sentret", "Furret", "Hoothoot", "Noctowl", "Ledyba", "Ledian", "Spinarak", "Ariados", "Crobat", "Chinchou", "Lanturn",
+ "Pichu", "Cleffa", "Igglybuff", "Togepi", "Togetic", "Natu", "Xatu", "Mareep", "Flaaffy", "Ampharos", "Bellossom",
+ "Marill", "Azumarill", "Sudowoodo", "Politoed", "Hoppip", "Skiploom", "Jumpluff", "Aipom", "Sunkern", "Sunflora",
+ "Yanma", "Wooper", "Quagsire", "Espeon", "Umbreon", "Murkrow", "Slowking", "Misdreavus", "Unown", "Wobbuffet",
+ "Girafarig", "Pineco", "Forretress", "Dunsparce", "Gligar", "Steelix", "Snubbull", "Granbull", "Qwilfish", "Scizor",
+ "Shuckle", "Heracross", "Sneasel", "Teddiursa", "Ursaring", "Slugma", "Magcargo", "Swinub", "Piloswine", "Corsola",
+ "Remoraid", "Octillery", "Delibird", "Mantine", "Skarmory", "Houndour", "Houndoom", "Kingdra", "Phanpy", "Donphan",
+ "Porygon2", "Stantler", "Smeargle", "Tyrogue", "Hitmontop", "Smoochum", "Elekid", "Magby", "Miltank", "Blissey",
+ "Raikou", "Entei", "Suicune", "Larvitar", "Pupitar", "Tyranitar", "Lugia", "Ho-Oh", "Celebi",
+ -- Gen 3
+ "Treecko", "Grovyle", "Sceptile", "Torchic", "Combusken", "Blaziken", "Mudkip", "Marshtomp", "Swampert", "Poochyena",
+ "Mightyena", "Zigzagoon", "Linoone", "Wurmple", "Silcoon", "Beautifly", "Cascoon", "Dustox", "Lotad", "Lombre", "Ludicolo",
+ "Seedot", "Nuzleaf", "Shiftry", "Taillow", "Swellow", "Wingull", "Pelipper", "Ralts", "Kirlia", "Gardevoir", "Surskit",
+ "Masquerain", "Shroomish", "Breloom", "Slakoth", "Vigoroth", "Slaking", "Nincada", "Ninjask", "Shedinja", "Whismur",
+ "Loudred", "Exploud", "Makuhita", "Hariyama", "Azurill", "Nosepass", "Skitty", "Delcatty", "Sableye", "Mawile", "Aron",
+ "Lairon", "Aggron", "Meditite", "Medicham", "Electrike", "Manectric", "Plusle", "Minun", "Volbeat", "Illumise", "Roselia",
+ "Gulpin", "Swalot", "Carvanha", "Sharpedo", "Wailmer", "Wailord", "Numel", "Camerupt", "Torkoal", "Spoink", "Grumpig",
+ "Spinda", "Trapinch", "Vibrava", "Flygon", "Cacnea", "Cacturne", "Swablu", "Altaria", "Zangoose", "Seviper", "Lunatone",
+ "Solrock", "Barboach", "Whiscash", "Corphish", "Crawdaunt", "Baltoy", "Claydol", "Lileep", "Cradily", "Anorith", "Armaldo",
+ "Feebas", "Milotic", "Castform", "Kecleon", "Shuppet", "Banette", "Duskull", "Dusclops", "Tropius", "Chimecho", "Absol",
+ "Wynaut", "Snorunt", "Glalie", "Spheal", "Sealeo", "Walrein", "Clamperl", "Huntail", "Gorebyss", "Relicanth", "Luvdisc",
+ "Bagon", "Shelgon", "Salamence", "Beldum", "Metang", "Metagross", "Regirock", "Regice", "Registeel", "Latias", "Latios",
+ "Kyogre", "Groudon", "Rayquaza", "Jirachi", "Deoxys"}
+
+local abilityNamesList = {
+ "Stench", "Drizzle", "Speed Boost", "Battle Armor", "Sturdy", "Damp", "Limber",
+ "Sand Veil", "Static", "Volt Absorb", "Water Absorb", "Oblivious", "Cloud Nine",
+ "Compound Eyes", "Insomnia", "Color Change", "Immunity", "Flash Fire",
+ "Shield Dust", "Own Tempo", "Suction Cups", "Intimidate", "Shadow Tag",
+ "Rough Skin", "Wonder Guard", "Levitate", "Effect Spore", "Synchronize",
+ "Clear Body", "Natural Cure", "Lightning Rod", "Serene Grace", "Swift Swim",
+ "Chlorophyll", "Illuminate", "Trace", "Huge Power", "Poison Point", "Inner Focus",
+ "Magma Armor", "Water Veil", "Magnet Pull", "Soundproof", "Rain Dish", "Sand Stream",
+ "Pressure", "Thick Fat", "Early Bird", "Flame Body", "Run Away", "Keen Eye",
+ "Hyper Cutter", "Pickup", "Truant", "Hustle", "Cute Charm", "Plus", "Minus", "Forecast",
+ "Sticky Hold", "Shed Skin", "Guts", "Marvel Scale", "Liquid Ooze", "Overgrow", "Blaze",
+ "Torrent", "Swarm", "Rock Head", "Drought", "Arena Trap", "Vital Spirit", "White Smoke",
+ "Pure Power", "Shell Armor", "Cacophony", "Air Lock"}
+
+local moveNamesList = {
  "--" , "Pound", "Karate Chop", "Double Slap", "Comet Punch", "Mega Punch", "Pay Day", "Fire Punch", "Ice Punch", "Thunder Punch",
  "Scratch", "Vice Grip", "Guillotine", "Razor Wind", "Swords Dance", "Cut", "Gust", "Wing Attack", "Whirlwind", "Fly",
  "Bind", "Slam", "Vine Whip", "Stomp", "Double Kick", "Mega Kick", "Jump Kick", "Rolling Kick", "Sand Attack", "Headbutt",
@@ -53,9 +111,9 @@ local moveName = {
  "Shadow Ball", "Future Sight", "Rock Smash", "Whirlpool", "Beat Up", "Fake Out", "Uproar", "Stockpile", "Spit Up",
  "Swallow", "Heat Wave", "Hail", "Torment", "Flatter", "Will-O-Wisp", "Memento", "Facade", "Focus Punch", "Smelling Salts",
  "Follow Me", "Nature Power", "Charge", "Taunt", "Helping Hand", "Trick", "Role Play", "Wish", "Assist", "Ingrain",
- "Superpower", "Magic Coat", "Recycle", "Revenge", "Brick Break", "Yawn", "Knock partyScreenOff", "Endeavor", "Eruption", "Skill Swap",
+ "Superpower", "Magic Coat", "Recycle", "Revenge", "Brick Break", "Yawn", "Knock Off", "Endeavor", "Eruption", "Skill Swap",
  "Imprison", "Refresh", "Grudge", "Snatch", "Secret Power", "Dive", "Arm Thrust", "Camouflage", "Tail Glow", "Luster Purge",
- "Mist Ball", "Feather Dance", "Teeter Dance", "Blaze Kick", "Mud Sport", "Ice Ball", "Needle Arm", "Slack partyScreenOff",
+ "Mist Ball", "Feather Dance", "Teeter Dance", "Blaze Kick", "Mud Sport", "Ice Ball", "Needle Arm", "Slack Off",
  "Hyper Voice", "Poison Fang", "Crush Claw", "Blast Burn", "Hydro Cannon", "Meteor Mash", "Astonish", "Weather Ball",
  "Aromatherapy", "Fake Tears", "Air Cutter", "Overheat", "Odor Sleuth", "Rock Tomb", "Silver Wind", "Metal Sound",
  "Grass Whistle", "Tickle", "Cosmic Power", "Water Spout", "Signal Beam", "Shadow Punch", "Extrasensory", "Sky Uppercut",
@@ -64,7 +122,7 @@ local moveName = {
  "Water Sport", "Calm Mind", "Leaf Blade", "Dragon Dance", "Rock Blast", "Shock Wave", "Water Pulse", "Doom Desire",
  "Psycho Boost"}
 
-local nationalDexTable = {
+local nationalDexList = {
  1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
  27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
  51,  52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74,
@@ -86,7 +144,103 @@ local nationalDexTable = {
  335, 369, 304, 305, 306, 351, 313, 314, 345, 346, 347, 348, 280, 281, 282, 371, 372, 373, 374, 375,
  376, 377, 378, 379, 382, 383, 384, 380, 381, 385, 386, 358}
 
-local catchRate = {
+local pokemonAbilities = {
+ [001] = {65, 34}, [002] = {65, 34}, [003] = {65, 34}, [004] = {66}, [005] = {66}, [006] = {66}, [007] = {67, 44},
+ [008] = {67, 44}, [009] = {67, 44}, [010] = {19, 50}, [011] = {61}, [012] = {14}, [013] = {19, 50}, [014] = {61},
+ [015] = {68}, [016] = {51}, [017] = {51}, [018] = {51}, [019] = {50, 62, 55}, [020] = {50, 62, 55}, [021] = {51},
+ [022] = {51}, [023] = {22, 61}, [024] = {22, 61}, [025] = {9, 31}, [026] = {9, 31}, [027] = {8}, [028] = {8},
+ [029] = {38, 55}, [030] = {38, 55}, [031] = {38}, [032] = {38, 55}, [033] = {38, 55}, [034] = {38}, [035] = {56},
+ [036] = {56}, [037] = {18, 70}, [038] = {18, 70}, [039] = {56}, [040] = {56}, [041] = {39}, [042] = {39},
+ [043] = {34, 50}, [044] = {34, 1}, [045] = {34, 27}, [046] = {27, 6}, [047] = {27, 6}, [048] = {14, 50},
+ [049] = {19}, [050] = {8, 71}, [051] = {8, 71}, [052] = {53}, [053] = {7}, [054] = {6, 13, 33},
+ [055] = {6, 13, 33}, [056] = {72}, [057] = {72}, [058] = {22, 18}, [059] = {22, 18}, [060] = {11, 6, 33},
+ [061] = {11, 6, 33}, [062] = {11, 6, 33}, [063] = {28, 39}, [064] = {28, 39}, [065] = {28, 39}, [066] = {62},
+ [067] = {62}, [068] = {62}, [069] = {34}, [070] = {34}, [071] = {34}, [072] = {29, 64, 44}, [073] = {29, 64, 44},
+ [074] = {69, 5, 8}, [075] = {69, 5, 8}, [076] = {69, 5, 8}, [077] = {50, 18, 49}, [078] = {50, 18, 49},
+ [079] = {12, 20}, [080] = {12, 20}, [081] = {42, 5}, [082] = {42, 5}, [083] = {51, 39}, [084] = {50, 48},
+ [085] = {50, 48}, [086] = {47}, [087] = {47}, [088] = {1, 60}, [089] = {1, 60}, [090] = {75}, [091] = {75},
+ [092] = {26}, [093] = {26}, [094] = {26}, [095] = {69, 5}, [096] = {15, 39}, [097] = {15, 39}, [098] = {52, 75},
+ [099] = {52, 75}, [100] = {43, 9}, [101] = {43, 9}, [102] = {34}, [103] = {34}, [104] = {69, 31, 4},
+ [105] = {69, 31, 4}, [106] = {7}, [107] = {51, 39}, [108] = {20, 12, 13}, [109] = {26, 1}, [110] = {26, 1},
+ [111] = {31, 69}, [112] = {31, 69}, [113] = {30, 32}, [114] = {34}, [115] = {48, 39}, [116] = {33, 6},
+ [117] = {38, 6}, [230] = {33, 6}, [118] = {33, 41, 31}, [119] = {33, 41, 31}, [120] = {35, 30}, [121] = {35, 30},
+ [122] = {43}, [123] = {68}, [212] = {68}, [238] = {12}, [124] = {12}, [239] = {9, 72}, [125] = {9, 72},
+ [240] = {49, 72}, [126] = {49, 72}, [127] = {52}, [128] = {22}, [129] = {33}, [130] = {22}, [131] = {11, 75},
+ [132] = {7}, [133] = {50}, [134] = {11}, [135] = {10}, [136] = {18, 62}, [196] = {28}, [197] = {28, 39},
+ [137] = {36}, [233] = {36}, [138] = {33, 75}, [139] = {33, 75}, [140] = {33, 4}, [141] = {33, 4}, [142] = {69, 46},
+ [143] = {17, 47}, [144] = {46}, [145] = {46, 9}, [146] = {46, 49}, [147] = {61, 63}, [148] = {61, 63}, [149] = {39},
+ [150] = {46}, [151] = {28}, [152] = {65}, [153] = {65}, [154] = {65}, [155] = {66, 18}, [156] = {66, 18},
+ [157] = {66, 18}, [158] = {67}, [159] = {67}, [160] = {67}, [161] = {50, 51}, [162] = {50, 51}, [163] = {15, 51},
+ [164] = {15, 51}, [165] = {68, 48}, [166] = {68, 48}, [167] = {68, 15}, [168] = {68, 15}, [169] = {39},
+ [170] = {10, 35, 11}, [171] = {10, 35, 11}, [172] = {9, 31}, [173] = {56}, [174] = {56}, [175] = {55, 32},
+ [176] = {55, 32}, [177] = {28, 48}, [178] = {28, 48}, [179] = {9, 57}, [180] = {9, 57}, [181] = {9, 57}, [182] = {34},
+ [183] = {47, 37}, [184] = {47, 37}, [185] = {5, 69}, [186] = {11, 6, 2}, [187] = {34}, [188] = {34}, [189] = {34},
+ [190] = {50, 53}, [191] = {34, 48}, [192] = {34, 48}, [193] = {3, 14}, [194] = {6, 11}, [195] = {6, 11}, [198] = {15},
+ [199] = {12, 20}, [200] = {26}, [201] = {26}, [202] = {23}, [203] = {39, 48}, [204] = {5}, [205] = {5},
+ [206] = {32, 50}, [207] = {52, 8, 17}, [208] = {69, 5}, [209] = {22, 50}, [210] = {22}, [211] = {38, 33, 22},
+ [213] = {5}, [214] = {68, 62}, [215] = {39, 51}, [216] = {53}, [217] = {62}, [218] = {40, 49}, [219] = {40, 49},
+ [220] = {12, 47}, [221] = {12, 47}, [222] = {55, 30}, [223] = {55}, [224] = {21}, [225] = {72, 55, 15},
+ [226] = {33, 11, 41}, [227] = {51, 5}, [228] = {48, 18}, [229] = {48, 18}, [231] = {53, 8}, [232] = {5, 8},
+ [234] = {22}, [235] = {20}, [236] = {62, 72}, [237] = {22}, [241] = {47}, [242] = {30, 32}, [243] = {46, 39},
+ [244] = {46, 39}, [245] = {46, 39}, [246] = {62, 8}, [247] = {61}, [248] = {45}, [249] = {46}, [250] = {46},
+ [251] = {30}, [252] = {65}, [253] = {65}, [254] = {65}, [255] = {66, 3}, [256] = {66, 3}, [257] = {66, 3},
+ [258] = {67, 6}, [259] = {67, 6}, [260] = {67, 6}, [261] = {50}, [262] = {22}, [263] = {53}, [264] = {53},
+ [265] = {19, 50}, [266] = {61}, [267] = {68}, [268] = {61}, [269] = {19, 14}, [270] = {33, 44, 20}, [271] = {33, 44, 20},
+ [272] = {33, 44, 20}, [273] = {34, 48}, [274] = {34, 48}, [275] = {34, 48}, [276] = {62}, [277] = {62}, [278] = {51, 44},
+ [279] = {51, 2, 44}, [280] = {28, 36}, [281] = {28, 36}, [282] = {28, 36}, [283] = {33, 44}, [284] = {22}, [285] = {27},
+ [286] = {27}, [287] = {54}, [288] = {72}, [289] = {54}, [290] = {14, 50}, [291] = {3}, [292] = {25}, [293] = {43},
+ [294] = {43}, [295] = {43}, [296] = {47, 62}, [297] = {47, 62}, [298] = {47, 37}, [299] = {5, 42}, [300] = {56},
+ [301] = {56}, [302] = {51}, [303] = {52, 22}, [304] = {5, 69}, [305] = {5, 69}, [306] = {5, 69}, [307] = {74},
+ [308] = {74}, [309] = {9, 31, 58}, [310] = {9, 31, 58}, [311] = {57, 31}, [312] = {58, 10}, [313] = {35, 68}, [314] = {12},
+ [315] = {30, 38}, [316] = {64, 60}, [317] = {64, 60}, [318] = {24, 3}, [319] = {24, 3}, [320] = {41, 12, 46},
+ [321] = {41, 12, 46}, [322] = {12, 20}, [323] = {40}, [324] = {73, 70, 75}, [325] = {47, 20}, [326] = {47, 20}, [327] = {20},
+ [328] = {52, 71}, [329] = {26}, [330] = {26}, [331] = {8, 11}, [332] = {8, 11}, [333] = {30, 13}, [334] = {30, 13},
+ [335] = {17}, [336] = {61}, [337] = {26}, [338] = {26}, [339] = {12}, [340] = {12}, [341] = {52, 75}, [342] = {52, 75},
+ [343] = {26}, [344] = {26}, [345] = {21}, [346] = {21}, [347] = {4, 33}, [348] = {4, 33}, [349] = {33, 12}, [350] = {63, 56},
+ [351] = {59}, [352] = {16}, [353] = {15}, [354] = {15}, [355] = {26}, [356] = {46}, [357] = {34}, [358] = {26}, [359] = {46},
+ [360] = {23}, [361] = {39}, [362] = {39}, [363] = {47, 12}, [364] = {47, 12}, [365] = {47, 12}, [366] = {75}, [367] = {33, 41},
+ [368] = {33}, [369] = {33, 69, 5}, [370] = {33}, [371] = {69}, [372] = {69}, [373] = {22}, [374] = {29}, [375] = {29},
+ [376] = {29}, [377] = {29, 5}, [378] = {29}, [379] = {29}, [380] = {26}, [381] = {26}, [382] = {2}, [383] = {70}, [384] = {77},
+ [385] = {32}, [386] = {46}}
+
+local itemNamesList = {
+ "None", "Master Ball", "Ultra Ball", "Great Ball", "Poke Ball", "Safari Ball", "Net Ball", "Dive Ball", "Nest Ball", "Repeat Ball",
+ "Timer Ball", "Luxury Ball", "Premier Ball", "Potion", "Antidote", "Burn Heal", "Ice Heal", "Awakening", "Parlyz Heal", "Full Restore",
+ "Max Potion", "Hyper Potion", "Super Potion", "Full Heal", "Revive", "Max Revive", "Fresh Water", "Soda Pop", "Lemonade", "Moomoo Milk",
+ "EnergyPowder", "Energy Root", "Heal Powder", "Revival Herb", "Ether", "Max Ether", "Elixir", "Max Elixir", "Lava Cookie", "Blue Flute",
+ "Yellow Flute", "Red Flute", "Black Flute", "White Flute", "Berry Juice", "Sacred Ash", "Shoal Salt", "Shoal Shell", "Red Shard",
+ "Blue Shard", "Yellow Shard", "Green Shard", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown",
+ "unknown", "unknown", "unknown", "HP Up", "Protein", "Iron", "Carbos", "Calcium", "Rare Candy", "PP Up", "Zinc", "PP Max", "unknown",
+ "Guard Spec.", "Dire Hit", "X Attack", "X Defend", "X Speed", "X Accuracy", "X Special", "Poke Doll", "Fluffy Tail", "unknown",
+ "Super Repel", "Max Repel", "Escape Rope", "Repel", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "Sun Stone",
+ "Moon Stone", "Fire Stone", "Thunderstone", "Water Stone", "Leaf Stone", "unknown", "unknown", "unknown", "unknown", "TinyMushroom",
+ "Big Mushroom", "unknown", "Pearl", "Big Pearl", "Stardust", "Star Piece", "Nugget", "Heart Scale", "unknown", "unknown", "unknown",
+ "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "Orange Mail", "Harbor Mail", "Glitter Mail", "Mech Mail", "Wood Mail",
+ "Wave Mail", "Bead Mail", "Shadow Mail", "Tropic Mail", "Dream Mail", "Fab Mail", "Retro Mail", "Cheri Berry", "Chesto Berry",
+ "Pecha Berry", "Rawst Berry", "Aspear Berry", "Leppa Berry", "Oran Berry", "Persim Berry", "Lum Berry", "Sitrus Berry", "Figy Berry",
+ "Wiki Berry", "Mago Berry", "Aguav Berry", "Iapapa Berry", "Razz Berry", "Bluk Berry", "Nanab Berry", "Wepear Berry", "Pinap Berry",
+ "Pomeg Berry", "Kelpsy Berry", "Qualot Berry", "Hondew Berry", "Grepa Berry", "Tamato Berry", "Cornn Berry", "Magost Berry", "Rabuta Berry",
+ "Nomel Berry", "Spelon Berry", "Pamtre Berry", "Watmel Berry", "Durin Berry", "Belue Berry", "Liechi Berry", "Ganlon Berry", "Salac Berry",
+ "Petaya Berry", "Apicot Berry", "Lansat Berry", "Starf Berry", "Enigma Berry", "unknown", "unknown", "unknown", "BrightPowder", "White Herb",
+ "Macho Brace", "Exp. Share", "Quick Claw", "Soothe Bell", "Mental Herb", "Choice Band", "King's Rock", "SilverPowder", "Amulet Coin",
+ "Cleanse Tag", "Soul Dew", "DeepSeaTooth", "DeepSeaScale", "Smoke Ball", "Everstone", "Focus Band", "Lucky Egg", "Scope Lens", "Metal Coat",
+ "Leftovers", "Dragon Scale", "Light Ball", "Soft Sand", "Hard Stone", "Miracle Seed", "BlackGlasses", "Black Belt", "Magnet", "Mystic Water",
+ "Sharp Beak", "Poison Barb", "NeverMeltIce", "Spell Tag", "TwistedSpoon", "Charcoal", "Dragon Fang", "Silk Scarf", "Up-Grade", "Shell Bell",
+ "Sea Incense", "Lax Incense", "Lucky Punch", "Metal Powder", "Thick Club", "Stick", "unknown", "unknown", "unknown", "unknown", "unknown",
+ "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown",
+ "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "Red Scarf", "Blue Scarf",
+ "Pink Scarf", "Green Scarf", "Yellow Scarf", "Mach Bike", "Coin Case", "Itemfinder", "Old Rod", "Good Rod", "Super Rod", "S.S. Ticket",
+ "Contest Pass", "unknown", "Wailmer Pail", "Devon Goods", "Soot Sack", "Basement Key", "Acro Bike", "Pokeblock Case", "Letter", "Eon Ticket",
+ "Red Orb", "Blue Orb", "Scanner", "Go-Goggles", "Meteorite", "Rm. 1 Key", "Rm. 2 Key", "Rm. 4 Key", "Rm. 6 Key", "Storage Key", "Root Fossil",
+ "Claw Fossil", "Devon Scope", "TM 01", "TM 02", "TM 03", "TM 04", "TM 05", "TM 06", "TM 07", "TM 08", "TM 09", "TM 10", "TM 11", "TM 12",
+ "TM 13", "TM 14", "TM 15", "TM 16", "TM 17", "TM 18", "TM 19", "TM 20", "TM 21", "TM 22", "TM 23", "TM 24", "TM 25", "TM 26", "TM 27", "TM 28",
+ "TM 29", "TM 30", "TM 31", "TM 32", "TM 33", "TM 34", "TM 35", "TM 36", "TM 37", "TM 38", "TM 39", "TM 40", "TM 41", "TM 42", "TM 43", "TM 44",
+ "TM 45", "TM 46", "TM 47", "TM 48", "TM 49", "TM 50", "HM 01", "HM 02", "HM 03", "HM 04", "HM 05", "HM 06", "HM 07", "HM 08", "unknown",
+ "unknown", "Oak's Parcel", "Poke Flute", "Secret Key", "Bike Voucher", "Gold Teeth", "Old Amber", "Card Key", "Lift Key", "Helix Fossil",
+ "Dome Fossil", "Silph Scope", "Bicycle", "Town Map", "VS Seeker", "Fame Checker", "TM Case", "Berry Pouch", "Teachy TV", "Tri-Pass",
+ "Rainbow Pass", "Tea", "MysticTicket", "AuroraTicket", "Powder Jar", "Ruby", "Sapphire", "Magma Emblem", "Old Sea Map"}
+
+local catchRatesList = {
  -- Gen 1
  45, 45, 45, 45, 45, 45, 45, 45, 45, 255, 120, 45, 255, 120, 45, 255, 120,
  45, 255, 127, 255, 90, 255, 90, 190, 75, 255, 90, 235, 120, 45, 235, 120,
@@ -115,69 +269,62 @@ local catchRate = {
  200, 225, 45, 190, 90, 200, 45, 30, 125, 190, 75, 255, 120, 45, 255, 60,
  60, 25, 225, 45, 45, 45, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
 
-local ball = {"0", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
+local gameVersion = mbyte(0x080000AE)
+local game
+local gameLang = mbyte(0x080000AF)
+local language = ""
+local warning
+
 local mode = {"None", "Capture", "100% Catch", "Breeding", "Pandora", "Pokemon Info"}
 local index = 1
-local gameLang = mbyte(0x080000AF)
-local gameVersion = mbyte(0x080000AE)
-local language
-local monInfo
-local pointers
-local partyScreenOff
-local startBoxInfo
-local startBoxInfo2
-local partyScreen
-local partyCursor
-local hpiv
-local atkiv
-local defiv
-local spdiv
-local spatkiv
-local spdefiv
-local personality
-local shinyCheck
-local nature
-local natinc
-local natdec
-local hidpowtype
-local hidpowbase
-local tid
-local sid
+local prevKey = {}
+local showInstructionsText = false
+local prevKeyInstr = {}
+local leftArrowColor
+local rightArrowColor
+local leftInfoArrowColor
+local rightInfoArrowColor
+local prevKeyInfo = {}
 
-if gameLang == 0x4A then  -- Check game language
- language = "JPN"
- monInfo = 0
- battleInfo = 0
- movesInfo = 0
- pointers = 0
- partyScreenOff = 0
- startBoxInfo = 0
- startBoxInfo2 = 0
- catchInfo = 0
- catchInfo2 = 0
-elseif gameLang == 0x45 then
- language = "USA"
- monInfo = 0xD0
- battleInfo = 0xBC
- movesInfo = -0x3D4
- pointers = 0x2A0
- partyScreenOff = 0x80000
- startBoxInfo = 0x2E4
- startBoxInfo2 = 0x5D0
- catchInfo = 0x302
- catchInfo2 = 0x304
-else
- language = "EUR"
- monInfo = 0xE0
- battleInfo = 0xCC
- movesInfo = -0x3D4
- pointers = 0x2A0
- partyScreenOff = 0x80000
- startBoxInfo = 0x2E4
- startBoxInfo2 = 0x5D0
- catchInfo = 0x302
- catchInfo2 = 0x304
-end
+local currSeedAddr
+local checkSeeding = false
+local initSeed = nil
+local tempCurr = 0
+local frame = 0
+
+local wildAddr
+local IDsAddr
+local roamerAddr
+
+local speciesDexIndexAddr
+local selectedItemAddr
+local wildTypeAddr
+local isUnderWaterAddr
+local dexCaughtFlagAddr
+local safariZoneStepsCounterAddr
+local safariCatchFactorAddr = 0x02016089
+local battleTurnsCounterAddr
+local ballRate = {"1", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
+local catchCheckFlagAddr = 0x02017810
+local startingCatchFrame
+local catchDelayCounter = 0
+local catchDelay = 0
+local catchRngStop = true
+local skips
+local oneTimeCatchRng = true
+local currSeed2
+
+local partyAddr
+local partySlotsCounterAddr
+local eggLowPIDAddr
+local flagsAddr
+
+local infoMode = {"Party", "Stats", "Box"}
+local infoIndex = 1
+local partySelectedSlotNumberAddr = 0x020200BA
+local pokemonStatsScreenAddr = 0x02018010
+local currBoxNumberAddr
+local boxSelectedSlotNumberAddr
 
 if gameVersion == 0x56 then  -- Check game version
  game = "Ruby"
@@ -191,6 +338,65 @@ elseif gameVersion == 0x45 then
  game = "Emerald"
 end
 
+if gameLang == 0x4A then  -- Check game language
+ language = "JPN"
+ currSeedAddr = 0x03004748
+ wildAddr = 0x030044F0 -- capture
+ IDsAddr = 0x02024C0E
+ roamerAddr = 0x020285DC
+ speciesDexIndexAddr = 0x020241C4 -- 100% catch
+ selectedItemAddr = 0x0203825C
+ wildTypeAddr = 0x02024859
+ isUnderWaterAddr = 0x030041D0
+ dexCaughtFlagAddr = 0x02024C2C
+ safariZoneStepsCounterAddr = 0x02038506
+ battleTurnsCounterAddr = 0x03004223
+ partyAddr = 0x03004290 -- breeding
+ partySlotsCounterAddr = 0x03004280
+ eggLowPIDAddr = 0x02028548
+ flagsAddr = 0x020266C4
+ currBoxNumberAddr = 0x0202FDBC -- info
+ boxSelectedSlotNumberAddr = 0x02038201
+elseif gameLang == 0x45 then
+ language = "USA"
+ currSeedAddr = 0x03004818
+ wildAddr = 0x030045C0 -- capture
+ IDsAddr = 0x02024EAE
+ roamerAddr = 0x0202887C
+ speciesDexIndexAddr = 0x02024464 -- 100% catch
+ selectedItemAddr = 0x0203855E
+ wildTypeAddr = 0x02024AF9
+ isUnderWaterAddr = 0x0300428C
+ dexCaughtFlagAddr = 0x02024ECC
+ safariZoneStepsCounterAddr = 0x0203880A
+ battleTurnsCounterAddr = 0x030042F3
+ partyAddr = 0x03004360 -- breeding
+ partySlotsCounterAddr = 0x03004350
+ eggLowPIDAddr = 0x020287E8
+ flagsAddr = 0x02026964
+ currBoxNumberAddr = 0x020300A0 -- info
+ boxSelectedSlotNumberAddr = 0x020384E5
+else
+ language = "EUR"
+ currSeedAddr = 0x03004828
+ wildAddr = 0x030045D0 -- capture
+ IDsAddr = 0x02024EAE
+ roamerAddr = 0x0202887C
+ speciesDexIndexAddr = 0x02024464 -- 100% catch
+ selectedItemAddr = 0x0203855E
+ wildTypeAddr = 0x02024AF9
+ isUnderWaterAddr = 0x0300429C
+ dexCaughtFlagAddr = 0x02024ECC
+ safariZoneStepsCounterAddr = 0x0203880A
+ battleTurnsCounterAddr = 0x03004303
+ partyAddr = 0x03004370 -- breeding
+ partySlotsCounterAddr = 0x03004360
+ eggLowPIDAddr = 0x020287E8
+ flagsAddr = 0x02026964
+ currBoxNumberAddr = 0x020300A0 -- info
+ boxSelectedSlotNumberAddr = 0x020384E5
+end
+
 if game ~= "Ruby" and game ~= "Sapphire" then
  warning = " - Wrong game version! Use Ruby/Sapphire instead"
 else
@@ -202,570 +408,768 @@ print()
 print("Game Version: "..game..warning)
 print("Language: "..language)
 
-local wildStart = 0x030044F0 + monInfo
-local start = 0x030044F0 + monInfo
-local moveStart = 0x02024844 + movesInfo
-local ppStart = 0x0202485C + pointers
-local partyStart = 0x03004290 + monInfo
-local currentBoxPidSelected = 0x02000C1C + startBoxInfo2
-local boxCheck = false
-local initSeed = 0
-local currSeed = 0
-local tempCurr = 0
-local frame = 0
-local key = {}
-local prevKey = {}
-local catchKey = {}
-local catchInstructions = false
-local catchDelay = -1
-local delayCounter = 0
-local bonusStatus = 1
-local skips = 0
-local seed2 = 0
-local seed3 = 0
-local frameDelay = 0
-local oneTime = false
-local safariOffset = 0
-
 joypad.set(1, {A = true, B = true, select = true, start = true})
 
-function next(s)
- local a = 0x41C6 * (s % 65536) + rshift(s, 16) * 0x4E6D
- local b = 0x4E6D * (s % 65536) + (a % 65536) * 65536 + 0x6073
- local c = b % 4294967296
- return c
-end
+function getInput()
+ leftArrowColor = "gray"
+ rightArrowColor = "gray"
 
-function back(s)
- local a = 0xEEB9 * (s % 65536) + rshift(s, 16) * 0xEB65
- local b = 0xEB65 * (s % 65536) + (a % 65536) * 65536 + 0x0A3561A1
- local c = b % 4294967296
- return c
-end
+ local key = input.get()
 
-function calcFrameJump()
- frame = frame + 1
- calibrationFrame = 0
- if frame > 4 and tempCurr ~= currSeed then
-  tempCurr2 = tempCurr
-  while tempCurr ~= currSeed and tempCurr2 ~= currSeed do
-   tempCurr = next(tempCurr)
-   tempCurr2 = back(tempCurr2)
-   calibrationFrame = calibrationFrame + 1
-  end
-  if tempCurr2 == currSeed then
-   calibrationFrame = (-1) * calibrationFrame
-   tempCurr = tempCurr2
-  end
- end
- return calibrationFrame
-end
-
-function findCatchSeed(s, d)
- local t = s
- for i = 1, d do
-  t = next(t)
- end
- return t
-end
-
-function findSureCatch(s, b, sz)
- local t = s
- local t1 = s
- local delay = 0
- local ballShakes = 0
- while ballShakes ~= 4 do
-  if rshift(t, 16) < b then
-   ballShakes = 1
-   t = next(t)
-   if rshift(t, 16) < b then
-    ballShakes = 2
-    t = next(t)
-    if rshift(t, 16) < b then
-     ballShakes = 3
-     t = next(t)
-     if rshift(t, 16) < b then
-      ballShakes = 4
-     end
-    end
-   end
-   else
-    ballShakes = 0
-  end
-  if sz and delay % 2 ~= 0 then
-   ballShakes = 0
-  end
-  t1 = next(t1)
-  t = t1
-  delay = delay + 1
- end
- return delay
-end
-
-function showStats()
- gui.text(2, 11, "Stats:")
- gui.text(30, 11, "HP "..mword(start + 86))
- gui.text(62, 11, "Atk "..mword(start + 90))
- gui.text(95, 11, "Def "..mword(start + 92))
- gui.text(128, 11, "SpA "..mword(start + 96))
- gui.text(161, 11, "SpD "..mword(start + 98))
- gui.text(194, 11, "Spe "..mword(start + 94))
-end
-
-function showHiddenInfo()
- gui.text(1, 21, "IVs:")
- gui.text(30, 21, "HP ")
- if hpiv >= 30 then
-  gui.text(42, 21, hpiv, "green")
- elseif hpiv >= 1 and hpiv <= 5 then
-  gui.text(42, 21, hpiv, "#ffb100")
- elseif hpiv < 1 then
-  gui.text(42, 21, hpiv, "red")
- else
-  gui.text(42, 21, hpiv)
- end
- gui.text(62, 21, "Atk ")
- if atkiv >= 30 then
-  gui.text(78, 21, atkiv, "green")
- elseif atkiv >= 1 and atkiv <= 5 then
-  gui.text(78, 21, atkiv, "#ffb100")
- elseif atkiv < 1 then
-  gui.text(78, 21, atkiv, "red")
- else
-  gui.text(78, 21, atkiv)
- end
- gui.text(95, 21, "Def ")
- if defiv >= 30 then
-  gui.text(111, 21, defiv, "green")
- elseif defiv >= 1 and defiv <= 5 then
-  gui.text(111, 21, defiv, "#ffb100")
- elseif defiv < 1 then
-  gui.text(111, 21, defiv, "red")
- else
-  gui.text(111, 21, defiv)
- end
- gui.text(128, 21, "SpA ")
- if spatkiv >= 30 then
-  gui.text(144, 21, spatkiv, "green")
- elseif spatkiv >= 1 and spatkiv <= 5 then
-  gui.text(144, 21, spatkiv, "#ffb100")
- elseif spatkiv < 1 then
-  gui.text(144, 21, spatkiv, "red")
- else
-  gui.text(144, 21, spatkiv)
- end
- gui.text(161, 21, "SpD ")
- if spdefiv >= 30 then
-  gui.text(177, 21, spdefiv, "green")
- elseif spdefiv >= 1 and spdefiv <= 5 then
-  gui.text(177, 21, spdefiv, "#ffb100")
- elseif spdefiv < 1 then
-  gui.text(177, 21, spdefiv, "red")
- else
-  gui.text(177, 21, spdefiv)
- end
- gui.text(194, 21, "Spe ")
- if spdiv >= 30 then
-  gui.text(210, 21, spdiv, "green")
- elseif spdiv >= 1 and spdiv <= 5 then
-  gui.text(210, 21, spdiv, "#ffb100")
- elseif spdiv < 1 then
-  gui.text(210, 21, spdiv, "red")
- else
-  gui.text(210, 21, spdiv)
- end
-
- gui.text(2, 40, "PID: ")
- if shinyCheck < 8 then
-  gui.text(22, 40, string.format("%08X", personality), "green")
- else
-  gui.text(22, 40, string.format("%08X", personality))
- end
- gui.text(2, 50, "Nature: "..natureName[nature + 1])
- gui.text(2, 60, natureOrder[natinc + 1].."+ "..natureOrder[natdec + 1].."-")
- gui.text(167, 30, "HP "..typeOrder[hidpowtype + 1].." "..hidpowbase)
-end
-
-function showMoves()
- if mword(moveStart) + 1 <= 355 then
-  gui.text(2, 77, "Move: "..moveName[mword(moveStart) + 1])
- end
- if mword(moveStart + 2) + 1 <= 355 then
-  gui.text(2, 87, "Move: "..moveName[mword(moveStart + 2) + 1])
- end
- if mword(moveStart + 4) + 1 <= 355 then
-  gui.text(2, 97, "Move: "..moveName[mword(moveStart + 4) + 1])
- end
- if mword(moveStart + 6) + 1 <= 355 then
-  gui.text(2, 107, "Move: "..moveName[mword(moveStart + 6) + 1])
- end
-end
-
-function showPP()
- gui.text(85, 77, "PP: ")
- if mbyte(ppStart) >= 1 and mbyte(ppStart) <= 4 then
-  gui.text(101, 77, mbyte(ppStart), "#ffb100")
- elseif mbyte(ppStart) < 1 then
-  gui.text(101, 77, mbyte(ppStart), "red")
- else
-  gui.text(101, 77, mbyte(ppStart))
- end
- gui.text(85, 87, "PP: ")
- if mbyte(ppStart + 1) >= 1 and mbyte(ppStart + 1) <= 4 then
-  gui.text(101, 87, mbyte(ppStart + 1), "#ffb100")
- elseif mbyte(ppStart + 1) < 1 then
-  gui.text(101, 87, mbyte(ppStart + 1), "red")
- else
-  gui.text(101, 87, mbyte(ppStart + 1))
- end
- gui.text(85, 97, "PP: ")
- if mbyte(ppStart + 2) >= 1 and mbyte(ppStart + 2) <= 4 then
-  gui.text(101, 97, mbyte(ppStart + 2), "#ffb100")
- elseif mbyte(ppStart + 2) < 1 then
-  gui.text(101, 97, mbyte(ppStart + 2), "red")
- else
-  gui.text(101, 97, mbyte(ppStart + 2))
- end
- gui.text(85, 107, "PP: ")
- if mbyte(ppStart + 3) >= 1 and mbyte(ppStart + 3) <= 4 then
-  gui.text(101, 107, mbyte(ppStart + 3), "#ffb100")
- elseif mbyte(ppStart + 3) < 1 then
-  gui.text(101, 107, mbyte(ppStart + 3), "red")
- else
-  gui.text(101, 107, mbyte(ppStart + 3))
- end
-end
-
-function showRngInfo()
- gui.text(2, 122, frame)
- gui.text(1, 132, "Initial Seed: "..string.format("%04X", initSeed))
- gui.text(2, 142, "Current Seed: "..string.format("%08X", currSeed))
-end
-
-function showTrainerInfo()
- gui.text(199, 142, string.format("TID: %d", tid))
- gui.text(199, 152, string.format("SID: %d", sid))
-end
-
-while true do
- currSeed = mdword(0x03004748 + monInfo)
- screenCheck = mdword(0x02020004)
- statsScreen = screenCheck == 0x80784030 or screenCheck == 0x80574020
-
- key = input.get()
  if key["1"] and not prevKey["1"] then
+  leftArrowColor = "orange"
   index = index - 1
   if index < 1 then
    index = 6
   end
  elseif key["2"] and not prevKey["2"] then
+  rightArrowColor = "orange"
   index = index + 1
   if index > 6 then
    index = 1
   end
  end
 
- gui.text(2, 1, "Mode: "..mode[index])
- gui.text(97, 1, "<- 1 - 2 ->")
+ prevKey = key
+end
 
- if key["4"] and not prevKey["4"] then
-  catchInstructions = true
- elseif key["3"] and not prevKey["3"] then
-  catchInstructions = false
+function drawArrowLeft(a, b, c)
+ gui.line(a, b + 3, a + 2, b + 5, c)
+ gui.line(a, b + 3, a + 2, b + 1, c)
+ gui.line(a, b + 3, a + 6, b + 3, c)
+end
+
+function drawArrowRight(a, b, c)
+ gui.line(a, b + 3, a - 2, b + 5, c)
+ gui.line(a, b + 3, a - 2, b + 1, c)
+ gui.line(a, b + 3, a - 6, b + 3, c)
+end
+
+function showInstructions()
+ local key = input.get()
+
+ if key["4"] and not prevKeyInstr["4"] then
+  if mode[index] == "100% Catch" or mode[index] == "Initial Seed Bot" or mode[index] == "TID Bot" then
+   showInstructionsText = true
+  end
+ elseif key["3"] and not prevKeyInstr["3"] then
+  if mode[index] == "100% Catch" or mode[index] == "Initial Seed Bot" or mode[index] == "TID Bot" then
+   showInstructionsText = false
+  end
  end
 
- prevKey = key
+ prevKeyInstr = key
 
- if (currSeed <= 0xFFFF and frame < 8) or currSeed == 0 then  -- start counting the Frame when Initial Seed is generated
-  initSeed = currSeed
+ if mode[index] == "100% Catch" and showInstructionsText then
+  gui.text(155, 1, "3 - Hide instructions")
+  gui.text(1, 11, "1) During battle, go to BAG > POKE BALLS")
+  gui.text(1, 21, "2) Press A on the ball you want to use")
+  gui.text(1, 31, "3) Move the arrow on 'USE', pause the game and save a state")
+  gui.text(1, 41, "4) Advance one frame holding SELECT and then unpause the")
+  gui.text(1, 51, "game holding A. Wait until delay is calculated")
+  gui.text(1, 61, "5) Load the state you made, advance frames until counter")
+  gui.text(1, 71, "become 0")
+  gui.text(1, 81, "6) Unpase the game holding A")
+ elseif mode[index] == "100% Catch" then
+  gui.text(155, 1, "4 - Show instructions")
+ else
+  showInstructionsText = false
+  catchRngStop = true
+  catchDelayCounter = 999
+  catchDelay = 0
+ end
+end
+
+function checkInitialSeedGeneration(current)
+ if vba.framecount() <= 1 then
+  initSeed = nil
+  tempCurr = 0
+  frame = 0
+  checkSeeding = false
+ end
+
+ if checkSeeding and current <= 0xFFFF and initSeed == nil then
+  initSeed = current
   tempCurr = initSeed
   frame = 0
+  checkSeeding = false
  end
 
- tempCurr = next(tempCurr)
- frame = frame + calcFrameJump()
+ if current == 0x6073 and mdword(IDsAddr) == 0 and initSeed == nil then
+  checkSeeding = true
+ end
+end
 
- if mode[index] == "Capture" then
-  start = 0x030044F0 + monInfo
- elseif mode[index] == "100% Catch" then
-  if catchInstructions then
-   gui.text(155, 1, "3 - Hide instructions")
-   gui.text(2, 11, "1) During battle, go to BAG > POKE BALLS")
-   gui.text(2, 21, "2) Press A on the ball you want to use")
-   gui.text(2, 31, "3) Move the arrow on 'USE', pause the game and save a state")
-   gui.text(2, 41, "4) Advance one frame holding SELECT and then unpause the")
-   gui.text(2, 51, "game holding A. Wait until delay is calculated")
-   gui.text(2, 61, "5) Load the state you made, advance frames until counter")
-   gui.text(2, 71, "become 0")
-   gui.text(2, 81, "6) Unpase the game holding A")
-  else
-   gui.text(155, 1, "4 - Show instructions")
+function lcrng(s, mul1, mul2, sum)
+ local a = mul1 * (s % 65536) + rshift(s, 16) * mul2
+ local b = mul2 * (s % 65536) + (a % 65536) * 65536 + sum
+ local c = b % 4294967296
+ return c
+end
+
+function calcFrameJump(seed)
+ local calibrationFrame = 0
+ local tempCurr2
+
+ if tempCurr ~= seed then
+  tempCurr2 = tempCurr
+
+  while tempCurr ~= seed and tempCurr2 ~= seed do
+   tempCurr = lcrng(tempCurr, 0x41C6, 0x4E6D, 0x6073)
+   tempCurr2 = lcrng(tempCurr2, 0xEEB9, 0xEB65, 0x0A3561A1)
+   calibrationFrame = calibrationFrame + 1
   end
 
-  battleScreen = mdword(0x0600D000) ~= 0 and mdword(0x0600CFFC) == 0
-  species = nationalDexTable[mword(0x020241C4 + pointers) + 1]
-  bagScreen = screenCheck == 0x00004000 or rshift(screenCheck, 0x4) == 0x00A4400
-  ballSelector = mword(0x0203825C + catchInfo) + 1
-  isBallSelected = ballSelector > 0 and ballSelector < 0xE
-  status = mbyte(wildStart + 80)
-  level = mbyte(start + 84)
-  wildType = mbyte(0x02024859 + pointers)
-  HPcurrent = mword(wildStart + 86)
-  HPmax = mword(wildStart + 88)
-  isUnderWater = mbyte(0x030041D0 + battleInfo) == 0x3
-  isSafariZone = mword(0x02038506 + catchInfo2) ~= 0
-  baseDexFlag = rshift(lshift(0x1000000, band((species - 1), 7)), 24)
-  dexFlag = band(mbyte((0x2024C2C + pointers) + band(rshift(lshift(species - 1, 16), 19), 0xFF)), baseDexFlag)
-  battleTurnsCounter = mbyte(0x03004223 + monInfo)
+  if tempCurr2 == seed then
+    calibrationFrame = (-1) * calibrationFrame
+    tempCurr = tempCurr2
+  end
+ end
 
-  if wildType == 0x0B or wildType == 0x06 then  -- net ball catch rate, 0x0B = Water, 0x06 = Bug
-   ball[7] = 3
+ return calibrationFrame
+end
+
+function showRngInfo(current, frame)
+ if initSeed ~= nil then
+  gui.text(0, 132, "Initial Seed: "..string.format("%04X", initSeed))
+ end
+
+ gui.text(1, 142, "Current Seed: "..string.format("%08X", current))
+ gui.text(1, 152, "Frame: "..frame)
+end
+
+function getTrainerIDs(addr)
+ addr = addr or nil
+
+ local IDs
+ local TID
+ local SID
+
+ if mode[index] ~= "Pokemon Info" then
+  IDs = mdword(IDsAddr)
+ else
+  IDs = mdword(addr + 4)
+ end
+
+  TID = IDs % 0x10000
+  SID = floor(IDs / 65536)
+
+ return {TID, SID}
+end
+
+function showTrainerIDs(addr)
+ addr = addr or nil
+
+ local trainerIDs = getTrainerIDs(addr)
+
+ gui.text(199, 142, string.format("TID: %d", trainerIDs[1]))
+ gui.text(199, 152, string.format("SID: %d", trainerIDs[2]))
+end
+
+function showStats(addr)
+ gui.text(1, 11, "Stats:")
+ gui.text(30, 11, "HP "..mword(addr + 86))
+ gui.text(62, 11, "Atk "..mword(addr + 90))
+ gui.text(95, 11, "Def "..mword(addr + 92))
+ gui.text(128, 11, "SpA "..mword(addr + 96))
+ gui.text(161, 11, "SpD "..mword(addr + 98))
+ gui.text(194, 11, "Spe "..mword(addr + 94))
+end
+
+function getMiscOffset(orderIndex)
+ local offset
+
+ if orderIndex >= 18 then
+  offset = 0
+ elseif orderIndex % 6 >= 4 then
+  offset = 12
+ elseif orderIndex % 2 == 1 then
+  offset = 24
+ else
+  offset = 36
+ end
+
+ return offset
+end
+
+function getGrowthOffset(orderIndex)
+ local offset
+
+ if orderIndex <= 5 then
+  offset = 0
+ elseif orderIndex % 6 <= 1 then
+  offset = 12
+ elseif orderIndex % 2 == 0 then
+  offset = 24
+ else
+  offset = 36
+ end
+
+ return offset
+end
+
+function getAttacksOffset(orderIndex)
+ local offset
+ local index1 = {0, 1, 14, 15, 20, 21}
+ local index2 = {2, 4, 12, 17, 18, 23}
+ local index3 = {3, 5, 13, 16, 19, 22}
+ local isIndex1 = 0
+ local isIndex2 = 0
+
+ for i = 1, table.getn(index1) do
+  if orderIndex == index1[i] then
+   isIndex1 = 1
+   break
+  end
+ end
+
+ for i = 1, table.getn(index2) do
+  if orderIndex == index2[i] then
+   isIndex2 = 1
+   break
+  end
+ end
+
+ if orderIndex >= 6 and orderIndex <= 11 then
+  offset = 0
+ elseif isIndex1 == 1 then
+  offset = 12
+ elseif isIndex2 == 1 then
+  offset = 24
+ else
+  offset = 36
+ end
+
+ return offset
+end
+
+function getIVColor(value)
+ if value >= 30 then
+  return "green"
+ elseif value >= 1 and value <= 5 then
+  return "#ffb100"
+ elseif value < 1 then
+  return "red"
+ else
+  return ""
+ end
+end
+
+function isEgg(addr)
+ return mword(addr + 0x12) == 0x601
+end
+
+function shinyCheck(PID, addr)
+ addr = addr or nil
+
+ local trainerIDs = getTrainerIDs(addr)
+ local highPID = floor(PID / 65536)
+ local lowPID = PID % 0x10000
+ local isShiny = bxor(bxor(trainerIDs[2], trainerIDs[1]), bxor(lowPID, highPID)) < 8
+
+ if isShiny then
+  return "green"
+ else
+  return ""
+ end
+end
+
+function showMoves(value1, value2)
+ local move1Number = band(value1, 0xFFF)
+ local move2Number = rshift(value1, 16)
+ local move3Number = band(value2, 0xFFF)
+ local move4Number = rshift(value2, 16)
+
+ if move1Number <= 354 then
+  gui.text(1, 77, "Move: "..moveNamesList[move1Number + 1])
+ end
+
+ if move2Number <= 354 then
+  gui.text(1, 87, "Move: "..moveNamesList[move2Number + 1])
+ end
+
+ if move3Number <= 354 then
+  gui.text(1, 97, "Move: "..moveNamesList[move3Number + 1])
+ end
+
+ if move4Number <= 354 then
+  gui.text(1, 107, "Move: "..moveNamesList[move4Number + 1])
+ end
+end
+
+function getPPColor(value)
+ if value >= 1 and value <= 4 then
+  return "#ffb100"
+ elseif value < 1 then
+  return "red"
+ else
+  return ""
+ end
+end
+
+function showPP(value)
+ local PPmove1 = band(value, 0xFF)
+ local PPmove2 = band(rshift(value, 8), 0xFF)
+ local PPmove3 = band(rshift(value, 16), 0xFF)
+ local PPmove4 = rshift(value, 24)
+
+ gui.text(85, 77, "PP: ")
+ gui.text(101, 77, PPmove1, getPPColor(PPmove1))
+ gui.text(85, 87, "PP: ")
+ gui.text(101, 87, PPmove2, getPPColor(PPmove2))
+ gui.text(85, 97, "PP: ")
+ gui.text(101, 97, PPmove3, getPPColor(PPmove3))
+ gui.text(85, 107, "PP: ")
+ gui.text(101, 107, PPmove4, getPPColor(PPmove4))
+end
+
+function showInfo(addr)
+ local PID = mdword(addr)
+ local natureNumber = PID % 25
+ local IDs = mdword(addr + 4)
+ local orderIndex = PID % 24
+ local decryptionKey = bxor(PID, IDs)
+ local miscOffset = getMiscOffset(orderIndex)
+ local growthOffset = getGrowthOffset(orderIndex)
+ local attacksOffset = getAttacksOffset(orderIndex)
+
+ local IVsAndAbilityValue = bxor(mdword(addr + 32 + miscOffset + 4), decryptionKey)
+ local hpIV = band(IVsAndAbilityValue, 0x1F)
+ local atkIV = band(IVsAndAbilityValue, 0x1F * 0x20) / 0x20
+ local defIV = band(IVsAndAbilityValue, 0x1F * 0x400) / 0x400
+ local spAtkIV = band(IVsAndAbilityValue, 0x1F * 0x100000) / 0x100000
+ local spDefIV = band(IVsAndAbilityValue, 0x1F * 0x2000000) / 0x2000000
+ local spdIV = band(IVsAndAbilityValue, 0x1F * 0x8000) / 0x8000
+
+ local hpType = floor(((hpIV%2 + 2*(atkIV%2) + 4*(defIV%2) + 8*(spdIV%2) + 16*(spAtkIV%2) + 32*(spDefIV%2))*15)/63)
+ local hpPower = floor(((band(hpIV,2)/2 + band(atkIV,2) + 2*band(defIV,2) + 4*band(spdIV,2) + 8*band(spAtkIV,2) + 16*band(spDefIV,2))*40)/63 + 30)
+
+ local speciesAndItemValue = bxor(mdword(addr + 32 + growthOffset), decryptionKey)
+ local speciesDexIndex = band(speciesAndItemValue, 0xFFFF)
+ local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
+ local speciesName = speciesNamesList[speciesDexNumber]
+
+ local itemNumber = rshift(speciesAndItemValue, 16)
+ local itemName = itemNamesList[itemNumber + 1]
+
+ local abilityNumber = rshift(IVsAndAbilityValue, 0x1F) + 1
+ local abilityName = "--"
+
+ if speciesDexNumber ~= nil and abilityNumber ~= nil then
+  abilityName = abilityNamesList[pokemonAbilities[speciesDexNumber][abilityNumber]]
+ end
+
+ local moves1Value = bxor(mdword(addr + 32 + attacksOffset), decryptionKey)
+ local moves2Value = bxor(mdword(addr + 32 + attacksOffset + 4), decryptionKey)
+ local PPValue = bxor(mdword(addr + 32 + attacksOffset + 8), decryptionKey)
+
+ gui.text(0, 21, "IVs:")
+ gui.text(30, 21, "HP ")
+ gui.text(42, 21, hpIV, getIVColor(hpIV))
+ gui.text(62, 21, "Atk ")
+ gui.text(78, 21, atkIV, getIVColor(atkIV))
+ gui.text(95, 21, "Def ")
+ gui.text(111, 21, defIV, getIVColor(defIV))
+ gui.text(128, 21, "SpA ")
+ gui.text(144, 21, spAtkIV, getIVColor(spAtkIV))
+ gui.text(161, 21, "SpD ")
+ gui.text(177, 21, spDefIV, getIVColor(spDefIV))
+ gui.text(194, 21, "Spe ")
+ gui.text(210, 21, spdIV, getIVColor(spdIV))
+
+ if speciesName ~= nil and isEgg(addr) then
+  gui.text(1, 30, "Species: "..speciesName)
+ end
+
+ gui.text(178, 30, "HP "..HPTypeNamesList[hpType + 1].." "..hpPower)
+
+ gui.text(1, 40, "PID: ")
+ gui.text(21, 40, string.format("%08X", PID), shinyCheck(PID, addr))
+
+ if itemName ~= nil then
+  gui.text(85, 40, "Held item: "..itemName)
+ end
+
+ gui.text(1, 50, "Nature: "..natureNamesList[natureNumber + 1])
+
+ if abilityName ~= nil and abilityNumber ~= nil then
+  gui.text(1, 60, string.format("Ability: %s (%d)", abilityName, abilityNumber))
+ end
+
+ showMoves(moves1Value, moves2Value)
+ showPP(PPValue)
+end
+
+function showOpponentPokemonInfo()
+ showStats(wildAddr)
+ showInfo(wildAddr)
+end
+
+function showRoamerInfo()
+ local roamerPID = mdword(roamerAddr)
+ local roamerNatureNumber = roamerPID % 25
+
+ if roamerPID == 0 then
+  gui.text(178, 50, string.format("Roamer? No"))
+ else
+  gui.text(178, 50, string.format("Roamer? Yes"))
+  gui.text(178, 60, "PID: ")
+  gui.text(198, 60, string.format("%08X", roamerPID), shinyCheck(roamerPID))
+  gui.text(178, 70, "Nature: "..natureNamesList[roamerNatureNumber + 1])
+ end
+end
+
+function getCatchRngStopInput()
+ local key = input.get()
+
+ if key["5"] then
+  catchRngStop = true
+  catchDelayCounter = 999
+  catchDelay = 0
+ end
+
+ gui.text(208, 152, "5 - Stop")
+end
+
+function getCatchDelay(isSafariZone)
+ local key = joypad.get(1)
+ local frameDelay
+ local safariOffset = 0
+ local currSeed3
+
+ getCatchRngStopInput()
+
+ if isSafariZone then
+  safariOffset = 80
+ end
+
+ if key.select then
+  startingCatchFrame = frame
+  catchDelayCounter = 0
+  catchRngStop = false
+  catchDelay = 0
+  skips = 0
+  oneTimeCatchRng = false
+  currSeed2 = mdword(currSeedAddr)
+ end
+
+ if catchDelayCounter <= 200 and catchDelay == 0 and not catchRngStop then
+  if mbyte(catchCheckFlagAddr) == 0x40 and not oneTimeCatchRng then
+   currSeed3 = mdword(currSeedAddr)
+
+   while currSeed2 ~= currSeed3 do
+    currSeed2 = lcrng(currSeed2, 0x41C6, 0x4E6D, 0x6073)
+    skips = skips + 1
+   end
+
+   oneTimeCatchRng = true
+   frameDelay = frame - startingCatchFrame
   else
-   ball[7] = 1
+   currSeed2 = mdword(currSeedAddr)
   end
 
-  if isUnderWater then  -- dive ball catch rate
-   ball[8] = 3.5
-   -- gui.text(0,77,"Undewater? Yes")
-  else
-   ball[8] = 1
-   -- gui.text(0,77,"Undewater? No")
+  if skips == 2 and frameDelay > 120 - safariOffset then
+   catchDelay = frameDelay + 1
+  elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
+   catchDelay = frameDelay
+  elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
+   catchDelay = frameDelay - 1
+  elseif skips == 5 and frameDelay > 120 - safariOffset then  -- 2 shake
+   catchDelay = frameDelay - 2
+  elseif skips == 6 and frameDelay > 120 - safariOffset then  -- 3 shake
+   catchDelay = frameDelay - 3
   end
 
-  if level < 30 then  -- nest ball catch rate
-   ball[9] = (40 - level) / 10
-  else
-   ball[9] = 1
+  catchDelayCounter = catchDelayCounter + 1
+ end
+
+ return catchDelay
+end
+
+function findCatchSeed(seed, delay)
+ local tempSeed = seed
+
+ for i = 1, delay do
+  tempSeed = lcrng(tempSeed, 0x41C6, 0x4E6D, 0x6073)
+ end
+
+ return tempSeed
+end
+
+function getCatchRate(speciesDexNumber, isSafariZone)
+ local safariCatchFactor
+
+ if isSafariZone then
+  safariCatchFactor = mbyte(safariCatchFactorAddr)
+
+  return floor((1275 * safariCatchFactor) / 100)
+ else
+  return catchRatesList[speciesDexNumber]
+ end
+end
+
+function getBonusBall(speciesDexNumber, isSafariZone)
+ local wildType = mbyte(wildTypeAddr)
+ local isUnderWater = mbyte(isUnderWaterAddr) == 0x3
+ local level = mbyte(wildAddr + 84)
+ local dexCaughtMask = rshift(lshift(0x1000000, band((speciesDexNumber - 1), 7)), 24)
+ local dexCaughtFlag = band(mbyte(dexCaughtFlagAddr + band(rshift(lshift(speciesDexNumber - 1, 16), 19), 0xFF)), dexCaughtMask)
+ local battleTurnsCounter = mbyte(battleTurnsCounterAddr)
+ local selectedItem = mword(selectedItemAddr)
+ local isBallSelected = selectedItem > 0 and selectedItem < 13
+
+ if wildType == 0x0B or wildType == 0x06 then  -- net ball catch rate: 0x0B = Water, 0x06 = Bug
+  ballRate[7] = 3
+ else
+  ballRate[7] = 1
+ end
+
+ if level < 30 then  -- nest ball catch rate
+  ballRate[9] = (40 - level) / 10
+ else
+  ballRate[9] = 1
+ end
+
+ if dexCaughtFlag ~= 0 then  -- repeat ball catch rate
+  ballRate[10] = 3
+  --gui.text(0,77,"Already Catched? Yes")
+ else
+  ballRate[10] = 1
+  --gui.text(0,77,"Already Catched? No")
+ end
+
+ if battleTurnsCounter < 30 then  -- timer ball catch rate, bonusBall is x4 if battle turns are >= 30
+  ballRate[11] = (battleTurnsCounter + 10) / 10
+ else
+  ballRate[11] = 4
+ end
+
+ if isSafariZone then
+  return ballRate[6]
+ end
+
+ if isBallSelected then
+  return ballRate[selectedItem + 1]
+ else
+  return 1
+ end
+end
+
+function getBonusStatus()
+ local status = mbyte(wildAddr + 80)
+
+ if status == 0 then
+  bonusStatus = 1
+ elseif (status > 0 and status < 0x08) or status == 0x020 then
+  bonusStatus = 2
+ else
+  bonusStatus = 1.5
+ end
+
+ return bonusStatus
+end
+
+function calcCatchProb(isSafariZone)
+ local speciesDexIndex = mword(speciesDexIndexAddr)
+ local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
+
+ local HPmax = mword(wildAddr + 88)
+ local HPcurrent = mword(wildAddr + 86)
+ local catchRate = getCatchRate(speciesDexNumber, isSafariZone)
+ local bonusBall = getBonusBall(speciesDexNumber, isSafariZone)
+ local bonusStatus = getBonusStatus()
+
+ if HPmax == 0 then
+  HPmax = 1
+  HPcurrent = 1
+ end
+
+ local a = floor(((((3 * HPmax) - (2 * HPcurrent)) * catchRate * bonusBall) / (3 * HPmax)) * bonusStatus)
+
+ if a == 0 then
+  a = 1
+ end
+
+ local b = floor(1048560 / (sqrt(sqrt(16711680 / a))))
+
+ return b
+end
+
+function findSureCatch(seed, catchProbability, isSafariZone)
+ local tempSeed = seed
+ local tempSeed1 = seed
+ local delay = 0
+ local ballShakes = 0
+
+ while ballShakes ~= 4 do
+  ballShakes = 0
+
+  while rshift(tempSeed, 16) < catchProbability and ballShakes < 4 do
+   ballShakes = ballShakes + 1
+   tempSeed = lcrng(tempSeed, 0x41C6, 0x4E6D, 0x6073)
   end
 
-  if dexFlag ~= 0 then  -- repeat ball catch rate
-   ball[10] = 3
-   -- gui.text(0,77,"Already Catched? Yes")
-  else
-   ball[10] = 1
-   -- gui.text(0,77,"Already Catched? No")
+  if isSafariZone and delay % 2 ~= 0 then
+   ballShakes = 0
   end
 
-  if battleTurnsCounter < 30 then  -- timer ball catch rate, bonusBall is x4 if battle turns are >= 30
-   ball[11] = (battleTurnsCounter + 10) / 10
-  else
-   ball[11] = 4
-  end
+  tempSeed1 = lcrng(tempSeed1, 0x41C6, 0x4E6D, 0x6073)
+  tempSeed = tempSeed1
+  delay = delay + 1
+ end
 
-  if isBallSelected then
-   bonusBall = ball[ballSelector]
-  else
-   bonusBall = 0
-  end
+ return delay
+end
 
-  if status == 0 then
-   bonusStatus = 1
-  elseif (status > 0 and status < 0x08) or status == 0x020 then
-   bonusStatus = 2
-  else
-   bonusStatus = 1.5
-  end
+function catchRng()
+ local isSafariZone = mword(safariZoneStepsCounterAddr) ~= 0
+ local wildCatchDelay = getCatchDelay(isSafariZone)
+
+ if wildCatchDelay <= 0 then
+  gui.text(1, 101, "Delay not calculated yet")
+ else
+  gui.text(1, 101, "Delay calculated")
+ end
+
+ local catchSeed = findCatchSeed(mdword(currSeedAddr), wildCatchDelay)
+ local sureCatchDelay
+
+ if wildCatchDelay > 0 then
+  sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone) - 1
 
   if isSafariZone then
-   bonusBall = ball[6]
-   safariOffset = 80
-   rate = mbyte(0x02016089)
-  else
-   safariOffset = 0
-   rate = catchRate[species]
+   sureCatchDelay = sureCatchDelay / 2
   end
 
-  a = floor(((((3 * HPmax) - (2 * HPcurrent)) * rate * bonusBall) / (3 * HPmax)) * bonusStatus)
-  b = floor(1048560 / (sqrt(sqrt(16711680 / a))))
+  gui.text(1, 111, "100% catch missing frames: "..sureCatchDelay)
+ end
+end
 
-  catchKey = joypad.get(1)
-  if catchKey.select then
-   startingFrame = frame
-   delayCounter = 0
-   catchDelay = 0
-   skips = 0
-   oneTime = false
-   seed2 = currSeed
-   frameDelay = 0
-  end
+function showDayCareInfo()
+ local eggStepCounter = 255 - mbyte(eggLowPIDAddr - 0x4)
+ local isEggReady = band(rshift(mbyte(flagsAddr), 6), 0x1) == 1
+ local eggLowPid
 
-  if delayCounter <= 150 and catchDelay == 0 then
-   if mbyte(0x02017810) == 0x40 and not oneTime then
-    seed3 = currSeed
-    while seed2 ~= seed3 do
-     seed2 = next(seed2)
-     skips = skips + 1
-    end
-    oneTime = true
-    frameDelay = frame - startingFrame
-   else
-    seed2 = currSeed
-   end
-
-   if skips == 2 and frameDelay > 120 - safariOffset then
-    catchDelay = frameDelay + 1
-   elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
-    catchDelay = frameDelay
-   elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
-    catchDelay = frameDelay - 1
-   elseif skips == 5 and frameDelay > 120 - safariOffset then  -- 2 shake
-    catchDelay = frameDelay - 2
-   elseif skips == 6 and frameDelay > 120 - safariOffset then  -- 3 shake
-    catchDelay = frameDelay - 3
-   end
-   delayCounter = delayCounter + 1
-  end
-
-  if catchDelay <= 0 then
-   gui.text(2, 101, "Delay not calculated yet")
-  else
-   gui.text(2, 101, "Delay calculated")
-  end
-
-  catchSeed = findCatchSeed(currSeed, catchDelay)
-
-  if catchDelay > 0 and a > 0 and (battleScreen or isBallSelected) and ((bonusBall ~= 0 and bagScreen) or isSafariZone) then
-   sureCatchDelay = findSureCatch(catchSeed, b, isSafariZone) - 1
-   if isSafariZone then
-    sureCatchDelay = sureCatchDelay / 2
-   end
-   gui.text(2, 111, "100% catch missing frames: "..sureCatchDelay)
-  end
- elseif mode[index] == "Breeding" then
-  partyCounter = mbyte(0x03004280 + monInfo) - 1
-  eggPartyPidStart = partyStart + partyCounter * 0x64
-  start = eggPartyPidStart
- elseif mode[index] == "Pokemon Info" then
-  partyCounter = mbyte(0x03004280 + monInfo) - 1
-  partyScreen = screenCheck == 0x80080015 - partyScreenOff or screenCheck == 0x80080018 - partyScreenOff or screenCheck == 0x80080019 - partyScreenOff
-  partyCursor = mbyte(0x020200BA + (0x88 * partyCounter))
-  boxNum = mbyte(0x0202FDBC + startBoxInfo)
-  boxStart = 0x0202FDBC + startBoxInfo + 4
-  boxPosition = mbyte(0x02038201 + startBoxInfo)
-  boxPidStart = boxStart + (0x1E * boxNum * 0x50) + (boxPosition * 0x50)
-  boxCheck = mdword(currentBoxPidSelected) == mdword(boxPidStart) and (mword(0x02020008) == 0x6680 or mword(0x02020008) == 0x6690)
-
-  if boxCheck and not partyScreen then
-   start = boxPidStart
-  elseif partyScreen then
-   if partyCursor ~= 0x7 then
-    start = partyStart + partyCursor * 0x64
-   end
-  elseif statsScreen then
-   start = 0x02018010
-  end
+ if not isEggReady then
+  gui.text(130, 77, "Step Counter: "..eggStepCounter)
+  gui.text(130, 87, "Egg is not ready")
  end
 
- personality = mdword(start)
- trainerID = mdword(start + 4)
- isEgg = mword(start + 0x12) == 0x0601
- magicword = bxor(personality, trainerID)
-
- if mode[index] == "Pokemon Info" then
-  tid = trainerID % 0x10000
-  sid = floor(trainerID / 65536)
+ if isEggReady then
+  eggLowPid = mword(eggLowPIDAddr)
+  gui.text(130, 87, "Egg generated, go get it!")
+  gui.text(130, 97, string.format("Egg lower PID: %04X", eggLowPid))
+ elseif eggStepCounter == 1 then
+  gui.text(130, 97, "Next step might generate an egg!")
+ elseif eggStepCounter == 0 then
+  gui.text(130, 97, "255th step taken")
  else
-  ids = mdword(0x02024C0E + pointers)
-  tid = ids % 0x10000
-  sid = floor(ids / 65536)
+  gui.text(130, 97, "Keep on steppin'")
+ end
+end
+
+function showPartyEggInfo()
+ local partySlotsCounter = mbyte(partySlotsCounterAddr) - 1
+ local lastPartySlotAddr = partyAddr + (partySlotsCounter) * 0x64
+
+ if isEgg(lastPartySlotAddr) then
+  showStats(lastPartySlotAddr)
+  showInfo(lastPartySlotAddr)
+ end
+end
+
+function getInfoInput()
+ leftInfoArrowColor = "gray"
+ rightInfoArrowColor = "gray"
+
+ local key = input.get()
+
+ if key["3"] and not prevKeyInfo["3"] then
+  leftInfoArrowColor = "orange"
+  infoIndex = infoIndex - 1
+  if infoIndex < 1 then
+   infoIndex = 3
+  end
+ elseif key["4"] and not prevKeyInfo["4"] then
+  rightInfoArrowColor = "orange"
+  infoIndex = infoIndex + 1
+  if infoIndex > 3 then
+   infoIndex = 1
+  end
  end
 
- highPid = math.floor(personality / 65536)
- lowPid = personality % 0x10000
- shinyCheck = bxor(bxor(sid, tid), bxor(lowPid, highPid))
+ prevKeyInfo = key
+end
 
- i = personality % 24
+function showPokemonInfo()
+ local partySlotsCounter
+ local partySelectedSlotNumber
+ local partySelectedPokemonAddr
+ local currBoxNumber
+ local boxAddr
+ local boxSelectedSlotNumber
+ local boxSelectedPokemonAddr
 
- if i >= 18 then
-  miscoffset = 0
- elseif i % 6 >= 4 then
-  miscoffset = 12
- elseif i % 2 == 1 then
-  miscoffset = 24
- else
-  miscoffset = 36
+ if infoMode[infoIndex] == "Party" then
+  partySlotsCounter = mbyte(partySlotsCounterAddr) - 1
+  partySelectedSlotNumber = mbyte(partySelectedSlotNumberAddr + (partySlotsCounter * 0x88))
+  partySelectedPokemonAddr = partyAddr + (partySelectedSlotNumber * 0x64)
+
+  showStats(partySelectedPokemonAddr)
+  showInfo(partySelectedPokemonAddr)
+  showTrainerIDs(partySelectedPokemonAddr)
+ elseif infoMode[infoIndex] == "Box" then
+  currBoxNumber = mbyte(currBoxNumberAddr)
+  boxAddr = currBoxNumberAddr + 4
+  boxSelectedSlotNumber = mbyte(boxSelectedSlotNumberAddr)
+  boxSelectedPokemonAddr = boxAddr + (0x1E * currBoxNumber * 0x50) + (boxSelectedSlotNumber * 0x50)
+
+  showInfo(boxSelectedPokemonAddr)
+  showTrainerIDs(boxSelectedPokemonAddr)
+ elseif infoMode[infoIndex] == "Stats" then
+  showStats(pokemonStatsScreenAddr)
+  showInfo(pokemonStatsScreenAddr)
+  showTrainerIDs(pokemonStatsScreenAddr)
+ end
+end
+
+while warning == "" do
+ getInput()
+ gui.text(1, 1, "Mode: "..mode[index])
+ drawArrowLeft(100, 1, leftArrowColor)
+ gui.text(110, 1, "1 - 2")
+ drawArrowRight(138, 1, rightArrowColor)
+ showInstructions()
+
+ currSeed = mdword(currSeedAddr)
+
+ checkInitialSeedGeneration(currSeed)
+
+ if initSeed ~= nil then
+  frame = frame + calcFrameJump(currSeed)
  end
 
- ivs = bxor(mdword(start + 32 + miscoffset + 4), magicword)
-
- hpiv = band(ivs, 0x1F)
- atkiv = band(ivs, 0x1F * 0x20) / 0x20
- defiv = band(ivs, 0x1F * 0x400) / 0x400
- spdiv = band(ivs, 0x1F * 0x8000) / 0x8000
- spatkiv = band(ivs, 0x1F * 0x100000) / 0x100000
- spdefiv = band(ivs, 0x1F * 0x2000000) / 0x2000000
-
- nature = personality % 25
- natinc = floor(nature / 5)
- natdec = nature % 5
-
- hidpowtype=floor(((hpiv%2 + 2*(atkiv%2) + 4*(defiv%2) + 8*(spdiv%2) + 16*(spatkiv%2) + 32*(spdefiv%2))*15)/63)
- hidpowbase=floor(((band(hpiv,2)/2 + band(atkiv,2) + 2*band(defiv,2) + 4*band(spdiv,2) + 8*band(spatkiv,2) + 16*band(spdefiv,2))*40)/63 + 30)
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+  showRngInfo(currSeed, frame)
+  showTrainerIDs()
+ end
 
  if mode[index] == "Capture" then
-  battleScreen = mdword(0x0600D000) ~= 0 and mdword(0x0600CFFC) == 0
-  roamerCheck = mdword(0x020285DC + pointers)
-
-  if battleScreen and not statsScreen then
-   showStats()
-   showHiddenInfo()
-   showMoves()
-   showPP()
-  end
-
-  if roamerCheck == 0 then
-   gui.text(186, 50, string.format("Roamer? No"))
-  else
-   gui.text(178, 50, string.format("Roamer? Yes"))
-   gui.text(178, 60, string.format("PID: %08X", roamerCheck))
-   gui.text(178, 70, "Nature: "..natureName[(roamerCheck % 25) + 1])
-  end
-
-  showRngInfo()
-  showTrainerInfo()
+  showOpponentPokemonInfo()
+  showRoamerInfo()
+ elseif mode[index] == "100% Catch" then
+  catchRng()
  elseif mode[index] == "Breeding" then
-  eggStepCounter = mbyte(0x02028544 + pointers)
-  eggReady = mbyte(0x020266C4 + pointers) == 0xCC or mbyte(0x020266C4 + pointers) == 0xFE
-  gui.text(2, 77, "Step Counter: "..eggStepCounter)
-
-  if eggReady then
-   eggLowPid = mword(0x02028548 + pointers)
-   gui.text(2, 87, "Egg generated, go get it!")
-   gui.text(2, 97, string.format("Egg lower PID: %04X", eggLowPid))
-  elseif eggStepCounter == 254 then
-   gui.text(2, 87, "Next step might generate an egg!")
-  elseif eggStepCounter == 255 then
-   gui.text(2, 87, "255th step taken")
-  else
-   gui.text(2, 87, "Keep on steppin'")
-  end
-
-  if not eggReady then
-   gui.text(2, 97, "No Egg")
-  end
-
-  if isEgg then
-   showStats()
-   showHiddenInfo()
-  end
-
-  showRngInfo()
-  showTrainerInfo()
- elseif mode[index] == "Pandora" then
-  showRngInfo()
-  showTrainerInfo()
+  showDayCareInfo()
+  showPartyEggInfo()
  elseif mode[index] == "Pokemon Info" then
-  if (partyScreen and partyCursor ~= 0x7) or statsScreen or boxCheck then
-   if not boxCheck then
-    showStats()
-   end
-   showHiddenInfo()
-   showTrainerInfo()
-  end
- end
+  getInfoInput()
+  gui.text(1, 142, "Info Mode: "..infoMode[infoIndex])
+  drawArrowLeft(130, 142, leftInfoArrowColor)
+  gui.text(140, 142, "3 - 4")
+  drawArrowRight(168, 142, rightInfoArrowColor)
 
- if mode[index] ~= "100% Catch" then
-  catchInstructions = false
+  showPokemonInfo()
  end
 
  emu.frameadvance()
