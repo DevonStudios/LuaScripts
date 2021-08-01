@@ -21,14 +21,12 @@ elseif gameVersion == 0x45 then
  game = "Emerald"
 end
 
-if game == "Ruby" or game == "Sapphire" then
- if gameLang == 0x4A then  -- Check game language
-  language = "JPN"
- elseif gameLang == 0x45 then
-  language = "USA"
- else
-  language = "EUR"
- end
+if gameLang == 0x4A then  -- Check game language
+ language = "JPN"
+elseif gameLang == 0x45 then
+ language = "USA"
+else
+ language = "EUR"
 end
 
 if game ~= "Ruby" and game ~= "Sapphire" then
@@ -193,7 +191,7 @@ end
  end
 end]]
 
-while true do
+while warning == "" do
  getInput()
  gui.text(1, 1, "Mode: "..mode[index])
  drawArrowLeft(110, 1, leftArrowColor)
