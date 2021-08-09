@@ -651,7 +651,7 @@ function getIVColor(value)
  elseif value < 1 then
   return "red"
  else
-  return ""
+  return nil
  end
 end
 
@@ -670,7 +670,7 @@ function shinyCheck(PID, addr)
  if isShiny then
   return "green"
  else
-  return ""
+  return nil
  end
 end
 
@@ -703,7 +703,7 @@ function getPPColor(value)
  elseif value < 1 then
   return "red"
  else
-  return ""
+  return nil
  end
 end
 
@@ -924,6 +924,14 @@ function getBonusBall(speciesDexNumber, isSafariZone)
   ballRate[7] = 1
  end
 
+ if isUnderWater then  -- dive ball catch rate
+  ballRate[8] = 3.5
+  -- gui.text(0, 77, "Undewater? Yes")
+ else
+  ballRate[8] = 1
+  -- gui.text(0, 77, "Undewater? No")
+ end
+
  if level < 30 then  -- nest ball catch rate
   ballRate[9] = (40 - level) / 10
  else
@@ -932,10 +940,10 @@ function getBonusBall(speciesDexNumber, isSafariZone)
 
  if dexCaughtFlag ~= 0 then  -- repeat ball catch rate
   ballRate[10] = 3
-  --gui.text(0,77,"Already Catched? Yes")
+  --gui.text(0, 77, "Already Catched? Yes")
  else
   ballRate[10] = 1
-  --gui.text(0,77,"Already Catched? No")
+  --gui.text(0, 77, "Already Catched? No")
  end
 
  if battleTurnsCounter < 30 then  -- timer ball catch rate, bonusBall is x4 if battle turns are >= 30
@@ -1164,7 +1172,7 @@ while warning == "" do
   showPartyEggInfo()
  elseif mode[index] == "Pokemon Info" then
   getInfoInput()
-  gui.text(1, 142, "Info Mode: "..infoMode[infoIndex])
+  gui.text(0, 142, "Info Mode: "..infoMode[infoIndex])
   drawArrowLeft(130, 142, leftInfoArrowColor)
   gui.text(140, 142, "3 - 4")
   drawArrowRight(168, 142, rightInfoArrowColor)
