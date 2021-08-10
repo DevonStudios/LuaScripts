@@ -269,6 +269,9 @@ local catchRatesList = {
  200, 225, 45, 190, 90, 200, 45, 30, 125, 190, 75, 255, 120, 45, 255, 60,
  60, 25, 225, 45, 45, 45, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
 
+local statusConditionNamesList = {
+ "None", "SLP", "PSN", "BRN", "FRZ", "PAR", "PSN"}
+
 local gameVersion = mbyte(0x080000AE)
 local game
 local gameLang = mbyte(0x080000AF)
@@ -666,6 +669,53 @@ function getAttacksOffset(orderIndex)
  return offset
 end
 
+function showIVsAndHP(IVsValue, isRoamer)
+ isRoamer = isRoamer or nil
+
+ local hpIV = band(IVsValue, 0x1F)
+ local atkIV = band(IVsValue, 0x1F * 0x20) / 0x20
+ local defIV = band(IVsValue, 0x1F * 0x400) / 0x400
+ local spAtkIV = band(IVsValue, 0x1F * 0x100000) / 0x100000
+ local spDefIV = band(IVsValue, 0x1F * 0x2000000) / 0x2000000
+ local spdIV = band(IVsValue, 0x1F * 0x8000) / 0x8000
+
+ local hpType = floor(((hpIV%2 + 2*(atkIV%2) + 4*(defIV%2) + 8*(spdIV%2) + 16*(spAtkIV%2) + 32*(spDefIV%2))*15)/63)
+ local hpPower = floor(((band(hpIV,2)/2 + band(atkIV,2) + 2*band(defIV,2) + 4*band(spdIV,2) + 8*band(spAtkIV,2) + 16*band(spDefIV,2))*40)/63 + 30)
+
+ if not isRoamer then
+  gui.text(0, 21, "IVs:")
+  gui.text(30, 21, "HP ")
+  gui.text(42, 21, hpIV, getIVColor(hpIV))
+  gui.text(62, 21, "Atk ")
+  gui.text(78, 21, atkIV, getIVColor(atkIV))
+  gui.text(95, 21, "Def ")
+  gui.text(111, 21, defIV, getIVColor(defIV))
+  gui.text(128, 21, "SpA ")
+  gui.text(144, 21, spAtkIV, getIVColor(spAtkIV))
+  gui.text(161, 21, "SpD ")
+  gui.text(177, 21, spDefIV, getIVColor(spDefIV))
+  gui.text(194, 21, "Spe ")
+  gui.text(210, 21, spdIV, getIVColor(spdIV))
+
+  gui.text(178, 30, "HP "..HPTypeNamesList[hpType + 1].." "..hpPower)
+ else
+  gui.text(150, 90, "IVs:")
+  gui.text(170, 90, hpIV, getIVColor(hpIV))
+  gui.text(178, 90, "/")
+  gui.text(182, 90, atkIV, getIVColor(atkIV))
+  gui.text(190, 90, "/")
+  gui.text(194, 90, defIV, getIVColor(defIV))
+  gui.text(202, 90, "/")
+  gui.text(206, 90, spAtkIV, getIVColor(spAtkIV))
+  gui.text(214, 90, "/")
+  gui.text(218, 90, spDefIV, getIVColor(spDefIV))
+  gui.text(226, 90, "/")
+  gui.text(230, 90, spdIV, getIVColor(spdIV))
+
+  gui.text(150, 100, "Hidd Pow: "..HPTypeNamesList[hpType + 1].." "..hpPower)
+ end
+end
+
 function getIVColor(value)
  if value >= 30 then
   return "green"
@@ -674,7 +724,7 @@ function getIVColor(value)
  elseif value < 1 then
   return "red"
  else
-  return ""
+  return nil
  end
 end
 
@@ -693,7 +743,7 @@ function shinyCheck(PID, addr)
  if isShiny then
   return "green"
  else
-  return ""
+  return nil
  end
 end
 
@@ -726,7 +776,7 @@ function getPPColor(value)
  elseif value < 1 then
   return "red"
  else
-  return ""
+  return nil
  end
 end
 
@@ -757,17 +807,11 @@ function showInfo(addr)
  local attacksOffset = getAttacksOffset(orderIndex)
 
  local IVsAndAbilityValue = bxor(mdword(addr + 32 + miscOffset + 4), decryptionKey)
- local hpIV = band(IVsAndAbilityValue, 0x1F)
- local atkIV = band(IVsAndAbilityValue, 0x1F * 0x20) / 0x20
- local defIV = band(IVsAndAbilityValue, 0x1F * 0x400) / 0x400
- local spAtkIV = band(IVsAndAbilityValue, 0x1F * 0x100000) / 0x100000
- local spDefIV = band(IVsAndAbilityValue, 0x1F * 0x2000000) / 0x2000000
- local spdIV = band(IVsAndAbilityValue, 0x1F * 0x8000) / 0x8000
-
- local hpType = floor(((hpIV%2 + 2*(atkIV%2) + 4*(defIV%2) + 8*(spdIV%2) + 16*(spAtkIV%2) + 32*(spDefIV%2))*15)/63)
- local hpPower = floor(((band(hpIV,2)/2 + band(atkIV,2) + 2*band(defIV,2) + 4*band(spdIV,2) + 8*band(spAtkIV,2) + 16*band(spDefIV,2))*40)/63 + 30)
-
  local speciesAndItemValue = bxor(mdword(addr + 32 + growthOffset), decryptionKey)
+ local moves1Value = bxor(mdword(addr + 32 + attacksOffset), decryptionKey)
+ local moves2Value = bxor(mdword(addr + 32 + attacksOffset + 4), decryptionKey)
+ local PPValue = bxor(mdword(addr + 32 + attacksOffset + 8), decryptionKey)
+
  local speciesDexIndex = band(speciesAndItemValue, 0xFFFF)
  local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
  local speciesName = speciesNamesList[speciesDexNumber]
@@ -782,35 +826,17 @@ function showInfo(addr)
   abilityName = abilityNamesList[pokemonAbilities[speciesDexNumber][abilityNumber]]
  end
 
- local moves1Value = bxor(mdword(addr + 32 + attacksOffset), decryptionKey)
- local moves2Value = bxor(mdword(addr + 32 + attacksOffset + 4), decryptionKey)
- local PPValue = bxor(mdword(addr + 32 + attacksOffset + 8), decryptionKey)
-
- gui.text(0, 21, "IVs:")
- gui.text(30, 21, "HP ")
- gui.text(42, 21, hpIV, getIVColor(hpIV))
- gui.text(62, 21, "Atk ")
- gui.text(78, 21, atkIV, getIVColor(atkIV))
- gui.text(95, 21, "Def ")
- gui.text(111, 21, defIV, getIVColor(defIV))
- gui.text(128, 21, "SpA ")
- gui.text(144, 21, spAtkIV, getIVColor(spAtkIV))
- gui.text(161, 21, "SpD ")
- gui.text(177, 21, spDefIV, getIVColor(spDefIV))
- gui.text(194, 21, "Spe ")
- gui.text(210, 21, spdIV, getIVColor(spdIV))
+ showIVsAndHP(IVsAndAbilityValue)
 
  if speciesName ~= nil and isEgg(addr) then
   gui.text(1, 30, "Species: "..speciesName)
  end
 
- gui.text(178, 30, "HP "..HPTypeNamesList[hpType + 1].." "..hpPower)
-
  gui.text(1, 40, "PID: ")
  gui.text(21, 40, string.format("%08X", PID), shinyCheck(PID, addr))
 
  if itemName ~= nil then
-  gui.text(85, 40, "Held item: "..itemName)
+  gui.text(62, 40, "Held item: "..itemName)
  end
 
  gui.text(1, 50, "Nature: "..natureNamesList[natureNumber + 1])
@@ -829,17 +855,52 @@ function showOpponentPokemonInfo()
 end
 
 function showRoamerInfo()
- local roamerAddr = mdword(saveBlock1Addr) + 0x30D4
- local roamerPID = mdword(roamerAddr)
+ local roamerAddr = mdword(saveBlock1Addr) + 0x30D0
+ local roamerIVsValue = mdword(roamerAddr)
+ local roamerPID = mdword(roamerAddr + 0x4)
  local roamerNatureNumber = roamerPID % 25
+ local roamerSpeciesIndex = mword(roamerAddr + 0x8)
+ local roamersDexNumber = nationalDexList[roamerSpeciesIndex + 1]
+ local roamerSpeciesName = speciesNamesList[roamersDexNumber]
+ local roamerHP = mword(roamerAddr + 0xA)
+ local roamerLevel = mbyte(roamerAddr + 0xC)
+ local roamerStatusIndex = mbyte(roamerAddr + 0xD)
+ local roamerStatus
 
- if roamerPID == 0 then
-  gui.text(178, 50, string.format("Roamer? No"))
+ if roamerStatusIndex > 0 and roamerStatusIndex < 0x8 then
+  roamerStatus = statusConditionNamesList[2]
+ elseif roamerStatusIndex == 0x8 then
+  roamerStatus = statusConditionNamesList[3]
+ elseif roamerStatusIndex == 0x10 then
+  roamerStatus = statusConditionNamesList[4]
+ elseif roamerStatusIndex == 0x20 then
+  roamerStatus = statusConditionNamesList[5]
+ elseif roamerStatusIndex == 0x40 then
+  roamerStatus = statusConditionNamesList[6]
+ elseif roamerStatusIndex == 0x80 then
+  roamerStatus = statusConditionNamesList[7]
  else
-  gui.text(178, 50, string.format("Roamer? Yes"))
-  gui.text(178, 60, "PID: ")
-  gui.text(198, 60, string.format("%08X", roamerPID), shinyCheck(roamerPID))
-  gui.text(178, 70, "Nature: "..natureNamesList[roamerNatureNumber + 1])
+  roamerStatus = statusConditionNamesList[1]
+ end
+
+ local isRoamerActive = mbyte(roamerAddr + 0x13) == 1
+
+ if isRoamerActive then
+  gui.text(150, 50, string.format("Active Roamer? Yes"))
+
+  if roamerSpeciesName ~= nil then
+   gui.text(150, 60, "Species: "..roamerSpeciesName)
+  end
+
+  gui.text(150, 70, "PID: ")
+  gui.text(170, 70, string.format("%08X", roamerPID), shinyCheck(roamerPID))
+  gui.text(150, 80, "Nature: "..natureNamesList[roamerNatureNumber + 1])
+  showIVsAndHP(band(roamerIVsValue, 0xFF), isRoamerActive)
+  gui.text(150, 110, "HP: "..roamerHP)
+  gui.text(150, 120, "Level: "..roamerLevel)
+  gui.text(150, 130, "Status condition: "..roamerStatus)
+ else
+  gui.text(150, 50, string.format("Active Roamer? No"))
  end
 end
 
@@ -956,10 +1017,10 @@ function getBonusBall(speciesDexNumber, isSafariZone)
 
  if dexCaughtFlag ~= 0 then  -- repeat ball catch rate
   ballRate[10] = 3
-  --gui.text(0,77,"Already Catched? Yes")
+  --gui.text(1, 77, "Already Catched? Yes")
  else
   ballRate[10] = 1
-  --gui.text(0,77,"Already Catched? No")
+  --gui.text(1, 77, "Already Catched? No")
  end
 
  if battleTurnsCounter < 30 then  -- timer ball catch rate, bonusBall is x4 if battle turns are >= 30
@@ -984,7 +1045,7 @@ function getBonusStatus()
 
  if status == 0 then
   bonusStatus = 1
- elseif (status > 0 and status < 0x08) or status == 0x020 then
+ elseif (status > 0 and status < 0x8) or status == 0x20 then
   bonusStatus = 2
  else
   bonusStatus = 1.5
@@ -1201,7 +1262,7 @@ function showFoundInitSeed()
 
  if initSeedFound then
   gui.text(1, 100, "Found!")
-  gui.text(1, 110, "Initial Seed: "..string.format("%04X", init))
+  gui.text(0, 110, "Initial Seed: "..string.format("%04X", init))
 
   if not botOneTime then
    emu.pause()
@@ -1384,7 +1445,7 @@ while warning == "" do
   TIDBot()
  elseif mode[index] == "Pokemon Info" then
   getInfoInput()
-  gui.text(1, 142, "Info Mode: "..infoMode[infoIndex])
+  gui.text(0, 142, "Info Mode: "..infoMode[infoIndex])
   drawArrowLeft(130, 142, leftInfoArrowColor)
   gui.text(140, 142, "3 - 4")
   drawArrowRight(168, 142, rightInfoArrowColor)
