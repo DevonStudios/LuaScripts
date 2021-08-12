@@ -469,21 +469,21 @@ function showInstructions()
 
  if mode[index] == "100% Catch" and showInstructionsText then
   gui.text(155, 1, "3 - Hide instructions")
-  gui.text(1, 11, "1) During battle, go to BAG > POKE BALLS")
-  gui.text(1, 21, "2) Press A on the ball you want to use")
-  gui.text(1, 31, "3) Move the arrow on 'USE', pause the game and save a state")
-  gui.text(1, 41, "4) Advance one frame holding SELECT and then unpause the")
-  gui.text(1, 51, "game holding A. Wait until delay is calculated")
-  gui.text(1, 61, "5) Load the state you made, advance frames until counter")
-  gui.text(1, 71, "become 0")
-  gui.text(1, 81, "6) Unpase the game holding A")
+  gui.text(1, 10, "1) During battle, go to BAG > POKE BALLS")
+  gui.text(1, 19, "2) Press A on the ball you want to use")
+  gui.text(1, 28, "3) Move the arrow on 'USE', pause the game and save a state")
+  gui.text(1, 37, "4) Advance one frame holding SELECT and then unpause the")
+  gui.text(13, 46, "game holding A. Wait until delay is calculated")
+  gui.text(1, 55, "5) Load the state you made, advance frames until counter")
+  gui.text(13, 64, "become 0")
+  gui.text(1, 73, "6) Unpase the game holding A")
  elseif mode[index] == "TID Bot" and showInstructionsText then
   gui.text(155, 1, "3 - Hide instructions")
-  gui.text(1, 11, "1) Go to name insertion screen")
-  gui.text(1, 21, "2) Insert the name you like")
-  gui.text(1, 31, "3) Pause the game")
-  gui.text(1, 41, "4) Advance one frame holding START")
-  gui.text(1, 51, "5) Unpause the game")
+  gui.text(1, 10, "1) Go to name insertion screen")
+  gui.text(1, 19, "2) Insert the name you like")
+  gui.text(1, 28, "3) Pause the game")
+  gui.text(1, 37, "4) Advance one frame holding START")
+  gui.text(1, 46, "5) Unpause the game")
  elseif mode[index] == "100% Catch" or mode[index] == "TID Bot" then
   gui.text(155, 1, "4 - Show instructions")
  else
@@ -494,7 +494,7 @@ function showInstructions()
  end
 end
 
-function lcrng(s, mul1, mul2, sum)
+function LCRNG(s, mul1, mul2, sum)
  local a = mul1 * (s % 65536) + rshift(s, 16) * mul2
  local b = mul2 * (s % 65536) + (a % 65536) * 65536 + sum
  local c = b % 4294967296
@@ -511,8 +511,8 @@ function calcFrameJump(seed)
   tempCurr2 = tempCurr
 
   while tempCurr ~= current and tempCurr2 ~= current do
-   tempCurr = lcrng(tempCurr, 0x41C6, 0x4E6D, 0x6073)
-   tempCurr2 = lcrng(tempCurr2, 0xEEB9, 0xEB65, 0x0A3561A1)
+   tempCurr = LCRNG(tempCurr, 0x41C6, 0x4E6D, 0x6073)
+   tempCurr2 = LCRNG(tempCurr2, 0xEEB9, 0xEB65, 0x0A3561A1)
    calibrationFrame = calibrationFrame + 1
   end
 
@@ -550,9 +550,9 @@ function checkInitialSeedGeneration(initial, battle, current)
 end
 
 function showRngInfo(initial, current, battle, frame)
- gui.text(0, 122, "Initial Seed: "..string.format("%04X", initial))
- gui.text(1, 132, "Battle Video Seed: "..string.format("%04X", battle))
- gui.text(1, 142, "Current Seed: "..string.format("%08X", current))
+ gui.text(0, 125, "Initial Seed: "..string.format("%04X", initial))
+ gui.text(1, 134, "Battle Video Seed: "..string.format("%04X", battle))
+ gui.text(1, 143, "Current Seed: "..string.format("%08X", current))
  gui.text(1, 152, "Frame: "..frame)
 end
 
@@ -568,7 +568,7 @@ function getTrainerIDs(addr)
   IDsAddr = mdword(saveBlock2Addr) + 0xA
   IDs = mdword(IDsAddr)
  else
-  IDs = mdword(addr + 4)
+  IDs = mdword(addr + 0x4)
  end
 
   TID = IDs % 0x10000
@@ -582,18 +582,18 @@ function showTrainerIDs(addr)
 
  local trainerIDs = getTrainerIDs(addr)
 
- gui.text(199, 142, string.format("TID: %d", trainerIDs[1]))
+ gui.text(199, 143, string.format("TID: %d", trainerIDs[1]))
  gui.text(199, 152, string.format("SID: %d", trainerIDs[2]))
 end
 
 function showStats(addr)
- gui.text(1, 11, "Stats:")
- gui.text(30, 11, "HP "..mword(addr + 86))
- gui.text(62, 11, "Atk "..mword(addr + 90))
- gui.text(95, 11, "Def "..mword(addr + 92))
- gui.text(128, 11, "SpA "..mword(addr + 96))
- gui.text(161, 11, "SpD "..mword(addr + 98))
- gui.text(194, 11, "Spe "..mword(addr + 94))
+ gui.text(1, 10, "Stats:")
+ gui.text(29, 10, "HP "..mword(addr + 0x56))
+ gui.text(59, 10, "Atk "..mword(addr + 0x5A))
+ gui.text(93, 10, "Def "..mword(addr + 0x5C))
+ gui.text(127, 10, "SpA "..mword(addr + 0x60))
+ gui.text(161, 10, "SpD "..mword(addr + 0x62))
+ gui.text(195, 10, "Spe "..mword(addr + 0x5E))
 end
 
 function getMiscOffset(orderIndex)
@@ -677,36 +677,36 @@ function showIVsAndHP(IVsValue, isRoamer)
  local hpPower = floor(((band(hpIV,2)/2 + band(atkIV,2) + 2*band(defIV,2) + 4*band(spdIV,2) + 8*band(spAtkIV,2) + 16*band(spDefIV,2))*40)/63 + 30)
 
  if not isRoamer then
-  gui.text(0, 21, "IVs:")
-  gui.text(30, 21, "HP ")
-  gui.text(42, 21, hpIV, getIVColor(hpIV))
-  gui.text(62, 21, "Atk ")
-  gui.text(78, 21, atkIV, getIVColor(atkIV))
-  gui.text(95, 21, "Def ")
-  gui.text(111, 21, defIV, getIVColor(defIV))
-  gui.text(128, 21, "SpA ")
-  gui.text(144, 21, spAtkIV, getIVColor(spAtkIV))
-  gui.text(161, 21, "SpD ")
-  gui.text(177, 21, spDefIV, getIVColor(spDefIV))
-  gui.text(194, 21, "Spe ")
-  gui.text(210, 21, spdIV, getIVColor(spdIV))
+  gui.text(0, 19, "IVs:")
+  gui.text(29, 19, "HP")
+  gui.text(41, 19, hpIV, getIVColor(hpIV))
+  gui.text(59, 19, "Atk")
+  gui.text(75, 19, atkIV, getIVColor(atkIV))
+  gui.text(93, 19, "Def")
+  gui.text(109, 19, defIV, getIVColor(defIV))
+  gui.text(127, 19, "SpA")
+  gui.text(143, 19, spAtkIV, getIVColor(spAtkIV))
+  gui.text(161, 19, "SpD")
+  gui.text(177, 19, spDefIV, getIVColor(spDefIV))
+  gui.text(195, 19, "Spe")
+  gui.text(211, 19, spdIV, getIVColor(spdIV))
 
-  gui.text(178, 30, "HP "..HPTypeNamesList[hpType + 1].." "..hpPower)
+  gui.text(150, 28, "Hidd Pow "..HPTypeNamesList[hpType + 1].." "..hpPower)
  else
-  gui.text(150, 90, "IVs:")
-  gui.text(170, 90, hpIV, getIVColor(hpIV))
-  gui.text(178, 90, "/")
-  gui.text(182, 90, atkIV, getIVColor(atkIV))
-  gui.text(190, 90, "/")
-  gui.text(194, 90, defIV, getIVColor(defIV))
-  gui.text(202, 90, "/")
-  gui.text(206, 90, spAtkIV, getIVColor(spAtkIV))
-  gui.text(214, 90, "/")
-  gui.text(218, 90, spDefIV, getIVColor(spDefIV))
-  gui.text(226, 90, "/")
-  gui.text(230, 90, spdIV, getIVColor(spdIV))
+  gui.text(149, 82, "IVs:")
+  gui.text(169, 82, hpIV, getIVColor(hpIV))
+  gui.text(177, 82, "/")
+  gui.text(181, 82, atkIV, getIVColor(atkIV))
+  gui.text(189, 82, "/")
+  gui.text(193, 82, defIV, getIVColor(defIV))
+  gui.text(201, 82, "/")
+  gui.text(205, 82, spAtkIV, getIVColor(spAtkIV))
+  gui.text(213, 82, "/")
+  gui.text(217, 82, spDefIV, getIVColor(spDefIV))
+  gui.text(225, 82, "/")
+  gui.text(229, 82, spdIV, getIVColor(spdIV))
 
-  gui.text(150, 100, "Hidd Pow: "..HPTypeNamesList[hpType + 1].." "..hpPower)
+  gui.text(150, 91, "Hidd Pow: "..HPTypeNamesList[hpType + 1].." "..hpPower)
  end
 end
 
@@ -748,19 +748,19 @@ function showMoves(value1, value2)
  local move4Number = rshift(value2, 16)
 
  if move1Number <= 354 then
-  gui.text(1, 77, "Move: "..moveNamesList[move1Number + 1])
+  gui.text(1, 73, "Move: "..moveNamesList[move1Number + 1])
  end
 
  if move2Number <= 354 then
-  gui.text(1, 87, "Move: "..moveNamesList[move2Number + 1])
+  gui.text(1, 82, "Move: "..moveNamesList[move2Number + 1])
  end
 
  if move3Number <= 354 then
-  gui.text(1, 97, "Move: "..moveNamesList[move3Number + 1])
+  gui.text(1, 91, "Move: "..moveNamesList[move3Number + 1])
  end
 
  if move4Number <= 354 then
-  gui.text(1, 107, "Move: "..moveNamesList[move4Number + 1])
+  gui.text(1, 100, "Move: "..moveNamesList[move4Number + 1])
  end
 end
 
@@ -780,35 +780,36 @@ function showPP(value)
  local PPmove3 = band(rshift(value, 16), 0xFF)
  local PPmove4 = rshift(value, 24)
 
- gui.text(85, 77, "PP: ")
- gui.text(101, 77, PPmove1, getPPColor(PPmove1))
- gui.text(85, 87, "PP: ")
- gui.text(101, 87, PPmove2, getPPColor(PPmove2))
- gui.text(85, 97, "PP: ")
- gui.text(101, 97, PPmove3, getPPColor(PPmove3))
- gui.text(85, 107, "PP: ")
- gui.text(101, 107, PPmove4, getPPColor(PPmove4))
+ gui.text(85, 73, "PP: ")
+ gui.text(101, 73, PPmove1, getPPColor(PPmove1))
+ gui.text(85, 82, "PP: ")
+ gui.text(101, 82, PPmove2, getPPColor(PPmove2))
+ gui.text(85, 91, "PP: ")
+ gui.text(101, 91, PPmove3, getPPColor(PPmove3))
+ gui.text(85, 100, "PP: ")
+ gui.text(101, 100, PPmove4, getPPColor(PPmove4))
 end
 
 function showInfo(addr)
  local PID = mdword(addr)
  local natureNumber = PID % 25
- local IDs = mdword(addr + 4)
+ local IDs = mdword(addr + 0x4)
  local orderIndex = PID % 24
  local decryptionKey = bxor(PID, IDs)
  local miscOffset = getMiscOffset(orderIndex)
  local growthOffset = getGrowthOffset(orderIndex)
  local attacksOffset = getAttacksOffset(orderIndex)
 
- local IVsAndAbilityValue = bxor(mdword(addr + 32 + miscOffset + 4), decryptionKey)
- local speciesAndItemValue = bxor(mdword(addr + 32 + growthOffset), decryptionKey)
- local moves1Value = bxor(mdword(addr + 32 + attacksOffset), decryptionKey)
- local moves2Value = bxor(mdword(addr + 32 + attacksOffset + 4), decryptionKey)
- local PPValue = bxor(mdword(addr + 32 + attacksOffset + 8), decryptionKey)
+ local IVsAndAbilityValue = bxor(mdword(addr + 0x20 + miscOffset + 0x4), decryptionKey)
+ local speciesAndItemValue = bxor(mdword(addr + 0x20 + growthOffset), decryptionKey)
+ local moves1Value = bxor(mdword(addr + 0x20 + attacksOffset), decryptionKey)
+ local moves2Value = bxor(mdword(addr + 0x20 + attacksOffset + 0x4), decryptionKey)
+ local PPValue = bxor(mdword(addr + 0x20 + attacksOffset + 0x8), decryptionKey)
 
  local speciesDexIndex = band(speciesAndItemValue, 0xFFFF)
  local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
  local speciesName = speciesNamesList[speciesDexNumber]
+ local level = mbyte(addr + 0x54)
 
  local itemNumber = rshift(speciesAndItemValue, 16)
  local itemName = itemNamesList[itemNumber + 1]
@@ -816,27 +817,31 @@ function showInfo(addr)
  local abilityNumber = rshift(IVsAndAbilityValue, 0x1F) + 1
  local abilityName = "--"
 
- if speciesDexNumber ~= nil and abilityNumber ~= nil then
+ if speciesDexNumber ~= nil and speciesDexNumber < 387 and abilityNumber ~= nil then
   abilityName = abilityNamesList[pokemonAbilities[speciesDexNumber][abilityNumber]]
  end
 
  showIVsAndHP(IVsAndAbilityValue)
 
- if speciesName ~= nil and isEgg(addr) then
-  gui.text(1, 30, "Species: "..speciesName)
+ if speciesName ~= nil then
+  gui.text(1, 28, "Species: "..speciesName)
  end
 
- gui.text(1, 40, "PID: ")
- gui.text(21, 40, string.format("%08X", PID), shinyCheck(PID, addr))
+ if mode[index] ~= "Pokemon Info" or infoMode[infoIndex] ~= "Box" then
+  gui.text(85, 28, "Level: "..level)
+ end
+
+ gui.text(1, 37, "PID: ")
+ gui.text(21, 37, string.format("%08X", PID), shinyCheck(PID, addr))
 
  if itemName ~= nil then
-  gui.text(62, 40, "Held item: "..itemName)
+  gui.text(62, 37, "Held item: "..itemName)
  end
 
- gui.text(1, 50, "Nature: "..natureNamesList[natureNumber + 1])
+ gui.text(1, 46, "Nature: "..natureNamesList[natureNumber + 1])
 
  if abilityName ~= nil and abilityNumber ~= nil then
-  gui.text(1, 60, string.format("Ability: %s (%d)", abilityName, abilityNumber))
+  gui.text(1, 55, string.format("Ability: %s (%d)", abilityName, abilityNumber))
  end
 
  showMoves(moves1Value, moves2Value)
@@ -880,21 +885,21 @@ function showRoamerInfo()
  local isRoamerActive = mbyte(roamerAddr + 0x13) == 1
 
  if isRoamerActive then
-  gui.text(150, 50, string.format("Active Roamer? Yes"))
+  gui.text(150, 46, string.format("Active Roamer? Yes"))
 
   if roamerSpeciesName ~= nil then
-   gui.text(150, 60, "Species: "..roamerSpeciesName)
+   gui.text(150, 55, "Species: "..roamerSpeciesName)
   end
 
-  gui.text(150, 70, "PID: ")
-  gui.text(170, 70, string.format("%08X", roamerPID), shinyCheck(roamerPID))
-  gui.text(150, 80, "Nature: "..natureNamesList[roamerNatureNumber + 1])
+  gui.text(150, 64, "PID: ")
+  gui.text(170, 64, string.format("%08X", roamerPID), shinyCheck(roamerPID))
+  gui.text(150, 73, "Nature: "..natureNamesList[roamerNatureNumber + 1])
   showIVsAndHP(roamerIVsValue, isRoamerActive)
-  gui.text(150, 110, "HP: "..roamerHP)
-  gui.text(150, 120, "Level: "..roamerLevel)
-  gui.text(150, 130, "Status condition: "..roamerStatus)
+  gui.text(150, 100, "HP: "..roamerHP)
+  gui.text(150, 109, "Level: "..roamerLevel)
+  gui.text(150, 118, "Status condition: "..roamerStatus)
  else
-  gui.text(150, 50, string.format("Active Roamer? No"))
+  gui.text(150, 46, string.format("Active Roamer? No"))
  end
 end
 
@@ -937,7 +942,7 @@ function getCatchDelay(isSafariZone)
    currSeed3 = mdword(currSeedAddr)
 
    while currSeed2 ~= currSeed3 do
-    currSeed2 = lcrng(currSeed2, 0x41C6, 0x4E6D, 0x6073)
+    currSeed2 = LCRNG(currSeed2, 0x41C6, 0x4E6D, 0x6073)
     skips = skips + 1
    end
 
@@ -969,7 +974,7 @@ function findCatchSeed(seed, delay)
  local tempSeed = seed
 
  for i = 1, delay do
-  tempSeed = lcrng(tempSeed, 0x41C6, 0x4E6D, 0x6073)
+  tempSeed = LCRNG(tempSeed, 0x41C6, 0x4E6D, 0x6073)
  end
 
  return tempSeed
@@ -990,7 +995,7 @@ end
 function getBonusBall(speciesDexNumber, isSafariZone)
  local wildType = mbyte(wildTypeAddr)
  local isUnderWater = mbyte(isUnderWaterAddr) == 0x5
- local level = mbyte(wildAddr + 84)
+ local level = mbyte(wildAddr + 0x54)
  local saveBlock2 = mdword(saveBlock2Addr)
  local dexCaughtMask = rshift(lshift(0x1000000, band((speciesDexNumber - 1), 7)), 24)
  local dexCaughtFlag = band(mbyte(saveBlock2 + 0x28 + band(rshift(lshift(speciesDexNumber - 1, 16), 19), 0xFF)), dexCaughtMask)
@@ -1044,7 +1049,7 @@ function getBonusBall(speciesDexNumber, isSafariZone)
 end
 
 function getBonusStatus()
- local status = mbyte(wildAddr + 80)
+ local status = mbyte(wildAddr + 0x50)
 
  if status == 0 then
   bonusStatus = 1
@@ -1061,8 +1066,8 @@ function calcCatchProb(isSafariZone)
  local speciesDexIndex = mword(speciesDexIndexAddr)
  local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
 
- local HPmax = mword(wildAddr + 88)
- local HPcurrent = mword(wildAddr + 86)
+ local HPmax = mword(wildAddr + 0x58)
+ local HPcurrent = mword(wildAddr + 0x56)
  local catchRate = getCatchRate(speciesDexNumber, isSafariZone)
  local bonusBall = getBonusBall(speciesDexNumber, isSafariZone)
  local bonusStatus = getBonusStatus()
@@ -1094,14 +1099,14 @@ function findSureCatch(seed, catchProbability, isSafariZone)
 
   while rshift(tempSeed, 16) < catchProbability and ballShakes < 4 do
    ballShakes = ballShakes + 1
-   tempSeed = lcrng(tempSeed, 0x41C6, 0x4E6D, 0x6073)
+   tempSeed = LCRNG(tempSeed, 0x41C6, 0x4E6D, 0x6073)
   end
 
   if isSafariZone and delay % 2 ~= 0 then
    ballShakes = 0
   end
 
-  tempSeed1 = lcrng(tempSeed1, 0x41C6, 0x4E6D, 0x6073)
+  tempSeed1 = LCRNG(tempSeed1, 0x41C6, 0x4E6D, 0x6073)
   tempSeed = tempSeed1
   delay = delay + 1
  end
@@ -1114,9 +1119,9 @@ function catchRng()
  local wildCatchDelay = getCatchDelay(isSafariZone)
 
  if wildCatchDelay <= 0 then
-  gui.text(1, 101, "Delay not calculated yet")
+  gui.text(1, 100, "Delay not calculated yet")
  else
-  gui.text(1, 101, "Delay calculated")
+  gui.text(1, 100, "Delay calculated")
  end
 
  local catchSeed = findCatchSeed(mdword(currSeedAddr), wildCatchDelay)
@@ -1129,7 +1134,7 @@ function catchRng()
    sureCatchDelay = sureCatchDelay / 2
   end
 
-  gui.text(1, 111, "100% catch missing frames: "..sureCatchDelay)
+  gui.text(1, 109, "100% catch missing frames: "..sureCatchDelay)
  end
 end
 
@@ -1156,33 +1161,34 @@ function showDayCareInfo()
  end
 
  if not isEggReady then
-  gui.text(120, 60, "Step Counter: "..eggStepCounter)
-  gui.text(120, 70, "Egg is not ready")
+  gui.text(127, 55, "Step Counter: "..eggStepCounter)
+  gui.text(127, 64, "Egg is not ready")
  end
 
- gui.text(120, 100, string.format("Egg Current Seed: %08X", eggCurrSeed))
- gui.text(120, 110, "Timer: "..timer)
- gui.text(120, 120, "Calibration: "..calibration + 1)
+ gui.text(127, 91, string.format("Egg Current Seed: %08X", eggCurrSeed))
+ gui.text(127, 100, "Timer: "..timer)
+ gui.text(127, 109, "Calibration: "..calibration + 1)
 
  if isEggReady then
-  gui.text(120, 60, "Egg generated, go get it!")
-  gui.text(120, 70, string.format("Egg PID: "))
-  gui.text(156, 70, string.format("%08X", eggPID), shinyCheck(eggPID))
-  gui.text(120, 80, "Nature: "..natureNamesList[eggNatureNumber + 1])
+  gui.text(127, 55, "Egg generated, go get it!")
+  gui.text(127, 64, string.format("Egg PID: "))
+  gui.text(163, 64, string.format("%08X", eggPID), shinyCheck(eggPID))
+  gui.text(127, 73, "Nature: "..natureNamesList[eggNatureNumber + 1])
 
   if iter > 1 then
-   gui.text(120, 130, string.format("Approx iter: %d", iter))
-   gui.text(120, 140, string.format("Stone worked!"))
+   gui.text(127, 118, string.format("Approx iter: %d", iter))
+   gui.text(127, 127, string.format("Stone worked!"))
   else
-   gui.text(120, 130, string.format("First egg PID result"))
-   gui.text(120, 140, string.format("Stone failed?"))
+   gui.text(127, 118, string.format("First egg PID result"))
+   gui.text(127, 127, string.format("Stone failed?"))
   end
  elseif eggStepCounter == 1 then
-  gui.text(120, 80, "Next step might generate\nan egg!")
+  gui.text(127, 73, "Next step might generate")
+  gui.text(127, 82, "an egg!")
  elseif eggStepCounter == 0 then
-  gui.text(120, 80, "255th step taken")
+  gui.text(127, 73, "255th step taken")
  else
-  gui.text(120, 80, "Keep on steppin'")
+  gui.text(127, 73, "Keep on steppin'")
  end
 end
 
@@ -1247,7 +1253,7 @@ function showFoundTID()
 
  if TIDFound then
   gui.text(1, 100, "Found!")
-  gui.text(1, 110, "TID: "..TID)
+  gui.text(1, 109, "TID: "..TID)
 
   if not botOneTime then
    emu.pause()
@@ -1306,7 +1312,7 @@ function showPokemonInfo()
   showTrainerIDs(partySelectedPokemonAddr)
  elseif infoMode[infoIndex] == "Box" then
   currBoxNumber = mbyte(mdword(currBoxNumberPointerAddr))
-  boxAddr = mdword(currBoxNumberPointerAddr) + 4
+  boxAddr = mdword(currBoxNumberPointerAddr) + 0x4
   boxSelectedSlotNumber = mbyte(boxSelectedSlotNumberAddr)
   boxSelectedPokemonAddr = boxAddr + (0x1E * currBoxNumber * 0x50) + (boxSelectedSlotNumber * 0x50)
 
@@ -1357,15 +1363,15 @@ while warning == "" do
   showDayCareInfo()
   showPartyEggInfo()
  elseif mode[index] == "Pandora" then
-  gui.text(1, 122, "Temp TID: "..initSeed)
+  gui.text(1, 116, "Temp TID: "..initSeed)
  elseif mode[index] == "TID Bot" then
   TIDBot()
  elseif mode[index] == "Pokemon Info" then
   getInfoInput()
-  gui.text(0, 142, "Info Mode: "..infoMode[infoIndex])
-  drawArrowLeft(130, 142, leftInfoArrowColor)
-  gui.text(140, 142, "3 - 4")
-  drawArrowRight(168, 142, rightInfoArrowColor)
+  gui.text(0, 143, "Info Mode: "..infoMode[infoIndex])
+  drawArrowLeft(130, 143, leftInfoArrowColor)
+  gui.text(140, 143, "3 - 4")
+  drawArrowRight(168, 143, rightInfoArrowColor)
 
   showPokemonInfo()
  end
