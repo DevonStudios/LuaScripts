@@ -298,6 +298,10 @@ local frame = 0
 local wildAddr
 local saveBlock1Addr
 local saveBlock2Addr
+local wildEncounterDataAddr
+local playerAvatarAddr
+local encounterRateBase = 0
+local encounterRateFlag = false
 
 local speciesDexIndexAddr
 local selectedItemAddr
@@ -364,6 +368,8 @@ if gameLang == 0x4A then  -- Check game language
  wildAddr = 0x02023F8C -- capture
  saveBlock1Addr = 0x03004FA8
  saveBlock2Addr = 0x03004FAC
+ wildEncounterDataAddr = 0x020386D0
+ playerAvatarAddr = 0x02037078
  speciesDexIndexAddr = 0x02023528 -- 100% catch
  selectedItemAddr = 0x0203ACA8
  wildTypeAddr = 0x02023BBD
@@ -385,6 +391,8 @@ elseif gameLang == 0x45 then
  wildAddr = 0x0202402C -- capture
  saveBlock1Addr = 0x03005008
  saveBlock2Addr = 0x0300500C
+ wildEncounterDataAddr = 0x020386D0
+ playerAvatarAddr = 0x02037078
  speciesDexIndexAddr = 0x020235C8 -- 100% catch
  selectedItemAddr = 0x0203AD30
  wildTypeAddr = 0x02023C5D
@@ -406,6 +414,8 @@ else
  wildAddr = 0x0202402C -- capture
  saveBlock1Addr = 0x03004F58
  saveBlock2Addr = 0x03004F5C
+ wildEncounterDataAddr = 0x020386D0
+ playerAvatarAddr = 0x02037078
  speciesDexIndexAddr = 0x020235C8 -- 100% catch
  selectedItemAddr = 0x0203AD30
  wildTypeAddr = 0x02023C5D
@@ -499,7 +509,7 @@ function showInstructions()
  elseif mode[index] == "Initial Seed Bot" and showInstructionsText then
   gui.text(155, 1, "3 - Hide instructions")
   gui.text(1, 10, "1) Pause the game")
-  gui.text(1, 19, "2) Reset the emulaor")
+  gui.text(1, 19, "2) Reset the emulator")
   gui.text(1, 28, "3) Advance one frame holding SELECT")
   gui.text(1, 37, "4) Unpause the game")
  elseif mode[index] == "TID Bot" and showInstructionsText then
@@ -786,13 +796,13 @@ function showPP(value)
  local PPmove3 = band(rshift(value, 16), 0xFF)
  local PPmove4 = rshift(value, 24)
 
- gui.text(85, 73, "PP: ")
+ gui.text(85, 73, "PP:")
  gui.text(101, 73, PPmove1, getPPColor(PPmove1))
- gui.text(85, 82, "PP: ")
+ gui.text(85, 82, "PP:")
  gui.text(101, 82, PPmove2, getPPColor(PPmove2))
- gui.text(85, 91, "PP: ")
+ gui.text(85, 91, "PP:")
  gui.text(101, 91, PPmove3, getPPColor(PPmove3))
- gui.text(85, 100, "PP: ")
+ gui.text(85, 100, "PP:")
  gui.text(101, 100, PPmove4, getPPColor(PPmove4))
 end
 
@@ -837,7 +847,7 @@ function showInfo(addr)
   gui.text(85, 28, "Level: "..level)
  end
 
- gui.text(1, 37, "PID: ")
+ gui.text(1, 37, "PID:")
  gui.text(21, 37, string.format("%08X", PID), shinyCheck(PID, addr))
 
  if itemName ~= nil then
@@ -897,7 +907,7 @@ function showRoamerInfo()
    gui.text(150, 55, "Species: "..roamerSpeciesName)
   end
 
-  gui.text(150, 64, "PID: ")
+  gui.text(150, 64, "PID:")
   gui.text(170, 64, string.format("%08X", roamerPID), shinyCheck(roamerPID))
   gui.text(150, 73, "Nature: "..natureNamesList[roamerNatureNumber + 1])
   showIVsAndHP(band(roamerIVsValue, 0xFF), isRoamerActive)
@@ -907,6 +917,118 @@ function showRoamerInfo()
  else
   gui.text(150, 46, string.format("Active Roamer? No"))
  end
+end
+
+function getBikeMod(rate)
+ local isPlayerOnBike = band(mbyte(playerAvatarAddr), 6) ~= 0
+
+ if isPlayerOnBike then
+  rate = floor((rate * 80) / 100)
+ end
+
+ return rate
+end
+
+function getActivedFluteType()
+ local fluteFlagsAddr = mdword(saveBlock1Addr) + 0xFE0
+ local fluteEffectActivedFlag = mbyte(fluteFlagsAddr)
+
+ local isWhiteFlute = rshift(fluteEffectActivedFlag, 3) == 1
+ local isBlackFlute = rshift(fluteEffectActivedFlag, 4) == 1
+
+ if isWhiteFlute then
+  return 1
+ elseif isBlackFlute then
+  return 2
+ else
+  return 0
+ end
+end
+
+function getFluteEffectMod(finalRate)
+ local activedFluteType = getActivedFluteType()
+ local isWhiteFluteActived = activedFluteType == 1
+ local isBlackFluteActived = activedFluteType == 2
+
+ if isWhiteFluteActived then
+  finalRate = finalRate + floor(finalRate / 2)
+ elseif isBlackFluteActived then
+  finalRate = floor(finalRate / 2)
+ end
+
+ return finalRate
+end
+
+function getCleanseTagEffectMod(finalRate)
+ local partyLeadMonHeldItem = mbyte(wildEncounterDataAddr + 0xA)
+ local isPartyLeadMonHoldingCleanseTag = partyLeadMonHeldItem == 190
+
+ if isPartyLeadMonHoldingCleanseTag then
+  finalRate = floor((finalRate * 2) / 3)
+ end
+
+ return finalRate
+end
+
+function getAbilityEffectMod(finalRate)
+ local partyLeadMonAbilityEffectType = mbyte(wildEncounterDataAddr + 0x9)
+
+ if partyLeadMonAbilityEffectType == 1 then
+  finalRate = floor(finalRate / 2)
+ elseif partyLeadMonAbilityEffectType == 2 then
+  finalRate = finalRate * 2
+ end
+
+ return finalRate
+end
+
+function getEncounterCheckValue(seed)
+ return rshift(seed, 16) % 0x640
+end
+
+function getEncounterMissingSteps(rate, rateBuff, rateBase)
+ local wildEncounterSeed = mdword(wildEncounterDataAddr)
+ local isEncounterStep = false
+ local missingSteps = 0
+ local finalRate = 0
+ local rateBonus
+
+ while rateBuff ~= 0 and isEncounterStep == false do
+  wildEncounterSeed = LCRNG(wildEncounterSeed, 0x41C6, 0x4E6D, 0x3039)
+  rateBuff = rateBuff + rateBase
+  rateBonus = floor((16 * rateBuff) / 200)
+  finalRate = rate + rateBonus
+  finalRate = getFluteEffectMod(finalRate)
+  finalRate = getCleanseTagEffectMod(finalRate)
+  finalRate = getAbilityEffectMod(finalRate)
+
+  if finalRate > 1600 then
+   finalRate = 1600
+  end
+
+  isEncounterStep = getEncounterCheckValue(wildEncounterSeed) < finalRate
+  missingSteps = missingSteps + 1
+ end
+
+ return missingSteps
+end
+
+function showMissingStepsForEncounter()
+ local encounterRateBuff = mword(wildEncounterDataAddr + 0x6)
+
+ if encounterRateBuff == 0 then
+  encounterRateFlag = false
+ elseif not encounterRateFlag then
+  encounterRateBase = encounterRateBuff
+  encounterRateFlag = true
+ end
+
+ encounterRate = 16 * encounterRateBase
+ encounterRate = getBikeMod(encounterRate)
+
+ encounterMissingSteps = getEncounterMissingSteps(encounterRate, encounterRateBuff, encounterRateBase)
+
+ gui.text(1, 118, "Steps for wild encounter: "..encounterMissingSteps)
 end
 
 function getCatchRngStopInput()
@@ -1105,7 +1227,14 @@ function findSureCatch(seed, catchProbability, isSafariZone)
 
   tempSeed1 = LCRNG(tempSeed1, 0x41C6, 0x4E6D, 0x6073)
   tempSeed = tempSeed1
-  delay = delay + 1
+
+  if ballShakes ~= 4 then
+   delay = delay + 1
+  end
+ end
+
+ if isSafariZone then
+  delay = delay / 2
  end
 
  return delay
@@ -1125,11 +1254,7 @@ function catchRng()
  local sureCatchDelay
 
  if wildCatchDelay > 0 then
-  sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone) - 1
-
-  if isSafariZone then
-   sureCatchDelay = sureCatchDelay / 2
-  end
+  sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone)
 
   gui.text(1, 109, "100% catch missing frames: "..sureCatchDelay)
  end
@@ -1138,8 +1263,8 @@ end
 function showDayCareInfo()
  local eggLowPIDAddr = mdword(eggLowPIDPointerAddr) + 0x2CE0
  local eggStepCounter = 255 - mbyte(eggLowPIDAddr - 0x4)
- local flagsAddr = mdword(saveBlock1Addr) + 0xF2C
- local isEggReady = band(rshift(mbyte(flagsAddr), 6), 0x1) == 1
+ local eggFlagAddr = mdword(saveBlock1Addr) + 0xF2C
+ local isEggReady = band(rshift(mbyte(eggFlagAddr), 6), 0x1) == 1
  local eggLowPid
 
  if not isEggReady then
@@ -1438,6 +1563,7 @@ while warning == "" do
  if mode[index] == "Capture" then
   showOpponentPokemonInfo()
   showRoamerInfo()
+  showMissingStepsForEncounter()
  elseif mode[index] == "100% Catch" then
   catchRng()
  elseif mode[index] == "Breeding" then
