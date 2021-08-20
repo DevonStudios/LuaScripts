@@ -1135,7 +1135,7 @@ function catchRng()
  local sureCatchDelay
 
  if wildCatchDelay > 0 then
-  sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone) - 1
+  sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone)
 
   gui.text(1, 109, "100% catch missing frames: "..sureCatchDelay)
  end
