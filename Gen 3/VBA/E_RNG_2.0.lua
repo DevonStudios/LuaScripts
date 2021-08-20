@@ -780,13 +780,13 @@ function showPP(value)
  local PPmove3 = band(rshift(value, 16), 0xFF)
  local PPmove4 = rshift(value, 24)
 
- gui.text(85, 73, "PP: ")
+ gui.text(85, 73, "PP:")
  gui.text(101, 73, PPmove1, getPPColor(PPmove1))
- gui.text(85, 82, "PP: ")
+ gui.text(85, 82, "PP:")
  gui.text(101, 82, PPmove2, getPPColor(PPmove2))
- gui.text(85, 91, "PP: ")
+ gui.text(85, 91, "PP:")
  gui.text(101, 91, PPmove3, getPPColor(PPmove3))
- gui.text(85, 100, "PP: ")
+ gui.text(85, 100, "PP:")
  gui.text(101, 100, PPmove4, getPPColor(PPmove4))
 end
 
@@ -831,7 +831,7 @@ function showInfo(addr)
   gui.text(85, 28, "Level: "..level)
  end
 
- gui.text(1, 37, "PID: ")
+ gui.text(1, 37, "PID:")
  gui.text(21, 37, string.format("%08X", PID), shinyCheck(PID, addr))
 
  if itemName ~= nil then
@@ -891,7 +891,7 @@ function showRoamerInfo()
    gui.text(150, 55, "Species: "..roamerSpeciesName)
   end
 
-  gui.text(150, 64, "PID: ")
+  gui.text(150, 64, "PID:")
   gui.text(170, 64, string.format("%08X", roamerPID), shinyCheck(roamerPID))
   gui.text(150, 73, "Nature: "..natureNamesList[roamerNatureNumber + 1])
   showIVsAndHP(roamerIVsValue, isRoamerActive)
@@ -1108,7 +1108,14 @@ function findSureCatch(seed, catchProbability, isSafariZone)
 
   tempSeed1 = LCRNG(tempSeed1, 0x41C6, 0x4E6D, 0x6073)
   tempSeed = tempSeed1
-  delay = delay + 1
+
+  if ballShakes ~= 4 then
+   delay = delay + 1
+  end
+ end
+
+ if isSafariZone then
+  delay = delay / 2
  end
 
  return delay
@@ -1130,10 +1137,6 @@ function catchRng()
  if wildCatchDelay > 0 then
   sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone) - 1
 
-  if isSafariZone then
-   sureCatchDelay = sureCatchDelay / 2
-  end
-
   gui.text(1, 109, "100% catch missing frames: "..sureCatchDelay)
  end
 end
@@ -1146,8 +1149,8 @@ function showDayCareInfo()
  local eggPID = mdword(eggPIDAddr)
  local eggNatureNumber = eggPID % 25
  local eggStepCounter = 255 - mbyte(eggPIDAddr - 0x4)
- local flagsAddr = mdword(saveBlock1Addr) + 0x1280
- local isEggReady = band(rshift(mbyte(flagsAddr), 6), 0x1) == 1
+ local eggFlagAddr = mdword(saveBlock1Addr) + 0x1280
+ local isEggReady = band(rshift(mbyte(eggFlagAddr), 6), 0x1) == 1
 
  if eggCurrSeed == 0 then
   base = calibration
@@ -1171,7 +1174,7 @@ function showDayCareInfo()
 
  if isEggReady then
   gui.text(127, 55, "Egg generated, go get it!")
-  gui.text(127, 64, string.format("Egg PID: "))
+  gui.text(127, 64, string.format("Egg PID:"))
   gui.text(163, 64, string.format("%08X", eggPID), shinyCheck(eggPID))
   gui.text(127, 73, "Nature: "..natureNamesList[eggNatureNumber + 1])
 

@@ -319,7 +319,7 @@ local currSeed2
 local partyAddr
 local partySlotsCounterAddr
 local eggLowPIDAddr
-local flagsAddr
+local eggFlagAddr
 
 local infoMode = {"Party", "Stats", "Box"}
 local infoIndex = 1
@@ -356,7 +356,7 @@ if gameLang == 0x4A then  -- Check game language
  partyAddr = 0x03004290 -- breeding
  partySlotsCounterAddr = 0x03004280
  eggLowPIDAddr = 0x02028548
- flagsAddr = 0x020266C4
+ eggFlagAddr = 0x020266C4
  currBoxNumberAddr = 0x0202FDBC -- info
  boxSelectedSlotNumberAddr = 0x02038201
 elseif gameLang == 0x45 then
@@ -375,7 +375,7 @@ elseif gameLang == 0x45 then
  partyAddr = 0x03004360 -- breeding
  partySlotsCounterAddr = 0x03004350
  eggLowPIDAddr = 0x020287E8
- flagsAddr = 0x02026964
+ eggFlagAddr = 0x02026964
  currBoxNumberAddr = 0x020300A0 -- info
  boxSelectedSlotNumberAddr = 0x020384E5
 else
@@ -394,7 +394,7 @@ else
  partyAddr = 0x03004370 -- breeding
  partySlotsCounterAddr = 0x03004360
  eggLowPIDAddr = 0x020287E8
- flagsAddr = 0x02026964
+ eggFlagAddr = 0x02026964
  currBoxNumberAddr = 0x020300A0 -- info
  boxSelectedSlotNumberAddr = 0x020384E5
 end
@@ -762,13 +762,13 @@ function showPP(value)
  local PPmove3 = band(rshift(value, 16), 0xFF)
  local PPmove4 = rshift(value, 24)
 
- gui.text(85, 73, "PP: ")
+ gui.text(85, 73, "PP:")
  gui.text(101, 73, PPmove1, getPPColor(PPmove1))
- gui.text(85, 82, "PP: ")
+ gui.text(85, 82, "PP:")
  gui.text(101, 82, PPmove2, getPPColor(PPmove2))
- gui.text(85, 91, "PP: ")
+ gui.text(85, 91, "PP:")
  gui.text(101, 91, PPmove3, getPPColor(PPmove3))
- gui.text(85, 100, "PP: ")
+ gui.text(85, 100, "PP:")
  gui.text(101, 100, PPmove4, getPPColor(PPmove4))
 end
 
@@ -813,7 +813,7 @@ function showInfo(addr)
   gui.text(85, 28, "Level: "..level)
  end
 
- gui.text(1, 37, "PID: ")
+ gui.text(1, 37, "PID:")
  gui.text(21, 37, string.format("%08X", PID), shinyCheck(PID, addr))
 
  if itemName ~= nil then
@@ -872,7 +872,7 @@ function showRoamerInfo()
    gui.text(150, 55, "Species: "..roamerSpeciesName)
   end
 
-  gui.text(150, 64, "PID: ")
+  gui.text(150, 64, "PID:")
   gui.text(170, 64, string.format("%08X", roamerPID), shinyCheck(roamerPID))
   gui.text(150, 73, "Nature: "..natureNamesList[roamerNatureNumber + 1])
   showIVsAndHP(band(roamerIVsValue, 0xFF), isRoamerActive)
@@ -1088,7 +1088,14 @@ function findSureCatch(seed, catchProbability, isSafariZone)
 
   tempSeed1 = LCRNG(tempSeed1, 0x41C6, 0x4E6D, 0x6073)
   tempSeed = tempSeed1
-  delay = delay + 1
+
+  if ballShakes ~= 4 then
+   delay = delay + 1
+  end
+ end
+
+ if isSafariZone then
+  delay = delay / 2
  end
 
  return delay
@@ -1110,17 +1117,13 @@ function catchRng()
  if wildCatchDelay > 0 then
   sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone) - 1
 
-  if isSafariZone then
-   sureCatchDelay = sureCatchDelay / 2
-  end
-
   gui.text(1, 109, "100% catch missing frames: "..sureCatchDelay)
  end
 end
 
 function showDayCareInfo()
  local eggStepCounter = 255 - mbyte(eggLowPIDAddr - 0x4)
- local isEggReady = band(rshift(mbyte(flagsAddr), 6), 0x1) == 1
+ local isEggReady = band(rshift(mbyte(eggFlagAddr), 6), 0x1) == 1
  local eggLowPid
 
  if not isEggReady then
