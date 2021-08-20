@@ -1,6 +1,6 @@
-mdword = memory.readdwordunsigned
-mword = memory.readwordunsigned
-mbyte = memory.readbyte
+read32Bit = memory.readdwordunsigned
+read16Bit = memory.readwordunsigned
+read8Bit = memory.readbyte
 rshift = bit.rshift
 lshift = bit.lshift
 bxor = bit.bxor
@@ -271,9 +271,9 @@ local catchRatesList = {
 local statusConditionNamesList = {
  "None", "SLP", "PSN", "BRN", "FRZ", "PAR", "PSN"}
 
-local gameVersion = mbyte(0x080000AE)
+local gameVersion = read8Bit(0x080000AE)
 local game
-local gameLang = mbyte(0x080000AF)
+local gameLang = read8Bit(0x080000AF)
 local language = ""
 local warning
 
@@ -497,7 +497,7 @@ function checkInitialSeedGeneration(current)
   checkSeeding = false
  end
 
- if current == 0x6073 and mdword(IDsAddr) == 0 and initSeed == nil then
+ if current == 0x6073 and read32Bit(IDsAddr) == 0 and initSeed == nil then
   checkSeeding = true
  end
 end
@@ -548,9 +548,9 @@ function getTrainerIDs(addr)
  local SID
 
  if mode[index] ~= "Pokemon Info" then
-  IDs = mdword(IDsAddr)
+  IDs = read32Bit(IDsAddr)
  else
-  IDs = mdword(addr + 0x4)
+  IDs = read32Bit(addr + 0x4)
  end
 
   TID = IDs % 0x10000
@@ -570,12 +570,12 @@ end
 
 function showStats(addr)
  gui.text(1, 10, "Stats:")
- gui.text(29, 10, "HP "..mword(addr + 0x56))
- gui.text(59, 10, "Atk "..mword(addr + 0x5A))
- gui.text(93, 10, "Def "..mword(addr + 0x5C))
- gui.text(127, 10, "SpA "..mword(addr + 0x60))
- gui.text(161, 10, "SpD "..mword(addr + 0x62))
- gui.text(195, 10, "Spe "..mword(addr + 0x5E))
+ gui.text(29, 10, "HP "..read16Bit(addr + 0x56))
+ gui.text(59, 10, "Atk "..read16Bit(addr + 0x5A))
+ gui.text(93, 10, "Def "..read16Bit(addr + 0x5C))
+ gui.text(127, 10, "SpA "..read16Bit(addr + 0x60))
+ gui.text(161, 10, "SpD "..read16Bit(addr + 0x62))
+ gui.text(195, 10, "Spe "..read16Bit(addr + 0x5E))
 end
 
 function getMiscOffset(orderIndex)
@@ -705,7 +705,7 @@ function getIVColor(value)
 end
 
 function isEgg(addr)
- return mword(addr + 0x12) == 0x601
+ return read16Bit(addr + 0x12) == 0x601
 end
 
 function shinyCheck(PID, addr)
@@ -773,25 +773,25 @@ function showPP(value)
 end
 
 function showInfo(addr)
- local PID = mdword(addr)
+ local PID = read32Bit(addr)
  local natureNumber = PID % 25
- local IDs = mdword(addr + 0x4)
+ local IDs = read32Bit(addr + 0x4)
  local orderIndex = PID % 24
  local decryptionKey = bxor(PID, IDs)
  local miscOffset = getMiscOffset(orderIndex)
  local growthOffset = getGrowthOffset(orderIndex)
  local attacksOffset = getAttacksOffset(orderIndex)
 
- local IVsAndAbilityValue = bxor(mdword(addr + 0x20 + miscOffset + 0x4), decryptionKey)
- local speciesAndItemValue = bxor(mdword(addr + 0x20 + growthOffset), decryptionKey)
- local moves1Value = bxor(mdword(addr + 0x20 + attacksOffset), decryptionKey)
- local moves2Value = bxor(mdword(addr + 0x20 + attacksOffset + 0x4), decryptionKey)
- local PPValue = bxor(mdword(addr + 0x20 + attacksOffset + 0x8), decryptionKey)
+ local IVsAndAbilityValue = bxor(read32Bit(addr + 0x20 + miscOffset + 0x4), decryptionKey)
+ local speciesAndItemValue = bxor(read32Bit(addr + 0x20 + growthOffset), decryptionKey)
+ local moves1Value = bxor(read32Bit(addr + 0x20 + attacksOffset), decryptionKey)
+ local moves2Value = bxor(read32Bit(addr + 0x20 + attacksOffset + 0x4), decryptionKey)
+ local PPValue = bxor(read32Bit(addr + 0x20 + attacksOffset + 0x8), decryptionKey)
 
  local speciesDexIndex = band(speciesAndItemValue, 0xFFFF)
  local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
  local speciesName = speciesNamesList[speciesDexNumber]
- local level = mbyte(addr + 0x54)
+ local level = read8Bit(addr + 0x54)
 
  local itemNumber = rshift(speciesAndItemValue, 16)
  local itemName = itemNamesList[itemNumber + 1]
@@ -836,15 +836,15 @@ function showOpponentPokemonInfo()
 end
 
 function showRoamerInfo()
- local roamerIVsValue = mdword(roamerAddr)
- local roamerPID = mdword(roamerAddr + 0x4)
+ local roamerIVsValue = read32Bit(roamerAddr)
+ local roamerPID = read32Bit(roamerAddr + 0x4)
  local roamerNatureNumber = roamerPID % 25
- local roamerSpeciesIndex = mword(roamerAddr + 0x8)
+ local roamerSpeciesIndex = read16Bit(roamerAddr + 0x8)
  local roamersDexNumber = nationalDexList[roamerSpeciesIndex + 1]
  local roamerSpeciesName = speciesNamesList[roamersDexNumber]
- local roamerHP = mword(roamerAddr + 0xA)
- local roamerLevel = mbyte(roamerAddr + 0xC)
- local roamerStatusIndex = mbyte(roamerAddr + 0xD)
+ local roamerHP = read16Bit(roamerAddr + 0xA)
+ local roamerLevel = read8Bit(roamerAddr + 0xC)
+ local roamerStatusIndex = read8Bit(roamerAddr + 0xD)
  local roamerStatus
 
  if roamerStatusIndex > 0 and roamerStatusIndex < 0x8 then
@@ -863,7 +863,7 @@ function showRoamerInfo()
   roamerStatus = statusConditionNamesList[1]
  end
 
- local isRoamerActive = mbyte(roamerAddr + 0x13) == 1
+ local isRoamerActive = read8Bit(roamerAddr + 0x13) == 1
 
  if isRoamerActive then
   gui.text(150, 46, string.format("Active Roamer? Yes"))
@@ -915,12 +915,12 @@ function getCatchDelay(isSafariZone)
   catchDelay = 0
   skips = 0
   oneTimeCatchRng = false
-  currSeed2 = mdword(currSeedAddr)
+  currSeed2 = read32Bit(currSeedAddr)
  end
 
  if catchDelayCounter <= 200 and catchDelay == 0 and not catchRngStop then
-  if mbyte(catchCheckFlagAddr) == 0x40 and not oneTimeCatchRng then
-   currSeed3 = mdword(currSeedAddr)
+  if read8Bit(catchCheckFlagAddr) == 0x40 and not oneTimeCatchRng then
+   currSeed3 = read32Bit(currSeedAddr)
 
    while currSeed2 ~= currSeed3 do
     currSeed2 = LCRNG(currSeed2, 0x41C6, 0x4E6D, 0x6073)
@@ -930,7 +930,7 @@ function getCatchDelay(isSafariZone)
    oneTimeCatchRng = true
    frameDelay = frame - startingCatchFrame
   else
-   currSeed2 = mdword(currSeedAddr)
+   currSeed2 = read32Bit(currSeedAddr)
   end
 
   if skips == 2 and frameDelay > 120 - safariOffset then
@@ -965,7 +965,7 @@ function getCatchRate(speciesDexNumber, isSafariZone)
  local safariCatchFactor
 
  if isSafariZone then
-  safariCatchFactor = mbyte(safariCatchFactorAddr)
+  safariCatchFactor = read8Bit(safariCatchFactorAddr)
 
   return floor((1275 * safariCatchFactor) / 100)
  else
@@ -974,13 +974,13 @@ function getCatchRate(speciesDexNumber, isSafariZone)
 end
 
 function getBonusBall(speciesDexNumber, isSafariZone)
- local wildType = mbyte(wildTypeAddr)
- local isUnderWater = mbyte(isUnderWaterAddr) == 0x3
- local level = mbyte(wildAddr + 0x54)
+ local wildType = read8Bit(wildTypeAddr)
+ local isUnderWater = read8Bit(isUnderWaterAddr) == 0x3
+ local level = read8Bit(wildAddr + 0x54)
  local dexCaughtMask = rshift(lshift(0x1000000, band((speciesDexNumber - 1), 7)), 24)
- local dexCaughtFlag = band(mbyte(dexCaughtFlagAddr + band(rshift(lshift(speciesDexNumber - 1, 16), 19), 0xFF)), dexCaughtMask)
- local battleTurnsCounter = mbyte(battleTurnsCounterAddr)
- local selectedItem = mword(selectedItemAddr)
+ local dexCaughtFlag = band(read8Bit(dexCaughtFlagAddr + band(rshift(lshift(speciesDexNumber - 1, 16), 19), 0xFF)), dexCaughtMask)
+ local battleTurnsCounter = read8Bit(battleTurnsCounterAddr)
+ local selectedItem = read16Bit(selectedItemAddr)
  local isBallSelected = selectedItem > 0 and selectedItem < 13
 
  if wildType == 0x0B or wildType == 0x06 then  -- net ball catch rate: 0x0B = Water, 0x06 = Bug
@@ -1029,7 +1029,7 @@ function getBonusBall(speciesDexNumber, isSafariZone)
 end
 
 function getBonusStatus()
- local status = mbyte(wildAddr + 0x50)
+ local status = read8Bit(wildAddr + 0x50)
 
  if status == 0 then
   bonusStatus = 1
@@ -1043,11 +1043,11 @@ function getBonusStatus()
 end
 
 function calcCatchProb(isSafariZone)
- local speciesDexIndex = mword(speciesDexIndexAddr)
+ local speciesDexIndex = read16Bit(speciesDexIndexAddr)
  local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
 
- local HPmax = mword(wildAddr + 0x58)
- local HPcurrent = mword(wildAddr + 0x56)
+ local HPmax = read16Bit(wildAddr + 0x58)
+ local HPcurrent = read16Bit(wildAddr + 0x56)
  local catchRate = getCatchRate(speciesDexNumber, isSafariZone)
  local bonusBall = getBonusBall(speciesDexNumber, isSafariZone)
  local bonusStatus = getBonusStatus()
@@ -1102,7 +1102,7 @@ function findSureCatch(seed, catchProbability, isSafariZone)
 end
 
 function catchRng()
- local isSafariZone = mword(safariZoneStepsCounterAddr) ~= 0
+ local isSafariZone = read16Bit(safariZoneStepsCounterAddr) ~= 0
  local wildCatchDelay = getCatchDelay(isSafariZone)
 
  if wildCatchDelay <= 0 then
@@ -1111,7 +1111,7 @@ function catchRng()
   gui.text(1, 100, "Delay calculated")
  end
 
- local catchSeed = findCatchSeed(mdword(currSeedAddr), wildCatchDelay)
+ local catchSeed = findCatchSeed(read32Bit(currSeedAddr), wildCatchDelay)
  local sureCatchDelay
 
  if wildCatchDelay > 0 then
@@ -1122,8 +1122,8 @@ function catchRng()
 end
 
 function showDayCareInfo()
- local eggStepCounter = 255 - mbyte(eggLowPIDAddr - 0x4)
- local isEggReady = band(rshift(mbyte(eggFlagAddr), 6), 0x1) == 1
+ local eggStepCounter = 255 - read8Bit(eggLowPIDAddr - 0x4)
+ local isEggReady = band(rshift(read8Bit(eggFlagAddr), 6), 0x1) == 1
  local eggLowPid
 
  if not isEggReady then
@@ -1132,7 +1132,7 @@ function showDayCareInfo()
  end
 
  if isEggReady then
-  eggLowPid = mword(eggLowPIDAddr)
+  eggLowPid = read16Bit(eggLowPIDAddr)
   gui.text(127, 55, "Egg generated, go get it!")
   gui.text(127, 64, string.format("Egg lower PID: %04X", eggLowPid))
  elseif eggStepCounter == 1 then
@@ -1146,7 +1146,7 @@ function showDayCareInfo()
 end
 
 function showPartyEggInfo()
- local partySlotsCounter = mbyte(partySlotsCounterAddr) - 1
+ local partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
  local lastPartySlotAddr = partyAddr + (partySlotsCounter) * 0x64
 
  if isEgg(lastPartySlotAddr) then
@@ -1188,17 +1188,17 @@ function showPokemonInfo()
  local boxSelectedPokemonAddr
 
  if infoMode[infoIndex] == "Party" then
-  partySlotsCounter = mbyte(partySlotsCounterAddr) - 1
-  partySelectedSlotNumber = mbyte(partySelectedSlotNumberAddr + (partySlotsCounter * 0x88))
+  partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
+  partySelectedSlotNumber = read8Bit(partySelectedSlotNumberAddr + (partySlotsCounter * 0x88))
   partySelectedPokemonAddr = partyAddr + (partySelectedSlotNumber * 0x64)
 
   showStats(partySelectedPokemonAddr)
   showInfo(partySelectedPokemonAddr)
   showTrainerIDs(partySelectedPokemonAddr)
  elseif infoMode[infoIndex] == "Box" then
-  currBoxNumber = mbyte(currBoxNumberAddr)
+  currBoxNumber = read8Bit(currBoxNumberAddr)
   boxAddr = currBoxNumberAddr + 0x4
-  boxSelectedSlotNumber = mbyte(boxSelectedSlotNumberAddr)
+  boxSelectedSlotNumber = read8Bit(boxSelectedSlotNumberAddr)
   boxSelectedPokemonAddr = boxAddr + (0x1E * currBoxNumber * 0x50) + (boxSelectedSlotNumber * 0x50)
 
   showInfo(boxSelectedPokemonAddr)
@@ -1218,7 +1218,7 @@ while warning == "" do
  drawArrowRight(138, 1, rightArrowColor)
  showInstructions()
 
- currSeed = mdword(currSeedAddr)
+ currSeed = read32Bit(currSeedAddr)
 
  checkInitialSeedGeneration(currSeed)
 
