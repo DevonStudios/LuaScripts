@@ -1037,7 +1037,7 @@ function showMissingStepsForEncounter()
 
  encounterMissingSteps = getEncounterMissingSteps(encounterRate, encounterRateBuff, encounterRateBase)
 
- gui.text(1, 118, "Steps for wild encounter: "..encounterMissingSteps)
+ gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 252, "Steps for wild encounter: "..encounterMissingSteps)
 end
 
 function getCatchRngStopInput()
@@ -1327,7 +1327,7 @@ end
  initSeedWritten = true
 end]]
 
---mrwrite(0x02020000, writeCheck)
+--mrwrite(writeCheck, 0x02020000)
 
 function isInitSeedFound()
  local init = read32Bit(0x02020000)
