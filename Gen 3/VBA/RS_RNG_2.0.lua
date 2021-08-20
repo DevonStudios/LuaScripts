@@ -1122,12 +1122,12 @@ function catchRng()
 end
 
 function showDayCareInfo()
- local eggStepCounter = 255 - read8Bit(eggLowPIDAddr - 0x4)
+ local eggStepsCounter = 255 - read8Bit(eggLowPIDAddr - 0x4)
  local isEggReady = band(rshift(read8Bit(eggFlagAddr), 6), 0x1) == 1
  local eggLowPid
 
  if not isEggReady then
-  gui.text(127, 55, "Step Counter: "..eggStepCounter)
+  gui.text(127, 55, "Steps Counter: "..eggStepsCounter)
   gui.text(127, 64, "Egg is not ready")
  end
 
@@ -1135,10 +1135,10 @@ function showDayCareInfo()
   eggLowPid = read16Bit(eggLowPIDAddr)
   gui.text(127, 55, "Egg generated, go get it!")
   gui.text(127, 64, string.format("Egg lower PID: %04X", eggLowPid))
- elseif eggStepCounter == 1 then
+ elseif eggStepsCounter == 1 then
   gui.text(127, 73, "Next step might generate")
   gui.text(127, 82, "an egg!")
- elseif eggStepCounter == 0 then
+ elseif eggStepsCounter == 0 then
   gui.text(127, 73, "255th step taken")
  else
   gui.text(127, 73, "Keep on steppin'")
