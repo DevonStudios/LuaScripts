@@ -6,7 +6,7 @@ Many Lua scripts useful for RNG abusing in Pokémon games on various emulators
 - Wilds/Stationaries/Gift RNG
 - 100% Catch RNG
 - Breeding RNG
-- Initial Seed Bot(FRLG/E (Soon...))
+- Initial Seed Bot (FRLG)/TID Bot (FRLG/E)
 - Pokérus RNG
 - IDs RNG
 - RNG Info
