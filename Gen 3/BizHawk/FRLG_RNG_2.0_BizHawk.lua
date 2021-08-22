@@ -512,7 +512,7 @@ function showInstructions()
   gui.text(emuWindow.leftPadding + 30, emuWindow.topPadding + 90, "game holding A. Wait until delay is calculated")
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 108, "5) Load the state you made, advance frames until counter")
   gui.text(emuWindow.leftPadding + 30, emuWindow.topPadding + 126, "become 0")
-  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 142, "6) Unpase the game holding A")
+  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 144, "6) Unpase the game holding A")
  elseif mode[index] == "Initial Seed Bot" and showInstructionsText then
   gui.text(emuWindow.rightPadding - 200, emuWindow.topPadding, "3 - Hide instructions")
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 18, "1) Pause the game")
@@ -1265,7 +1265,7 @@ function catchRng()
  if wildCatchDelay > 0 then
   sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone)
 
-  gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 20, "100% catch missing frames: "..sureCatchDelay)
+  gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 18, "100% catch missing frames: "..sureCatchDelay)
  end
 end
 
@@ -1402,7 +1402,7 @@ function showFoundInitSeed()
 
  if initSeedFound then
   gui.text(emuWindow.leftPadding + 1, emuWindow.height / 2, "Found!")
-  gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 20, "Initial Seed: "..string.format("%04X", init))
+  gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 18, "Initial Seed: "..string.format("%04X", init))
 
   if not botOneTime then
    emu.pause()
@@ -1469,7 +1469,7 @@ function showFoundTID()
 
  if TIDFound then
   gui.text(emuWindow.leftPadding + 1, emuWindow.height / 2, "Found!")
-  gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 20, "TID: "..TID)
+  gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 18, "TID: "..TID)
 
   if not botOneTime then
    emu.pause()
@@ -1591,7 +1591,7 @@ while warning == "" do
  elseif mode[index] == "Initial Seed Bot" then
   initSeedBot()
  elseif mode[index] == "Pandora" then
-  gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 54, "Temp TID: "..initSeed)
+  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 54, "Temp TID: "..initSeed)
  elseif mode[index] == "TID Bot" then
   TIDBot()
  elseif mode[index] == "Pokemon Info" then

@@ -482,7 +482,7 @@ function showInstructions()
   gui.text(emuWindow.leftPadding + 30, emuWindow.topPadding + 90, "game holding A. Wait until delay is calculated")
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 108, "5) Load the state you made, advance frames until counter")
   gui.text(emuWindow.leftPadding + 30, emuWindow.topPadding + 126, "become 0")
-  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 142, "6) Unpase the game holding A")
+  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 144, "6) Unpase the game holding A")
  elseif mode[index] == "100% Catch" then
   gui.text(emuWindow.rightPadding - 200, emuWindow.topPadding, "4 - Show instructions")
  else
@@ -1132,7 +1132,7 @@ function catchRng()
  if wildCatchDelay > 0 then
   sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone)
 
-  gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 20, "100% catch missing frames: "..sureCatchDelay)
+  gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 18, "100% catch missing frames: "..sureCatchDelay)
  end
 end
 

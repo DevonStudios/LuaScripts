@@ -290,6 +290,7 @@ local leftInfoArrowColor
 local rightInfoArrowColor
 local prevKeyInfo = {}
 
+local initSeed
 local initSeedAddr = 0x02020000
 local currSeedAddr
 local tempInit = 0
@@ -310,7 +311,7 @@ local isUnderWaterAddr
 local safariZoneStepsCounterAddr
 local safariCatchFactorPointerAddr
 local battleTurnsCounterAddr
-local ballRate = {"Number1", "255", "Number2", "1.5", "Number1", "1.5", "Number1", "Number1", "Number1", "Number1", "Number1", "Number1", "Number1"}
+local ballRate = {"1", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
 local catchCheckFlagAddr = 0x0200558C
 local startingCatchFrame
 local catchDelayCounter = 0
@@ -328,7 +329,6 @@ local partyAddr
 local partySlotsCounterAddr
 local eggPIDPointerAddr
 
---local TIDBotState = savestate.create()
 local TIDFound = false
 local botTargetTIDs = {0, 1, 1337, 8453, 8411, 11233, 11111, 22222, 33333}  -- Input here the bot target TIDs
 
@@ -487,7 +487,7 @@ function showInstructions()
   gui.text(emuWindow.leftPadding + 30, emuWindow.topPadding + 90, "game holding A. Wait until delay is calculated")
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 108, "5) Load the state you made, advance frames until counter")
   gui.text(emuWindow.leftPadding + 30, emuWindow.topPadding + 126, "become 0")
-  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 142, "6) Unpase the game holding A")
+  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 144, "6) Unpase the game holding A")
  elseif mode[index] == "TID Bot" and showInstructionsText then
   gui.text(emuWindow.rightPadding - 200, emuWindow.topPadding, "3 - Hide instructions")
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 18, "1) Go to name insertion screen")
@@ -561,7 +561,7 @@ function checkInitialSeedGeneration(initial, battle, current)
 end
 
 function showRngInfo(initial, current, battle, frame)
- gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 54, "Initial Seed: "..string.format("%04X", initial))
+ gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 54, "Initial Seed: "..string.format("%04X", initial))
  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 36, "Battle Video Seed: "..string.format("%04X", battle))
  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 18, "Current Seed: "..string.format("%08X", current))
  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding, "Frame: "..frame)
@@ -704,28 +704,28 @@ function showIVsAndHP(IVsValue, isRoamer)
 
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 54, "Hidd Pow "..HPTypeNamesList[hpType + 1].." "..hpPower)
  else
-  gui.text(149, 82, "IVs:")
-  gui.text(169, 82, hpIV, getIVColor(hpIV))
-  gui.text(177, 82, "/")
-  gui.text(181, 82, atkIV, getIVColor(atkIV))
-  gui.text(189, 82, "/")
-  gui.text(193, 82, defIV, getIVColor(defIV))
-  gui.text(201, 82, "/")
-  gui.text(205, 82, spAtkIV, getIVColor(spAtkIV))
-  gui.text(213, 82, "/")
-  gui.text(217, 82, spDefIV, getIVColor(spDefIV))
-  gui.text(225, 82, "/")
-  gui.text(229, 82, spdIV, getIVColor(spdIV))
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 162, "IVs:")
+  gui.text(emuWindow.leftPadding + 470, emuWindow.topPadding + 162, hpIV, getIVColor(hpIV))
+  gui.text(emuWindow.leftPadding + 490, emuWindow.topPadding + 162, "/")
+  gui.text(emuWindow.leftPadding + 500, emuWindow.topPadding + 162, atkIV, getIVColor(atkIV))
+  gui.text(emuWindow.leftPadding + 520, emuWindow.topPadding + 162, "/")
+  gui.text(emuWindow.leftPadding + 530, emuWindow.topPadding + 162, defIV, getIVColor(defIV))
+  gui.text(emuWindow.leftPadding + 550, emuWindow.topPadding + 162, "/")
+  gui.text(emuWindow.leftPadding + 560, emuWindow.topPadding + 162, spAtkIV, getIVColor(spAtkIV))
+  gui.text(emuWindow.leftPadding + 580, emuWindow.topPadding + 162, "/")
+  gui.text(emuWindow.leftPadding + 590, emuWindow.topPadding + 162, spDefIV, getIVColor(spDefIV))
+  gui.text(emuWindow.leftPadding + 610, emuWindow.topPadding + 162, "/")
+  gui.text(emuWindow.leftPadding + 620, emuWindow.topPadding + 162, spdIV, getIVColor(spdIV))
 
-  gui.text(150, 91, "Hidd Pow: "..HPTypeNamesList[hpType + 1].." "..hpPower)
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 180, "Hidd Pow: "..HPTypeNamesList[hpType + 1].." "..hpPower)
  end
 end
 
 function getIVColor(value)
  if value >= 30 then
-  return "green"
+  return "limegreen"
  elseif value >= 1 and value <= 5 then
-  return "#ffb100"
+  return "orange"
  elseif value < 1 then
   return "red"
  else
@@ -746,7 +746,7 @@ function shinyCheck(PID, addr)
  local isShiny = bxor(bxor(trainerIDs[2], trainerIDs[1]), bxor(lowPID, highPID)) < 8
 
  if isShiny then
-  return "green"
+  return "limegreen"
  else
   return nil
  end
@@ -777,7 +777,7 @@ end
 
 function getPPColor(value)
  if value >= 1 and value <= 4 then
-  return "#ffb100"
+  return "orange"
  elseif value < 1 then
   return "red"
  else
@@ -1148,7 +1148,7 @@ function catchRng()
  if wildCatchDelay > 0 then
   sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone)
 
-  gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 20, "100% catch missing frames: "..sureCatchDelay)
+  gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 18, "100% catch missing frames: "..sureCatchDelay)
  end
 end
 
@@ -1175,34 +1175,34 @@ function showDayCareInfo()
  end
 
  if not isEggReady then
-  gui.text(127, 55, "Steps Counter: "..eggStepsCounter)
-  gui.text(127, 64, "Egg is not ready")
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 108, "Steps Counter: "..eggStepsCounter)
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 126, "Egg is not ready")
  end
 
- gui.text(127, 91, string.format("Egg Current Seed: %08X", eggCurrSeed))
- gui.text(127, 100, "Timer: "..timer)
- gui.text(127, 109, "Calibration: "..calibration + 1)
+ gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 180, string.format("Egg Current Seed: %08X", eggCurrSeed))
+ gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 198, "Timer: "..timer)
+ gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 216, "Calibration: "..calibration + 1)
 
  if isEggReady then
-  gui.text(127, 55, "Egg generated, go get it!")
-  gui.text(127, 64, string.format("Egg PID:"))
-  gui.text(163, 64, string.format("%08X", eggPID), shinyCheck(eggPID))
-  gui.text(127, 73, "Nature: "..natureNamesList[eggNatureNumber + 1])
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 126, "Egg generated, go get it!")
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, string.format("Egg PID:"))
+  gui.text(emuWindow.leftPadding + 478, emuWindow.topPadding + 144, string.format("%08X", eggPID), shinyCheck(eggPID))
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 162, "Nature: "..natureNamesList[eggNatureNumber + 1])
 
   if iter > 1 then
-   gui.text(127, 118, string.format("Approx iter: %d", iter))
-   gui.text(127, 127, string.format("Stone worked!"))
+   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 234, string.format("Approx iter: %d", iter))
+   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 252, string.format("Stone worked!"))
   else
-   gui.text(127, 118, string.format("First egg PID result"))
-   gui.text(127, 127, string.format("Stone failed?"))
+   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 234, string.format("First egg PID result"))
+   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 252, string.format("Stone failed?"))
   end
  elseif eggStepsCounter == 1 then
-  gui.text(127, 73, "Next step might generate")
-  gui.text(127, 82, "an egg!")
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, "Next step might generate")
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 162, "an egg!")
  elseif eggStepsCounter == 0 then
-  gui.text(127, 73, "255th step taken")
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, "255th step taken")
  else
-  gui.text(127, 73, "Keep on steppin'")
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, "Keep on steppin'")
  end
 end
 
@@ -1220,7 +1220,7 @@ end
  initSeedWritten = true
 end]]
 
---mrwrite(0x02020000, writeCheck)
+--mrwrite(writeCheck, 0x02020000)
 
 function isTIDFound()
  local TID = read32Bit(0x02020000)
@@ -1234,27 +1234,27 @@ function isTIDFound()
 end
 
 function TIDBotLoop()
- initSeedWritten = false
+ --initSeedWritten = false
  botOneTime = false
 
  while not TIDFound do
-  savestate.save(TIDBotState)
-  joypad.set(1, {A = true})
+  savestate.save(0)
+  joypad.set({A = true})
 
   i = 0
-  while not initSeedWritten and i < 40 do
+  while --[[read16Bit(0x02020010) == 0 and]] i < 40 do
    emu.frameadvance()
    i = i + 1
   end
 
-  if initSeedWritten then
+  if read16Bit(0x02020010) ~= 0 then
    --print(read16Bit(0x02020000))
    TIDFound = isTIDFound()
   end
 
   if not TIDFound then
-   initSeedWritten = false
-   savestate.load(TIDBotState)
+   --initSeedWritten = false
+   savestate.load(0)
    emu.frameadvance()
   else
    break
@@ -1266,8 +1266,8 @@ function showFoundTID()
  local TID = read32Bit(0x02020000)
 
  if TIDFound then
-  gui.text(1, 100, "Found!")
-  gui.text(1, 109, "TID: "..TID)
+  gui.text(emuWindow.leftPadding + 1, emuWindow.height / 2, "Found!")
+  gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 18, "TID: "..TID)
 
   if not botOneTime then
    emu.pause()
@@ -1347,12 +1347,20 @@ function showPokemonInfo()
  end
 end
 
+function setInitseed()
+ initSeed = userdata.get("seed")
+ adjustFrame = userdata.get("frame")
+end
+
+event.onloadstate(setInitseed)
+
 while warning == "" do
+ getScreenDimensions()
  getInput()
- gui.text(1, 1, "Mode: "..mode[index])
- drawArrowLeft(100, 1, leftArrowColor)
- gui.text(110, 1, "1 - 2")
- drawArrowRight(138, 1, rightArrowColor)
+ gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding, "Mode: "..mode[index])
+ drawArrowLeft(102, 0, leftArrowColor)
+ gui.text((emuWindow.width / 2) - 21, emuWindow.topPadding, "1 - 2")
+ drawArrowRight(140, 0, rightArrowColor)
  showInstructions()
 
  initSeed = read16Bit(initSeedAddr)
@@ -1362,6 +1370,9 @@ while warning == "" do
  checkInitialSeedGeneration(initSeed, battleVideoSeed, currSeed)
 
  frame = read32Bit(frameAddr) - adjustFrame
+
+ userdata.set("frame", adjustFrame)
+ userdata.set("seed", initSeed)
 
  if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
   showRngInfo(initSeed, currSeed, battleVideoSeed, frame)
@@ -1377,15 +1388,15 @@ while warning == "" do
   showDayCareInfo()
   showPartyEggInfo()
  elseif mode[index] == "Pandora" then
-  gui.text(1, 116, "Temp TID: "..initSeed)
+  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 72, "Temp TID: "..initSeed)
  elseif mode[index] == "TID Bot" then
   TIDBot()
  elseif mode[index] == "Pokemon Info" then
   getInfoInput()
-  gui.text(0, 143, "Info Mode: "..infoMode[infoIndex])
-  drawArrowLeft(130, 143, leftInfoArrowColor)
-  gui.text(140, 143, "3 - 4")
-  drawArrowRight(168, 143, rightInfoArrowColor)
+  gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 18, "Info Mode: "..infoMode[infoIndex])
+  drawArrowLeft(102, 147, leftInfoArrowColor)
+  gui.text((emuWindow.width / 2) - 21, emuWindow.bottomPadding - 18, "3 - 4")
+  drawArrowRight(140, 147, rightInfoArrowColor)
 
   showPokemonInfo()
  end
