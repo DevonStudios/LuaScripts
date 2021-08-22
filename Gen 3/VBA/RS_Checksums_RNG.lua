@@ -230,7 +230,7 @@ while warning == "" do
    gui.text(1, 142, string.format("Actual XOR Seed: %04X", actualSeed))
    gui.text(1, 152, string.format("Target Checksum Seed: %04X", xorTargetSeed))
   else
-   gui.text(1, 55, string.format("Jirachi Seed: %04X", firstSegmentSeed))
+   gui.text(1, 95, string.format("Jirachi Seed: %04X", firstSegmentSeed))
   end
  end
 
