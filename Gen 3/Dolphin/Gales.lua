@@ -203,7 +203,7 @@ function setInfo(start, partyStart, boxStart, i)
  return infoText
 end
 
-function claclFrameJump()
+function calcFrameJump()
  calibrationFrame = 0
  if tempSeed ~= currSeed then
   tempSeed2 = tempSeed
@@ -301,7 +301,7 @@ function onScriptUpdate()
  end
 
  currSeed = ReadValue32(seedAddr)
- frame = frame + claclFrameJump()
+ frame = frame + calcFrameJump()
 
  RNGInfo = string.format("Initial Seed: %08X\nCurrent Seed: %08X\nFrame: %d", initSeed, currSeed, frame)
  IDs = string.format("\n\n\nTID: %05d\nSID: %05d", TID, SID)
