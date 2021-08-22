@@ -33,7 +33,7 @@ function getInitialSeed()
  frame = 0
 end
 
-function claclFrameJump()
+function calcFrameJump()
  local calibrationFrame = 0
 
  if tempSeed ~= currSeed then
@@ -135,7 +135,7 @@ function onScriptUpdate()
  end
 
  currSeed = ReadValue32(seedAddrs)
- frame = frame + claclFrameJump()
+ frame = frame + calcFrameJump()
  celebiStats = getCelebiStats(currSeed)
 
  text = "Visual Frame: "..GetFrameCount()

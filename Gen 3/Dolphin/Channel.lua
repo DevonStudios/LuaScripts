@@ -33,7 +33,7 @@ function getInitialSeed()
  frame = 0
 end
 
-function claclFrameJump()
+function calcFrameJump()
  local calibrationFrame = 0
 
  if tempSeed ~= currSeed then
@@ -143,7 +143,7 @@ function onScriptUpdate()
  end
 
  currSeed = ReadValue32(seedAddrs)
- frame = frame + claclFrameJump()
+ frame = frame + calcFrameJump()
  jirachiStats = getJirachiStats(currSeed)
 
  text = string.format("Initial Seed: %08X\nCurrent Seed: %08X\nFrame: %d\n%s", initSeed, currSeed, frame, jirachiStats)
