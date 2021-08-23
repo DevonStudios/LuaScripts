@@ -1445,12 +1445,12 @@ function TIDBotLoop()
   joypad.set({A = true})
 
   i = 0
-  while --[[read16Bit(0x02020010) == 0 and]] i < 40 do
+  while read16Bit(0x04000106) ~= 0 and i < 40 do
    emu.frameadvance()
    i = i + 1
   end
 
-  if read16Bit(0x02020010) ~= 0 then
+  if read16Bit(0x04000106) == 0 then
    --print(read16Bit(0x02020000))
    TIDFound = isTIDFound()
   end
