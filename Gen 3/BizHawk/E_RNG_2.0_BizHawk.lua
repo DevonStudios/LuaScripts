@@ -507,8 +507,8 @@ function showInstructions()
 end
 
 function LCRNG(s, mul1, mul2, sum)
- local a = mul1 * (s % 65536) + rshift(s, 16) * mul2
- local b = mul2 * (s % 65536) + (a % 65536) * 65536 + sum
+ local a = mul1 * (s % 0x10000) + rshift(s, 16) * mul2
+ local b = mul2 * (s % 0x10000) + (a % 0x10000) * 0x10000 + sum
  local c = b % 4294967296
  return c
 end
@@ -584,7 +584,7 @@ function getTrainerIDs(addr)
  end
 
   TID = IDs % 0x10000
-  SID = floor(IDs / 65536)
+  SID = floor(IDs / 0x10000)
 
  return {TID, SID}
 end
@@ -742,7 +742,7 @@ function shinyCheck(PID, addr)
  addr = addr or nil
 
  local trainerIDs = getTrainerIDs(addr)
- local highPID = floor(PID / 65536)
+ local highPID = floor(PID / 0x10000)
  local lowPID = PID % 0x10000
  local isShiny = bxor(bxor(trainerIDs[2], trainerIDs[1]), bxor(lowPID, highPID)) < 8
 
