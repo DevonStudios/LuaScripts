@@ -646,6 +646,18 @@ function getAttacksOffset(orderIndex)
  return offset
 end
 
+function getIVColor(value)
+ if value >= 30 then
+  return "green"
+ elseif value >= 1 and value <= 5 then
+  return "#ffb100"
+ elseif value < 1 then
+  return "red"
+ else
+  return nil
+ end
+end
+
 function showIVsAndHP(IVsValue, isRoamer)
  isRoamer = isRoamer or nil
 
@@ -690,18 +702,6 @@ function showIVsAndHP(IVsValue, isRoamer)
   gui.text(213, 82, spdIV, getIVColor(spdIV))
 
   gui.text(150, 91, "Hidd Pow: "..HPTypeNamesList[hpType + 1].." "..hpPower)
- end
-end
-
-function getIVColor(value)
- if value >= 30 then
-  return "green"
- elseif value >= 1 and value <= 5 then
-  return "#ffb100"
- elseif value < 1 then
-  return "red"
- else
-  return nil
  end
 end
 
