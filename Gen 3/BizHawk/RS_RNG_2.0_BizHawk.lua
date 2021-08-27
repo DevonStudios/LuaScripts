@@ -1163,7 +1163,7 @@ end
 
 function showPartyEggInfo()
  local partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
- local lastPartySlotAddr = partyAddr + (partySlotsCounter) * 0x64
+ local lastPartySlotAddr = partyAddr + (partySlotsCounter * 0x64)
 
  if isEgg(lastPartySlotAddr) then
   showStats(lastPartySlotAddr)
