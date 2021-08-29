@@ -432,12 +432,14 @@ function getInput()
  if key["Number1"] and not prevKey["Number1"] then
   leftArrowColor = "orange"
   index = index - 1
+
   if index < 1 then
    index = 6
   end
  elseif key["Number2"] and not prevKey["Number2"] then
   rightArrowColor = "orange"
   index = index + 1
+
   if index > 6 then
    index = 1
   end
@@ -1180,12 +1182,14 @@ function getInfoInput()
  if key["Number3"] and not prevKeyInfo["Number3"] then
   leftInfoArrowColor = "orange"
   infoIndex = infoIndex - 1
+
   if infoIndex < 1 then
    infoIndex = 3
   end
  elseif key["Number4"] and not prevKeyInfo["Number4"] then
   rightInfoArrowColor = "orange"
   infoIndex = infoIndex + 1
+
   if infoIndex > 3 then
    infoIndex = 1
   end
