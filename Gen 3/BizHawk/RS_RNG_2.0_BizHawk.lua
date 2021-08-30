@@ -329,74 +329,74 @@ local pokemonStatsScreenAddr = 0x02018010
 local currBoxNumberAddr
 local boxSelectedSlotNumberAddr
 
-if gameVersion == 0x56 then  -- Check game version
- game = "Ruby"
+if gameVersion == 0x45 then  -- Check game version
+ game = "Emerald"
+elseif gameVersion == 0x47 then
+ game = "LeafGreen"
 elseif gameVersion == 0x50 then
  game = "Sapphire"
 elseif gameVersion == 0x52 then
  game = "FireRed"
-elseif gameVersion == 0x47 then
- game = "LeafGreen"
-elseif gameVersion == 0x45 then
- game = "Emerald"
+elseif gameVersion == 0x56 then
+ game = "Ruby"
 end
 
-if gameLang == 0x4A then  -- Check game language
- language = "JPN"
- currSeedAddr = 0x03004748
- wildAddr = 0x030044F0 -- capture
- IDsAddr = 0x02024C0E
- roamerAddr = 0x020285D8
- speciesDexIndexAddr = 0x020241C4 -- 100% catch
- selectedItemAddr = 0x0203825C
- wildTypeAddr = 0x02024859
- isUnderWaterAddr = 0x030041D0
- dexCaughtFlagAddr = 0x02024C2C
- safariZoneStepsCounterAddr = 0x02038506
- battleTurnsCounterAddr = 0x03004223
- partyAddr = 0x03004290 -- breeding
- partySlotsCounterAddr = 0x03004280
- eggLowPIDAddr = 0x02028548
- eggFlagAddr = 0x020266C4
- currBoxNumberAddr = 0x0202FDBC -- info
- boxSelectedSlotNumberAddr = 0x02038201
-elseif gameLang == 0x45 then
+if gameLang == 0x45 then  -- Check game language
  language = "USA"
  currSeedAddr = 0x03004818
- wildAddr = 0x030045C0 -- capture
+ wildAddr = 0x030045C0  -- capture
  IDsAddr = 0x02024EAE
  roamerAddr = 0x02028878
- speciesDexIndexAddr = 0x02024464 -- 100% catch
+ speciesDexIndexAddr = 0x02024464  -- 100% catch
  selectedItemAddr = 0x0203855E
  wildTypeAddr = 0x02024AF9
  isUnderWaterAddr = 0x0300428C
  dexCaughtFlagAddr = 0x02024ECC
  safariZoneStepsCounterAddr = 0x0203880A
  battleTurnsCounterAddr = 0x030042F3
- partyAddr = 0x03004360 -- breeding
+ partyAddr = 0x03004360  -- breeding
  partySlotsCounterAddr = 0x03004350
  eggLowPIDAddr = 0x020287E8
  eggFlagAddr = 0x02026964
- currBoxNumberAddr = 0x020300A0 -- info
+ currBoxNumberAddr = 0x020300A0  -- info
  boxSelectedSlotNumberAddr = 0x020384E5
+elseif gameLang == 0x4A then
+ language = "JPN"
+ currSeedAddr = 0x03004748
+ wildAddr = 0x030044F0  -- capture
+ IDsAddr = 0x02024C0E
+ roamerAddr = 0x020285D8
+ speciesDexIndexAddr = 0x020241C4  -- 100% catch
+ selectedItemAddr = 0x0203825C
+ wildTypeAddr = 0x02024859
+ isUnderWaterAddr = 0x030041D0
+ dexCaughtFlagAddr = 0x02024C2C
+ safariZoneStepsCounterAddr = 0x02038506
+ battleTurnsCounterAddr = 0x03004223
+ partyAddr = 0x03004290  -- breeding
+ partySlotsCounterAddr = 0x03004280
+ eggLowPIDAddr = 0x02028548
+ eggFlagAddr = 0x020266C4
+ currBoxNumberAddr = 0x0202FDBC  -- info
+ boxSelectedSlotNumberAddr = 0x02038201
 else
  language = "EUR"
  currSeedAddr = 0x03004828
- wildAddr = 0x030045D0 -- capture
+ wildAddr = 0x030045D0  -- capture
  IDsAddr = 0x02024EAE
  roamerAddr = 0x02028878
- speciesDexIndexAddr = 0x02024464 -- 100% catch
+ speciesDexIndexAddr = 0x02024464  -- 100% catch
  selectedItemAddr = 0x0203855E
  wildTypeAddr = 0x02024AF9
  isUnderWaterAddr = 0x0300429C
  dexCaughtFlagAddr = 0x02024ECC
  safariZoneStepsCounterAddr = 0x0203880A
  battleTurnsCounterAddr = 0x03004303
- partyAddr = 0x03004370 -- breeding
+ partyAddr = 0x03004370  -- breeding
  partySlotsCounterAddr = 0x03004360
  eggLowPIDAddr = 0x020287E8
  eggFlagAddr = 0x02026964
- currBoxNumberAddr = 0x020300A0 -- info
+ currBoxNumberAddr = 0x020300A0  -- info
  boxSelectedSlotNumberAddr = 0x020384E5
 end
 

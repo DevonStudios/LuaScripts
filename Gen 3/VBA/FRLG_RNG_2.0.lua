@@ -350,82 +350,82 @@ local pokemonBattleStatsScreenAddr
 local currBoxNumberPointerAddr
 local boxSelectedSlotNumberAddr
 
-if gameVersion == 0x56 then  -- Check game version
- game = "Ruby"
+if gameVersion == 0x45 then  -- Check game version
+ game = "Emerald"
+elseif gameVersion == 0x47 then
+ game = "LeafGreen"
 elseif gameVersion == 0x50 then
  game = "Sapphire"
 elseif gameVersion == 0x52 then
  game = "FireRed"
-elseif gameVersion == 0x47 then
- game = "LeafGreen"
-elseif gameVersion == 0x45 then
- game = "Emerald"
+elseif gameVersion == 0x56 then
+ game = "Ruby"
 end
 
-if gameLang == 0x4A then  -- Check game language
- language = "JPN"
- currSeedAddr = 0x03004FA0
- wildAddr = 0x02023F8C -- capture
- saveBlock1Addr = 0x03004FA8
- saveBlock2Addr = 0x03004FAC
- wildEncounterDataAddr = 0x0203861C
- playerAvatarAddr = 0x02036FAC
- speciesDexIndexAddr = 0x02023528 -- 100% catch
- selectedItemAddr = 0x0203ACA8
- wildTypeAddr = 0x02023BBD
- safariZoneStepsCounterAddr = 0x0203990E
- safariCatchFactorPointerAddr = 0x02023F48
- battleTurnsCounterAddr = 0x03004F43
- partyAddr = 0x020241E4 -- breeding
- partySlotsCounterAddr = 0x02023F89
- eggLowPIDPointerAddr = 0x020397E0
- partySelectedSlotNumberAddr = 0x0203B01D -- info
- pokemonStatsScreenAddr = 0x02006410
- pokemonStatsScreen2Addr = 0x0200324C
- pokemonBattleStatsScreenAddr = 0x02011970
- currBoxNumberPointerAddr = 0x03004FB0
- boxSelectedSlotNumberAddr = 0x0203976D
-elseif gameLang == 0x45 then
+if gameLang == 0x45 then  -- Check game language
  language = "USA"
  currSeedAddr = 0x03005000
- wildAddr = 0x0202402C -- capture
+ wildAddr = 0x0202402C  -- capture
  saveBlock1Addr = 0x03005008
  saveBlock2Addr = 0x0300500C
  wildEncounterDataAddr = 0x020386D0
  playerAvatarAddr = 0x02037078
- speciesDexIndexAddr = 0x020235C8 -- 100% catch
+ speciesDexIndexAddr = 0x020235C8  -- 100% catch
  selectedItemAddr = 0x0203AD30
  wildTypeAddr = 0x02023C5D
  safariZoneStepsCounterAddr = 0x02039996
  safariCatchFactorPointerAddr = 0x02023FE8
  battleTurnsCounterAddr = 0x03004FA3
- partyAddr = 0x02024284 -- breeding
+ partyAddr = 0x02024284  -- breeding
  partySlotsCounterAddr = 0x02024029
  eggLowPIDPointerAddr = 0x02039894
- partySelectedSlotNumberAddr = 0x0203B0A9 -- info
+ partySelectedSlotNumberAddr = 0x0203B0A9  -- info
  pokemonStatsScreenAddr = 0x02006498
  pokemonStatsScreen2Addr = 0x020032A0
  pokemonBattleStatsScreenAddr = 0x020119C4
  currBoxNumberPointerAddr = 0x03005010
  boxSelectedSlotNumberAddr = 0x02039821
+elseif gameLang == 0x4A then
+ language = "JPN"
+ currSeedAddr = 0x03004FA0
+ wildAddr = 0x02023F8C  -- capture
+ saveBlock1Addr = 0x03004FA8
+ saveBlock2Addr = 0x03004FAC
+ wildEncounterDataAddr = 0x0203861C
+ playerAvatarAddr = 0x02036FAC
+ speciesDexIndexAddr = 0x02023528  -- 100% catch
+ selectedItemAddr = 0x0203ACA8
+ wildTypeAddr = 0x02023BBD
+ safariZoneStepsCounterAddr = 0x0203990E
+ safariCatchFactorPointerAddr = 0x02023F48
+ battleTurnsCounterAddr = 0x03004F43
+ partyAddr = 0x020241E4  -- breeding
+ partySlotsCounterAddr = 0x02023F89
+ eggLowPIDPointerAddr = 0x020397E0
+ partySelectedSlotNumberAddr = 0x0203B01D  -- info
+ pokemonStatsScreenAddr = 0x02006410
+ pokemonStatsScreen2Addr = 0x0200324C
+ pokemonBattleStatsScreenAddr = 0x02011970
+ currBoxNumberPointerAddr = 0x03004FB0
+ boxSelectedSlotNumberAddr = 0x0203976D
 else
  language = "EUR"
  currSeedAddr = 0x03004F50
- wildAddr = 0x0202402C -- capture
+ wildAddr = 0x0202402C  -- capture
  saveBlock1Addr = 0x03004F58
  saveBlock2Addr = 0x03004F5C
  wildEncounterDataAddr = 0x020386D0
  playerAvatarAddr = 0x02037078
- speciesDexIndexAddr = 0x020235C8 -- 100% catch
+ speciesDexIndexAddr = 0x020235C8  -- 100% catch
  selectedItemAddr = 0x0203AD30
  wildTypeAddr = 0x02023C5D
  safariZoneStepsCounterAddr = 0x02039996
  safariCatchFactorPointerAddr = 0x02023FE8
  battleTurnsCounterAddr = 0x03004EF3
- partyAddr = 0x02024284 -- breeding
+ partyAddr = 0x02024284  -- breeding
  partySlotsCounterAddr = 0x02024029
  eggLowPIDPointerAddr = 0x02039894
- partySelectedSlotNumberAddr = 0x0203B0A9 -- info
+ partySelectedSlotNumberAddr = 0x0203B0A9  -- info
  pokemonStatsScreenAddr = 0x02006498
  pokemonStatsScreen2Addr = 0x020032A0
  pokemonBattleStatsScreenAddr = 0x020119C4

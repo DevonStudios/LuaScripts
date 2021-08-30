@@ -341,16 +341,16 @@ local pokemonBattleStatsScreenAddr = 0x0200E808
 local currBoxNumberPointerAddr
 local boxSelectedSlotNumberAddr
 
-if gameVersion == 0x56 then  -- Check game version
- game = "Ruby"
+if gameVersion == 0x45 then  -- Check game version
+ game = "Emerald"
+elseif gameVersion == 0x47 then
+ game = "LeafGreen"
 elseif gameVersion == 0x50 then
  game = "Sapphire"
 elseif gameVersion == 0x52 then
  game = "FireRed"
-elseif gameVersion == 0x47 then
- game = "LeafGreen"
-elseif gameVersion == 0x45 then
- game = "Emerald"
+elseif gameVersion == 0x56 then
+ game = "Ruby"
 end
 
 if gameLang == 0x4A then  -- Check game language
@@ -359,22 +359,22 @@ if gameLang == 0x4A then  -- Check game language
  frameAddr = 0x02024664
  battleVideoSeed1Addr = 0x0203B9F8
  battleVideoSeed2Addr = 0x0203AD74
- wildAddr = 0x020243E8 -- capture
+ wildAddr = 0x020243E8  -- capture
  saveBlock1Addr = 0x03005AEC
  saveBlock2Addr = 0x03005AF0
- speciesDexIndexAddr = 0x0202370C -- 100% catch
+ speciesDexIndexAddr = 0x0202370C  -- 100% catch
  selectedItemAddr = 0x0203CB48
  wildTypeAddr = 0x02023DA1
  isUnderWaterAddr = 0x02036FCF
  safariZoneStepsCounterAddr = 0x02039D1A
  safariCatchFactorPointerAddr = 0x02024140
  battleTurnsCounterAddr = 0x03005A83
- eggCurrSeedAddr = 0x03005AE4 -- breeding
+ eggCurrSeedAddr = 0x03005AE4  -- breeding
  timerAddr = 0x03002384
  partyAddr = 0x02024190
  partySlotsCounterAddr = 0x0202418D
  eggPIDPointerAddr = 0x0203B944
- partySelectedSlotNumberAddr = 0x0203CB9D -- info
+ partySelectedSlotNumberAddr = 0x0203CB9D  -- info
  pokemonStatsScreenAddr = 0x02002FE0
  currBoxNumberPointerAddr = 0x03005AF4
  boxSelectedSlotNumberAddr = 0x02039A19
@@ -384,22 +384,22 @@ else
  frameAddr = 0x020249C0
  battleVideoSeed1Addr = 0x0203BD2C
  battleVideoSeed2Addr = 0x0203B0A8
- wildAddr = 0x02024744 -- capture
+ wildAddr = 0x02024744  -- capture
  saveBlock1Addr = 0x03005D8C
  saveBlock2Addr = 0x03005D90
- speciesDexIndexAddr = 0x02023A68 -- 100% catch
+ speciesDexIndexAddr = 0x02023A68  -- 100% catch
  selectedItemAddr = 0x0203CE7C
  wildTypeAddr = 0x020240FD
  isUnderWaterAddr = 0x0203732F
  safariZoneStepsCounterAddr = 0x0203A04E
  safariCatchFactorPointerAddr = 0x0202449C
  battleTurnsCounterAddr = 0x03005D23
- eggCurrSeedAddr = 0x03005D84 -- breeding
+ eggCurrSeedAddr = 0x03005D84  -- breeding
  timerAddr = 0x030022E4
  partyAddr = 0x020244EC
  partySlotsCounterAddr = 0x020244E9
  eggPIDPointerAddr = 0x0203BC78
- partySelectedSlotNumberAddr = 0x0203CED1 -- info
+ partySelectedSlotNumberAddr = 0x0203CED1  -- info
  pokemonStatsScreenAddr = 0x020032A8
  currBoxNumberPointerAddr = 0x03005D94
  boxSelectedSlotNumberAddr = 0x02039D79
