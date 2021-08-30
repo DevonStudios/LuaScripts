@@ -293,7 +293,7 @@ local currSeedAddr
 local checkSeeding = false
 local initSeed = nil
 local tempCurr = 0
-local frame = 0
+local advances = 0
 
 local wildAddr
 local IDsAddr
@@ -309,7 +309,7 @@ local safariCatchFactorAddr = 0x02016089
 local battleTurnsCounterAddr
 local ballRate = {"1", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
 local catchCheckFlagAddr = 0x02017810
-local startingCatchFrame
+local startingCatchAdvances
 local catchDelayCounter = 0
 local catchDelay = 0
 local catchRngStop = true
@@ -500,14 +500,14 @@ function checkInitialSeedGeneration(current)
  if emu.framecount() <= 1 then
   initSeed = nil
   tempCurr = 0
-  frame = 0
+  advances = 0
   checkSeeding = false
  end
 
  if checkSeeding and current <= 0xFFFF and initSeed == nil then
   initSeed = current
   tempCurr = initSeed
-  frame = 0
+  advances = 0
   checkSeeding = false
  end
 
@@ -525,8 +525,8 @@ function LCRNG(s, mul1, mul2, sum)
  return c
 end
 
-function calcFrameJump(seed)
- local calibrationFrame = 0
+function calcAdvancesJump(seed)
+ local calibrationAdvances = 0
  local tempCurr2
 
  if tempCurr ~= seed then
@@ -535,27 +535,27 @@ function calcFrameJump(seed)
   while tempCurr ~= seed and tempCurr2 ~= seed do
    tempCurr = LCRNG(tempCurr, 0x41C6, 0x4E6D, 0x6073)
    tempCurr2 = LCRNG(tempCurr2, 0xEEB9, 0xEB65, 0x0A3561A1)
-   calibrationFrame = calibrationFrame + 1
+   calibrationAdvances = calibrationAdvances + 1
   end
 
   if tempCurr2 == seed then
-    calibrationFrame = (-1) * calibrationFrame
+    calibrationAdvances = (-1) * calibrationAdvances
     tempCurr = tempCurr2
   end
  end
 
  userdata.set("temp", tempCurr)
 
- return calibrationFrame
+ return calibrationAdvances
 end
 
-function showRngInfo(current, frame)
+function showRngInfo(current, advances)
  if initSeed ~= nil then
   gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 36, "Initial Seed: "..string.format("%04X", initSeed))
  end
 
  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 18, "Current Seed: "..string.format("%08X", current))
- gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding, "Advances: "..frame)
+ gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding, "Advances: "..advances)
 end
 
 function getTrainerIDs(addr)
@@ -916,7 +916,7 @@ end
 
 function getCatchDelay(isSafariZone)
  local key = joypad.get()
- local frameDelay
+ local advancesDelay
  local safariOffset = 0
  local currSeed3
 
@@ -927,7 +927,7 @@ function getCatchDelay(isSafariZone)
  end
 
  if key.Select then
-  startingCatchFrame = frame
+  startingCatchAdvances = advances
   catchDelayCounter = 0
   catchRngStop = false
   catchDelay = 0
@@ -946,21 +946,21 @@ function getCatchDelay(isSafariZone)
    end
 
    oneTimeCatchRng = true
-   frameDelay = frame - startingCatchFrame
+   advancesDelay = advances - startingCatchAdvances
   else
    currSeed2 = read32Bit(currSeedAddr)
   end
 
-  if skips == 2 and frameDelay > 120 - safariOffset then
-   catchDelay = frameDelay + 1
-  elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
-   catchDelay = frameDelay
-  elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
-   catchDelay = frameDelay - 1
-  elseif skips == 5 and frameDelay > 120 - safariOffset then  -- 2 shake
-   catchDelay = frameDelay - 2
-  elseif skips == 6 and frameDelay > 120 - safariOffset then  -- 3 shake
-   catchDelay = frameDelay - 3
+  if skips == 2 and advancesDelay > 120 - safariOffset then
+   catchDelay = advancesDelay + 1
+  elseif skips == 3 and advancesDelay > 120 - safariOffset then  -- 0 shake
+   catchDelay = advancesDelay
+  elseif skips == 4 and advancesDelay > 120 - safariOffset then  -- 1 shake
+   catchDelay = advancesDelay - 1
+  elseif skips == 5 and advancesDelay > 120 - safariOffset then  -- 2 shake
+   catchDelay = advancesDelay - 2
+  elseif skips == 6 and advancesDelay > 120 - safariOffset then  -- 3 shake
+   catchDelay = advancesDelay - 3
   end
 
   catchDelayCounter = catchDelayCounter + 1
@@ -1232,7 +1232,7 @@ end
 
 function setStateInitSeed()
  initSeed = userdata.get("seed")
- frame = userdata.get("frame")
+ advances = userdata.get("advances")
  tempCurr = userdata.get("temp")
 end
 
@@ -1252,12 +1252,12 @@ while warning == "" do
  checkInitialSeedGeneration(currSeed)
 
  if initSeed ~= nil then
-  frame = frame + calcFrameJump(currSeed)
-  userdata.set("frame", frame)
+  advances = advances + calcAdvancesJump(currSeed)
+  userdata.set("advances", advances)
  end
 
  if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
-  showRngInfo(currSeed, frame)
+  showRngInfo(currSeed, advances)
   showTrainerIDs()
  end
 

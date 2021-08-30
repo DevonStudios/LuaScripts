@@ -292,9 +292,9 @@ local prevKeyInfo = {}
 local initSeedAddr = 0x02020000
 local currSeedAddr
 local tempInit = 0
-local frame = 0
-local frameAddr
-local adjustFrame = 0
+local advances = 0
+local advancesAddr
+local adjustAdvances = 0
 local battleVideoSeed1Addr
 local battleVideoSeed2Addr
 
@@ -311,7 +311,7 @@ local safariCatchFactorPointerAddr
 local battleTurnsCounterAddr
 local ballRate = {"1", "255", "2", "1.5", "1", "1.5", "1", "1", "1", "1", "1", "1", "1"}
 local catchCheckFlagAddr = 0x0200558C
-local startingCatchFrame
+local startingCatchAdvances
 local catchDelayCounter = 0
 local catchDelay = 0
 local catchRngStop = true
@@ -355,7 +355,7 @@ end
 if gameLang == 0x4A then  -- Check game language
  language = "JPN"
  currSeedAddr = 0x03005AE0
- frameAddr = 0x02024664
+ advancesAddr = 0x02024664
  battleVideoSeed1Addr = 0x0203B9F8
  battleVideoSeed2Addr = 0x0203AD74
  wildAddr = 0x020243E8  -- capture
@@ -380,7 +380,7 @@ if gameLang == 0x4A then  -- Check game language
 else
  language = "EUR/USA"
  currSeedAddr = 0x03005D80
- frameAddr = 0x020249C0
+ advancesAddr = 0x020249C0
  battleVideoSeed1Addr = 0x0203BD2C
  battleVideoSeed2Addr = 0x0203B0A8
  wildAddr = 0x02024744  -- capture
@@ -504,8 +504,8 @@ function LCRNG(s, mul1, mul2, sum)
  return c
 end
 
-function calcFrameJump(seed)
- local calibrationFrame = 0
+function calcAdvancesJump(seed)
+ local calibrationAdvances = 0
  local current = read32Bit(currSeedAddr)
  local tempCurr = seed
  local tempCurr2
@@ -516,21 +516,21 @@ function calcFrameJump(seed)
   while tempCurr ~= current and tempCurr2 ~= current do
    tempCurr = LCRNG(tempCurr, 0x41C6, 0x4E6D, 0x6073)
    tempCurr2 = LCRNG(tempCurr2, 0xEEB9, 0xEB65, 0x0A3561A1)
-   calibrationFrame = calibrationFrame + 1
+   calibrationAdvances = calibrationAdvances + 1
   end
 
   if tempCurr2 == current then
-    calibrationFrame = (-1) * calibrationFrame
+    calibrationAdvances = (-1) * calibrationAdvances
     tempCurr = tempCurr2
   end
  end
 
- return calibrationFrame
+ return calibrationAdvances
 end
 
 function checkInitialSeedGeneration(initial, battle, current)
  local battleVideoSeed2 = read32Bit(battleVideoSeed2Addr)
- local currFrame = read32Bit(frameAddr)
+ local currAdvances = read32Bit(advancesAddr)
 
  if initial == current or battleVideoSeed2 == current then
   if initial == current then
@@ -539,24 +539,24 @@ function checkInitialSeedGeneration(initial, battle, current)
    tempInit = battleVideoSeed2
   end
 
-  adjustFrame = currFrame
+  adjustAdvances = currAdvances
  elseif battle == battleVideoSeed2 and battle ~= 0 and battle ~= tempInit then
   tempInit = battle
-  adjustFrame = currFrame - calcFrameJump(battle)
+  adjustAdvances = currAdvances - calcAdvancesJump(battle)
  elseif initial ~= 0 and initial ~= tempInit then
   tempInit = initial
-  adjustFrame = currFrame - calcFrameJump(initial)
+  adjustAdvances = currAdvances - calcAdvancesJump(initial)
  elseif initial == 0 and battle ~= battleVideoSeed2 then
   tempInit = 0
-  adjustFrame = 0
+  adjustAdvances = 0
  end
 end
 
-function showRngInfo(initial, current, battle, frame)
+function showRngInfo(initial, current, battle, advances)
  gui.text(0, 125, "Initial Seed: "..string.format("%04X", initial))
  gui.text(1, 134, "Battle Video Seed: "..string.format("%04X", battle))
  gui.text(1, 143, "Current Seed: "..string.format("%08X", current))
- gui.text(1, 152, "Advances: "..frame)
+ gui.text(1, 152, "Advances: "..advances)
 end
 
 function getTrainerIDs(addr)
@@ -920,7 +920,7 @@ end
 
 function getCatchDelay(isSafariZone)
  local key = joypad.get(1)
- local frameDelay
+ local advancesDelay
  local safariOffset = 0
  local currSeed3
 
@@ -931,7 +931,7 @@ function getCatchDelay(isSafariZone)
  end
 
  if key.select then
-  startingCatchFrame = frame
+  startingCatchAdvances = advances
   catchDelayCounter = 0
   catchRngStop = false
   catchDelay = 0
@@ -950,21 +950,21 @@ function getCatchDelay(isSafariZone)
    end
 
    oneTimeCatchRng = true
-   frameDelay = frame - startingCatchFrame
+   advancesDelay = advances - startingCatchAdvances
   else
    currSeed2 = read32Bit(currSeedAddr)
   end
 
-  if skips == 2 and frameDelay > 120 - safariOffset then
-   catchDelay = frameDelay + 1
-  elseif skips == 3 and frameDelay > 120 - safariOffset then  -- 0 shake
-   catchDelay = frameDelay
-  elseif skips == 4 and frameDelay > 120 - safariOffset then  -- 1 shake
-   catchDelay = frameDelay - 1
-  elseif skips == 5 and frameDelay > 120 - safariOffset then  -- 2 shake
-   catchDelay = frameDelay - 2
-  elseif skips == 6 and frameDelay > 120 - safariOffset then  -- 3 shake
-   catchDelay = frameDelay - 3
+  if skips == 2 and advancesDelay > 120 - safariOffset then
+   catchDelay = advancesDelay + 1
+  elseif skips == 3 and advancesDelay > 120 - safariOffset then  -- 0 shake
+   catchDelay = advancesDelay
+  elseif skips == 4 and advancesDelay > 120 - safariOffset then  -- 1 shake
+   catchDelay = advancesDelay - 1
+  elseif skips == 5 and advancesDelay > 120 - safariOffset then  -- 2 shake
+   catchDelay = advancesDelay - 2
+  elseif skips == 6 and advancesDelay > 120 - safariOffset then  -- 3 shake
+   catchDelay = advancesDelay - 3
   end
 
   catchDelayCounter = catchDelayCounter + 1
@@ -1147,7 +1147,7 @@ end
 function showDayCareInfo()
  local eggCurrSeed = read32Bit(eggCurrSeedAddr)
  local timer = read32Bit(timerAddr)
- local calibration = (read32Bit(frameAddr) - adjustFrame) - timer
+ local calibration = (read32Bit(advancesAddr) - adjustAdvances) - timer
  local eggPIDAddr = read32Bit(eggPIDPointerAddr) + 0x988
  local eggPID = read32Bit(eggPIDAddr)
  local eggNatureNumber = eggPID % 25
@@ -1355,10 +1355,10 @@ while warning == "" do
 
  checkInitialSeedGeneration(initSeed, battleVideoSeed, currSeed)
 
- frame = read32Bit(frameAddr) - adjustFrame
+ advances = read32Bit(advancesAddr) - adjustAdvances
 
  if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
-  showRngInfo(initSeed, currSeed, battleVideoSeed, frame)
+  showRngInfo(initSeed, currSeed, battleVideoSeed, advances)
   showTrainerIDs()
  end
 
