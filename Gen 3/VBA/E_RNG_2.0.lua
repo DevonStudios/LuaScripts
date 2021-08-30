@@ -556,7 +556,7 @@ function showRngInfo(initial, current, battle, frame)
  gui.text(0, 125, "Initial Seed: "..string.format("%04X", initial))
  gui.text(1, 134, "Battle Video Seed: "..string.format("%04X", battle))
  gui.text(1, 143, "Current Seed: "..string.format("%08X", current))
- gui.text(1, 152, "Frame: "..frame)
+ gui.text(1, 152, "Advances: "..frame)
 end
 
 function getTrainerIDs(addr)
@@ -1140,7 +1140,7 @@ function catchRng()
  if wildCatchDelay > 0 then
   sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone)
 
-  gui.text(1, 109, "100% catch missing frames: "..sureCatchDelay)
+  gui.text(1, 109, "100% catch missing advances: "..sureCatchDelay)
  end
 end
 
