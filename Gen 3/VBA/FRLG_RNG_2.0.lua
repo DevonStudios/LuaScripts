@@ -771,7 +771,7 @@ end
 function showIVsAndHP(IVsValue, isRoamer)
  isRoamer = isRoamer or nil
 
- local textYOffset = 0
+ local textXOffset = 0
 
  local hpIV = band(IVsValue, 0x1F)
  local atkIV = band(IVsValue, 0x1F * 0x20) / 0x20
@@ -784,23 +784,23 @@ function showIVsAndHP(IVsValue, isRoamer)
  local hpPower = floor(((band(hpIV,2)/2 + band(atkIV,2) + 2*band(defIV,2) + 4*band(spdIV,2) + 8*band(spAtkIV,2) + 16*band(spDefIV,2))*40)/63 + 30)
 
  if isRoamer then
-  textYOffset = 149
+  textXOffset = 149
  end
 
- gui.text(0 + textYOffset, 46, "IVs: 00")
- gui.text(20 + textYOffset, 46, string.format("%02d", hpIV), getIVColor(hpIV))
- gui.text(28 + textYOffset, 46, "/")
- gui.text(32 + textYOffset, 46, string.format("%02d", atkIV), getIVColor(atkIV))
- gui.text(40 + textYOffset, 46, "/")
- gui.text(44 + textYOffset, 46, string.format("%02d", defIV), getIVColor(defIV))
- gui.text(52 + textYOffset, 46, "/")
- gui.text(56 + textYOffset, 46, string.format("%02d", spAtkIV), getIVColor(spAtkIV))
- gui.text(64 + textYOffset, 46, "/")
- gui.text(68 + textYOffset, 46, string.format("%02d", spDefIV), getIVColor(spDefIV))
- gui.text(76 + textYOffset, 46, "/")
- gui.text(80 + textYOffset, 46, string.format("%02d", spdIV), getIVColor(spdIV))
+ gui.text(0 + textXOffset, 46, "IVs: 00")
+ gui.text(20 + textXOffset, 46, string.format("%02d", hpIV), getIVColor(hpIV))
+ gui.text(28 + textXOffset, 46, "/")
+ gui.text(32 + textXOffset, 46, string.format("%02d", atkIV), getIVColor(atkIV))
+ gui.text(40 + textXOffset, 46, "/")
+ gui.text(44 + textXOffset, 46, string.format("%02d", defIV), getIVColor(defIV))
+ gui.text(52 + textXOffset, 46, "/")
+ gui.text(56 + textXOffset, 46, string.format("%02d", spAtkIV), getIVColor(spAtkIV))
+ gui.text(64 + textXOffset, 46, "/")
+ gui.text(68 + textXOffset, 46, string.format("%02d", spDefIV), getIVColor(spDefIV))
+ gui.text(76 + textXOffset, 46, "/")
+ gui.text(80 + textXOffset, 46, string.format("%02d", spdIV), getIVColor(spdIV))
 
- gui.text(1 + textYOffset, 55, "HPower: "..HPTypeNamesList[hpType + 1].." "..hpPower)
+ gui.text(1 + textXOffset, 55, "HPower: "..HPTypeNamesList[hpType + 1].." "..hpPower)
 end
 
 function isEgg(addr)
