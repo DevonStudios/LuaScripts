@@ -282,12 +282,13 @@ local mode = {"None", "Capture", "100% Catch", "Breeding", "Initial Seed Bot", "
 local index = 1
 local prevKey = {}
 local showInstructionsText = false
-local prevKeyInstr = {}
 local leftArrowColor
 local rightArrowColor
 local leftInfoArrowColor
 local rightInfoArrowColor
 local prevKeyInfo = {}
+local showRoamerInfoText = false
+local showRngInfoText = true
 
 local initSeedAddr = 0x02020000
 local currSeedAddr
@@ -483,23 +484,19 @@ function drawArrowRight(a, b, c)
  gui.line(a, b + 3, a - 6, b + 3, c)
 end
 
-function showInstructions()
+function getInstructionsInput()
  local key = input.get()
 
- if key["4"] and not prevKeyInstr["4"] then
-  if mode[index] == "100% Catch" or mode[index] == "Initial Seed Bot" or mode[index] == "TID Bot" then
+ if mode[index] == "100% Catch" or mode[index] == "Initial Seed Bot" or mode[index] == "TID Bot" then
+  if key["3"] then
    showInstructionsText = true
-  end
- elseif key["3"] and not prevKeyInstr["3"] then
-  if mode[index] == "100% Catch" or mode[index] == "Initial Seed Bot" or mode[index] == "TID Bot" then
+  elseif key["4"] then
    showInstructionsText = false
   end
  end
 
- prevKeyInstr = key
-
  if mode[index] == "100% Catch" and showInstructionsText then
-  gui.text(155, 1, "3 - Hide instructions")
+  gui.text(155, 1, "4 - Hide instructions")
   gui.text(1, 10, "1) During battle, go to BAG > POKE BALLS")
   gui.text(1, 19, "2) Press A on the ball you want to use")
   gui.text(1, 28, "3) Move the arrow on 'USE', pause the game and save a state")
@@ -510,25 +507,65 @@ function showInstructions()
   gui.text(13, 73, "become 0")
   gui.text(1, 82, "7) Unpase the game while holding A")
  elseif mode[index] == "Initial Seed Bot" and showInstructionsText then
-  gui.text(155, 1, "3 - Hide instructions")
+  gui.text(155, 1, "4 - Hide instructions")
   gui.text(1, 10, "1) Pause the game")
   gui.text(1, 19, "2) Reset the emulator")
   gui.text(1, 28, "3) Advance a single frame (CTRL+N) while holding SELECT")
   gui.text(1, 37, "4) Unpause the game")
  elseif mode[index] == "TID Bot" and showInstructionsText then
-  gui.text(155, 1, "3 - Hide instructions")
+  gui.text(155, 1, "4 - Hide instructions")
   gui.text(1, 10, "1) Go to name insertion screen")
   gui.text(1, 19, "2) Insert the name you like")
   gui.text(1, 28, "3) Pause the game")
   gui.text(1, 37, "4) Advance a single frame (CTRL+N) while holding START")
   gui.text(1, 46, "5) Unpause the game")
  elseif mode[index] == "100% Catch" or mode[index] == "Initial Seed Bot" or mode[index] == "TID Bot" then
-  gui.text(155, 1, "4 - Show instructions")
+  gui.text(155, 1, "3 - Show instructions")
  else
   showInstructionsText = false
   catchRngStop = true
   catchDelayCounter = 999
   catchDelay = 0
+ end
+end
+
+function getRoamerInput()
+ local key = input.get()
+
+ if mode[index] == "Capture" then
+  if key["3"] then
+   showRoamerInfoText = true
+  elseif key["4"] then
+   showRoamerInfoText = false
+  end
+ end
+
+ if mode[index] == "Capture" and showRoamerInfoText then
+  gui.text(155, 1, "4 - Hide roamer info")
+ elseif mode[index] == "Capture" and not showRoamerInfoText then
+  gui.text(155, 1, "3 - Show roamer info")
+ else
+  showRoamerInfoText = false
+ end
+end
+
+function getRngInfoInput()
+ local key = input.get()
+
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+  if key["5"]then
+   showRngInfoText = true
+  elseif key["6"]then
+   showRngInfoText = false
+  end
+ end
+
+ if (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and showRngInfoText then
+  gui.text(110, 152, "6 - Hide RNG info")
+ elseif (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and not showRngInfoText then
+  gui.text(110, 152, "5 - Show RNG info")
+ else
+  showRngInfoText = true
  end
 end
 
@@ -603,16 +640,6 @@ function showTrainerIDs(addr)
 
  gui.text(199, 143, string.format("TID: %d", trainerIDs[1]))
  gui.text(199, 152, string.format("SID: %d", trainerIDs[2]))
-end
-
-function showStats(addr)
- gui.text(1, 10, "Stats:")
- gui.text(29, 10, "HP "..read16Bit(addr + 0x56))
- gui.text(59, 10, "Atk "..read16Bit(addr + 0x5A))
- gui.text(93, 10, "Def "..read16Bit(addr + 0x5C))
- gui.text(127, 10, "SpA "..read16Bit(addr + 0x60))
- gui.text(161, 10, "SpD "..read16Bit(addr + 0x62))
- gui.text(195, 10, "Spe "..read16Bit(addr + 0x5E))
 end
 
 function getMiscOffset(orderIndex)
@@ -741,6 +768,41 @@ function showIVsAndHP(IVsValue, isRoamer)
  end
 end
 
+function showIVsAndHP(IVsValue, isRoamer)
+ isRoamer = isRoamer or nil
+
+ local textYOffset = 0
+
+ local hpIV = band(IVsValue, 0x1F)
+ local atkIV = band(IVsValue, 0x1F * 0x20) / 0x20
+ local defIV = band(IVsValue, 0x1F * 0x400) / 0x400
+ local spAtkIV = band(IVsValue, 0x1F * 0x100000) / 0x100000
+ local spDefIV = band(IVsValue, 0x1F * 0x2000000) / 0x2000000
+ local spdIV = band(IVsValue, 0x1F * 0x8000) / 0x8000
+
+ local hpType = floor(((hpIV%2 + 2*(atkIV%2) + 4*(defIV%2) + 8*(spdIV%2) + 16*(spAtkIV%2) + 32*(spDefIV%2))*15)/63)
+ local hpPower = floor(((band(hpIV,2)/2 + band(atkIV,2) + 2*band(defIV,2) + 4*band(spdIV,2) + 8*band(spAtkIV,2) + 16*band(spDefIV,2))*40)/63 + 30)
+
+ if isRoamer then
+  textYOffset = 149
+ end
+
+ gui.text(0 + textYOffset, 46, "IVs: 00")
+ gui.text(20 + textYOffset, 46, string.format("%02d", hpIV), getIVColor(hpIV))
+ gui.text(28 + textYOffset, 46, "/")
+ gui.text(32 + textYOffset, 46, string.format("%02d", atkIV), getIVColor(atkIV))
+ gui.text(40 + textYOffset, 46, "/")
+ gui.text(44 + textYOffset, 46, string.format("%02d", defIV), getIVColor(defIV))
+ gui.text(52 + textYOffset, 46, "/")
+ gui.text(56 + textYOffset, 46, string.format("%02d", spAtkIV), getIVColor(spAtkIV))
+ gui.text(64 + textYOffset, 46, "/")
+ gui.text(68 + textYOffset, 46, string.format("%02d", spDefIV), getIVColor(spDefIV))
+ gui.text(76 + textYOffset, 46, "/")
+ gui.text(80 + textYOffset, 46, string.format("%02d", spdIV), getIVColor(spdIV))
+
+ gui.text(1 + textYOffset, 55, "HPower: "..HPTypeNamesList[hpType + 1].." "..hpPower)
+end
+
 function isEgg(addr)
  return read16Bit(addr + 0x12) == 0x601
 end
@@ -767,19 +829,19 @@ function showMoves(value1, value2)
  local move4Number = rshift(value2, 16)
 
  if move1Number <= 354 then
-  gui.text(1, 73, "Move: "..moveNamesList[move1Number + 1])
+  gui.text(1, 82, "Move: "..moveNamesList[move1Number + 1])
  end
 
  if move2Number <= 354 then
-  gui.text(1, 82, "Move: "..moveNamesList[move2Number + 1])
+  gui.text(1, 91, "Move: "..moveNamesList[move2Number + 1])
  end
 
  if move3Number <= 354 then
-  gui.text(1, 91, "Move: "..moveNamesList[move3Number + 1])
+  gui.text(1, 100, "Move: "..moveNamesList[move3Number + 1])
  end
 
  if move4Number <= 354 then
-  gui.text(1, 100, "Move: "..moveNamesList[move4Number + 1])
+  gui.text(1, 109, "Move: "..moveNamesList[move4Number + 1])
  end
 end
 
@@ -799,14 +861,14 @@ function showPP(value)
  local PPmove3 = band(rshift(value, 16), 0xFF)
  local PPmove4 = rshift(value, 24)
 
- gui.text(85, 73, "PP:")
- gui.text(101, 73, PPmove1, getPPColor(PPmove1))
  gui.text(85, 82, "PP:")
- gui.text(101, 82, PPmove2, getPPColor(PPmove2))
+ gui.text(101, 82, PPmove1, getPPColor(PPmove1))
  gui.text(85, 91, "PP:")
- gui.text(101, 91, PPmove3, getPPColor(PPmove3))
+ gui.text(101, 91, PPmove2, getPPColor(PPmove2))
  gui.text(85, 100, "PP:")
- gui.text(101, 100, PPmove4, getPPColor(PPmove4))
+ gui.text(101, 100, PPmove3, getPPColor(PPmove3))
+ gui.text(85, 109, "PP:")
+ gui.text(101, 109, PPmove4, getPPColor(PPmove4))
 end
 
 function showInfo(addr)
@@ -828,7 +890,6 @@ function showInfo(addr)
  local speciesDexIndex = band(speciesAndItemValue, 0xFFFF)
  local speciesDexNumber = nationalDexList[speciesDexIndex + 1]
  local speciesName = speciesNamesList[speciesDexNumber]
- local level = read8Bit(addr + 0x54)
 
  local itemNumber = rshift(speciesAndItemValue, 16)
  local itemName = itemNamesList[itemNumber + 1]
@@ -840,27 +901,22 @@ function showInfo(addr)
   abilityName = abilityNamesList[pokemonAbilities[speciesDexNumber][abilityNumber]]
  end
 
- showIVsAndHP(IVsAndAbilityValue)
-
  if speciesName ~= nil then
-  gui.text(1, 28, "Species: "..speciesName)
+  gui.text(1, 10, "Species: "..speciesName)
  end
 
- if mode[index] ~= "Pokemon Info" or infoMode[infoIndex] ~= "Box" then
-  gui.text(85, 28, "Level: "..level)
- end
-
- gui.text(1, 37, "PID:")
- gui.text(21, 37, string.format("%08X", PID), shinyCheck(PID, addr))
-
- if itemName ~= nil then
-  gui.text(62, 37, "Held item: "..itemName)
- end
-
- gui.text(1, 46, "Nature: "..natureNamesList[natureNumber + 1])
+ gui.text(1, 19, "PID:")
+ gui.text(21, 19, string.format("%08X", PID), shinyCheck(PID, addr))
+ gui.text(1, 28, "Nature: "..natureNamesList[natureNumber + 1])
 
  if abilityName ~= nil and abilityNumber ~= nil then
-  gui.text(1, 55, string.format("Ability: %s (%d)", abilityName, abilityNumber))
+  gui.text(1, 37, string.format("Ability: %s (%d)", abilityName, abilityNumber))
+ end
+
+ showIVsAndHP(IVsAndAbilityValue)
+
+ if itemName ~= nil then
+  gui.text(1, 64, "Held item: "..itemName)
  end
 
  showMoves(moves1Value, moves2Value)
@@ -868,7 +924,6 @@ function showInfo(addr)
 end
 
 function showOpponentPokemonInfo()
- showStats(wildAddr)
  showInfo(wildAddr)
 end
 
@@ -904,21 +959,21 @@ function showRoamerInfo()
  local isRoamerActive = read8Bit(roamerAddr + 0x13) == 1
 
  if isRoamerActive then
-  gui.text(150, 46, string.format("Active Roamer? Yes"))
+  gui.text(150, 10, string.format("Active Roamer? Yes"))
 
   if roamerSpeciesName ~= nil then
-   gui.text(150, 55, "Species: "..roamerSpeciesName)
+   gui.text(150, 19, "Species: "..roamerSpeciesName)
   end
 
-  gui.text(150, 64, "PID:")
-  gui.text(170, 64, string.format("%08X", roamerPID), shinyCheck(roamerPID))
-  gui.text(150, 73, "Nature: "..natureNamesList[roamerNatureNumber + 1])
+  gui.text(150, 28, "PID:")
+  gui.text(170, 28, string.format("%08X", roamerPID), shinyCheck(roamerPID))
+  gui.text(150, 37, "Nature: "..natureNamesList[roamerNatureNumber + 1])
   showIVsAndHP(band(roamerIVsValue, 0xFF), isRoamerActive)
-  gui.text(150, 100, "HP: "..roamerHP)
-  gui.text(150, 109, "Level: "..roamerLevel)
-  gui.text(150, 118, "Status condition: "..roamerStatus)
+  gui.text(150, 64, "HP: "..roamerHP)
+  gui.text(150, 73, "Level: "..roamerLevel)
+  gui.text(150, 82, "Status condition: "..roamerStatus)
  else
-  gui.text(150, 46, string.format("Active Roamer? No"))
+  gui.text(150, 10, string.format("Active Roamer? No"))
  end
 end
 
@@ -1031,7 +1086,7 @@ function showMissingStepsForEncounter()
 
  encounterMissingSteps = getEncounterMissingSteps(encounterRate, encounterRateBuff, encounterRateBase)
 
- gui.text(1, 118, "Steps for wild encounter: "..encounterMissingSteps)
+ gui.text(1, 122, "Steps for wild encounter: "..encounterMissingSteps)
 end
 
 function getCatchRngStopInput()
@@ -1294,7 +1349,6 @@ function showPartyEggInfo()
  local lastPartySlotAddr = partyAddr + (partySlotsCounter * 0x64)
 
  if isEgg(lastPartySlotAddr) then
-  showStats(lastPartySlotAddr)
   showInfo(lastPartySlotAddr)
  end
 end
@@ -1519,7 +1573,6 @@ function showPokemonInfo()
   partySelectedSlotNumber = read8Bit(partySelectedSlotNumberAddr)
   partySelectedPokemonAddr = partyAddr + (partySelectedSlotNumber * 0x64)
 
-  showStats(partySelectedPokemonAddr)
   showInfo(partySelectedPokemonAddr)
   showTrainerIDs(partySelectedPokemonAddr)
  elseif infoMode[infoIndex] == "Box" then
@@ -1531,15 +1584,12 @@ function showPokemonInfo()
   showInfo(boxSelectedPokemonAddr)
   showTrainerIDs(boxSelectedPokemonAddr)
  elseif infoMode[infoIndex] == "Battle Party Stats" then
-  showStats(pokemonBattleStatsScreenAddr)
   showInfo(pokemonBattleStatsScreenAddr)
   showTrainerIDs(pokemonBattleStatsScreenAddr)
  elseif infoMode[infoIndex] == "1st Floor Box Stats" then
-  showStats(pokemonStatsScreenAddr)
   showInfo(pokemonStatsScreenAddr)
   showTrainerIDs(pokemonStatsScreenAddr)
  elseif infoMode[infoIndex] == "Party Stats" or infoMode[infoIndex] == "2nd Floor Box Stats" or infoMode[infoIndex] == "DayCare Box Stats" then
-  showStats(pokemonStatsScreen2Addr)
   showInfo(pokemonStatsScreen2Addr)
   showTrainerIDs(pokemonStatsScreen2Addr)
  end
@@ -1551,7 +1601,9 @@ while warning == "" do
  drawArrowLeft(100, 1, leftArrowColor)
  gui.text(110, 1, "1 - 2")
  drawArrowRight(138, 1, rightArrowColor)
- showInstructions()
+ getInstructionsInput()
+ getRoamerInput()
+ getRngInfoInput()
 
  initSeed = read16Bit(initSeedAddr)
  currSeed = read32Bit(currSeedAddr)
@@ -1561,13 +1613,20 @@ while warning == "" do
  advances = advances + calcAdvancesJump(currSeed)
 
  if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
-  showRngInfo(initSeed, currSeed, advances)
+  if showRngInfoText then
+   showRngInfo(initSeed, currSeed, advances)
+  end
+
   showTrainerIDs()
  end
 
  if mode[index] == "Capture" then
   showOpponentPokemonInfo()
-  showRoamerInfo()
+
+  if showRoamerInfoText then
+   showRoamerInfo()
+  end
+
   showMissingStepsForEncounter()
  elseif mode[index] == "100% Catch" then
   catchRng()
