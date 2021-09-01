@@ -453,14 +453,14 @@ function getInput()
 
  local key = input.get()
 
- if key["1"] and not prevKey["1"] then
+ if (key["1"] or key["numpad1"]) and (not prevKey["1"] and not prevKey["numpad1"]) then
   leftArrowColor = "orange"
   index = index - 1
 
   if index < 1 then
    index = 8
   end
- elseif key["2"] and not prevKey["2"] then
+ elseif (key["2"] or key["numpad2"]) and (not prevKey["2"] and not prevKey["numpad2"]) then
   rightArrowColor = "orange"
   index = index + 1
 
@@ -488,9 +488,9 @@ function getInstructionsInput()
  local key = input.get()
 
  if mode[index] == "100% Catch" or mode[index] == "Initial Seed Bot" or mode[index] == "TID Bot" then
-  if key["3"] then
+  if key["3"] or key["numpad3"] then
    showInstructionsText = true
-  elseif key["4"] then
+  elseif key["4"] or key["numpad4"] then
    showInstructionsText = false
   end
  end
@@ -533,9 +533,9 @@ function getRoamerInput()
  local key = input.get()
 
  if mode[index] == "Capture" then
-  if key["3"] then
+  if key["3"] or key["numpad3"] then
    showRoamerInfoText = true
-  elseif key["4"] then
+  elseif key["4"] or key["numpad4"] then
    showRoamerInfoText = false
   end
  end
@@ -553,9 +553,9 @@ function getRngInfoInput()
  local key = input.get()
 
  if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
-  if key["5"]then
+  if key["5"] or key["numpad5"] then
    showRngInfoText = true
-  elseif key["6"]then
+  elseif key["6"] or key["numpad6"] then
    showRngInfoText = false
   end
  end
@@ -1092,7 +1092,7 @@ end
 function getCatchRngStopInput()
  local key = input.get()
 
- if key["5"] then
+ if key["5"] or key["numpad5"] then
   catchRngStop = true
   catchDelayCounter = 999
   catchDelay = 0
@@ -1542,14 +1542,14 @@ function getInfoInput()
 
  local key = input.get()
 
- if key["3"] and not prevKeyInfo["3"] then
+ if (key["3"] or key["numpad3"]) and (not prevKeyInfo["3"] and not prevKeyInfo["numpad3"]) then
   leftInfoArrowColor = "orange"
   infoIndex = infoIndex - 1
 
   if infoIndex < 1 then
    infoIndex = 8
   end
- elseif key["4"] and not prevKeyInfo["4"] then
+ elseif (key["4"] or key["numpad4"]) and (not prevKeyInfo["4"] and not prevKeyInfo["numpad4"]) then
   rightInfoArrowColor = "orange"
   infoIndex = infoIndex + 1
 
