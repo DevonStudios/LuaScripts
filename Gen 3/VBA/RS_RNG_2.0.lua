@@ -1205,6 +1205,7 @@ function showPokemonInfo()
   lastPartySlotAddr = partyAddr + (partySlotsCounter * 0x64)
 
   showInfo(lastPartySlotAddr)
+  showTrainerIDs(lastPartySlotAddr)
  elseif infoMode[infoIndex] == "Party" then
   partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
   partySelectedSlotNumber = read8Bit(partySelectedSlotNumberAddr + (partySlotsCounter * 0x88))
