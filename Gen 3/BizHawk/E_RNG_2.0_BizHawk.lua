@@ -1175,6 +1175,7 @@ function showDayCareInfo()
  local calibration = (read32Bit(advancesAddr) - adjustAdvances) - timer
  local eggPIDAddr = read32Bit(eggPIDPointerAddr) + 0x988
  local eggPID = read32Bit(eggPIDAddr)
+ local eggShinyType = shinyCheck(eggPID)
  local eggNatureNumber = eggPID % 25
  local eggStepsCounter = 255 - read8Bit(eggPIDAddr - 0x4)
  local eggFlagAddr = read32Bit(saveBlock1Addr) + 0x1280
@@ -1203,7 +1204,7 @@ function showDayCareInfo()
  if isEggReady then
   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 126, "Egg generated, go get it!")
   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, string.format("Egg PID:"))
-  gui.text(emuWindow.leftPadding + 478, emuWindow.topPadding + 144, string.format("%08X", eggPID), shinyCheck(eggPID))
+  gui.text(emuWindow.leftPadding + 478, emuWindow.topPadding + 144, string.format("%08X%s", eggPID, eggShinyType[2]), eggShinyType[1])
   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 162, "Nature: "..natureNamesList[eggNatureNumber + 1])
 
   if iter > 1 then
