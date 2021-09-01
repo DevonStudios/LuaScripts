@@ -750,12 +750,16 @@ function shinyCheck(PID, addr)
  local trainerIDs = getTrainerIDs(addr)
  local highPID = floor(PID / 0x10000)
  local lowPID = PID % 0x10000
- local isShiny = bxor(bxor(trainerIDs[2], trainerIDs[1]), bxor(lowPID, highPID)) < 8
+ local shinyTypeValue = bxor(bxor(trainerIDs[2], trainerIDs[1]), bxor(lowPID, highPID))
 
- if isShiny then
-  return "green"
+ if shinyTypeValue < 8 then
+  if shinyTypeValue == 0 then
+   return {"green", " (Square)"}
+  else
+   return {"green", " (Star)"}
+  end
  else
-  return nil
+  return {nil, ""}
  end
 end
 
@@ -810,6 +814,7 @@ end
 
 function showInfo(addr)
  local PID = read32Bit(addr)
+ local shinyType = shinyCheck(PID, addr)
  local natureNumber = PID % 25
  local IDs = read32Bit(addr + 0x4)
  local orderIndex = PID % 24
@@ -843,7 +848,7 @@ function showInfo(addr)
  end
 
  gui.text(1, 19, "PID:")
- gui.text(21, 19, string.format("%08X", PID), shinyCheck(PID, addr))
+ gui.text(21, 19, string.format("%08X%s", PID, shinyType[2]), shinyType[1])
  gui.text(1, 28, "Nature: "..natureNamesList[natureNumber + 1])
 
  if abilityName ~= nil and abilityNumber ~= nil then
@@ -868,6 +873,7 @@ function showRoamerInfo()
  local roamerAddr = read32Bit(saveBlock1Addr) + 0x31DC
  local roamerIVsValue = read32Bit(roamerAddr)
  local roamerPID = read32Bit(roamerAddr + 0x4)
+ local roamerShinyType = shinyCheck(roamerPID)
  local roamerNatureNumber = roamerPID % 25
  local roamerSpeciesIndex = read16Bit(roamerAddr + 0x8)
  local roamersDexNumber = nationalDexList[roamerSpeciesIndex + 1]
@@ -903,7 +909,7 @@ function showRoamerInfo()
   end
 
   gui.text(150, 28, "PID:")
-  gui.text(170, 28, string.format("%08X", roamerPID), shinyCheck(roamerPID))
+  gui.text(170, 28, string.format("%08X%s", roamerPID, roamerShinyType[2]), roamerShinyType[1])
   gui.text(150, 37, "Nature: "..natureNamesList[roamerNatureNumber + 1])
   showIVsAndHP(roamerIVsValue, isRoamerActive)
   gui.text(150, 64, "HP: "..roamerHP)

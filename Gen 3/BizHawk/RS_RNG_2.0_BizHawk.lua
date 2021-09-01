@@ -747,12 +747,16 @@ function shinyCheck(PID, addr)
  local trainerIDs = getTrainerIDs(addr)
  local highPID = floor(PID / 0x10000)
  local lowPID = PID % 0x10000
- local isShiny = bxor(bxor(trainerIDs[2], trainerIDs[1]), bxor(lowPID, highPID)) < 8
+ local shinyTypeValue = bxor(bxor(trainerIDs[2], trainerIDs[1]), bxor(lowPID, highPID))
 
- if isShiny then
-  return "limegreen"
+ if shinyTypeValue < 8 then
+  if shinyTypeValue == 0 then
+   return {"limegreen", " (Square)"}
+  else
+   return {"limegreen", " (Star)"}
+  end
  else
-  return nil
+  return {nil, ""}
  end
 end
 
@@ -807,6 +811,7 @@ end
 
 function showInfo(addr)
  local PID = read32Bit(addr)
+ local shinyType = shinyCheck(PID, addr)
  local natureNumber = PID % 25
  local IDs = read32Bit(addr + 0x4)
  local orderIndex = PID % 24
@@ -840,7 +845,7 @@ function showInfo(addr)
  end
 
  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 36, "PID:")
- gui.text(emuWindow.leftPadding + 51, emuWindow.topPadding + 36, string.format("%08X", PID), shinyCheck(PID, addr))
+ gui.text(emuWindow.leftPadding + 51, emuWindow.topPadding + 36, string.format("%08X%s", PID, shinyType[2]), shinyType[1])
  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 54, "Nature: "..natureNamesList[natureNumber + 1])
 
  if abilityName ~= nil and abilityNumber ~= nil then
@@ -864,6 +869,7 @@ end
 function showRoamerInfo()
  local roamerIVsValue = read32Bit(roamerAddr)
  local roamerPID = read32Bit(roamerAddr + 0x4)
+ local roamerShinyType = shinyCheck(roamerPID)
  local roamerNatureNumber = roamerPID % 25
  local roamerSpeciesIndex = read16Bit(roamerAddr + 0x8)
  local roamersDexNumber = nationalDexList[roamerSpeciesIndex + 1]
@@ -899,7 +905,7 @@ function showRoamerInfo()
   end
 
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 54, "PID:")
-  gui.text(emuWindow.leftPadding + 470, emuWindow.topPadding + 54, string.format("%08X", roamerPID), shinyCheck(roamerPID))
+  gui.text(emuWindow.leftPadding + 470, emuWindow.topPadding + 54, string.format("%08X%s", roamerPID, roamerShinyType[2]), roamerShinyType[1])
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 72, "Nature: "..natureNamesList[roamerNatureNumber + 1])
   showIVsAndHP(band(roamerIVsValue, 0xFF), isRoamerActive)
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 126, "HP: "..roamerHP)
