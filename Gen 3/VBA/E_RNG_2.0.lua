@@ -332,7 +332,7 @@ local TIDBotState = savestate.create()
 local TIDFound = false
 local botTargetTIDs = {0, 1, 1337, 8453, 8411, 11233, 11111, 22222, 33333}  -- Input here the bot target TIDs
 
-local infoMode = {"Party", "Party Stats", "Battle Party Stats", "Box", "1st Floor Box Stats", "2nd Floor Box Stats", "DayCare Box Stats"}
+local infoMode = {"Gift", "Party", "Party Stats", "Battle Party Stats", "Box", "1st Floor Box Stats", "2nd Floor Box Stats", "DayCare Box Stats"}
 local infoIndex = 1
 local partySelectedSlotNumberAddr
 local pokemonStatsScreenAddr
@@ -517,7 +517,7 @@ end
 function getRngInfoInput()
  local key = input.get()
 
- if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
   if key["5"]then
    showRngInfoText = true
   elseif key["6"]then
@@ -525,10 +525,10 @@ function getRngInfoInput()
   end
  end
 
- if (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and showRngInfoText then
-  gui.text(110, 152, "6 - Hide RNG info")
- elseif (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and not showRngInfoText then
-  gui.text(110, 152, "5 - Show RNG info")
+ if (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info") and showRngInfoText then
+  gui.text(100, 152, "6 - Hide RNG info")
+ elseif (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info") and not showRngInfoText then
+  gui.text(100, 152, "5 - Show RNG info")
  else
   showRngInfoText = true
  end
@@ -1296,13 +1296,13 @@ function getInfoInput()
   infoIndex = infoIndex - 1
 
   if infoIndex < 1 then
-   infoIndex = 7
+   infoIndex = 8
   end
  elseif key["4"] and not prevKeyInfo["4"] then
   rightInfoArrowColor = "orange"
   infoIndex = infoIndex + 1
 
-  if infoIndex > 7 then
+  if infoIndex > 8 then
    infoIndex = 1
   end
  end
@@ -1311,6 +1311,8 @@ function getInfoInput()
 end
 
 function showPokemonInfo()
+ local partySlotsCounter
+ local lastPartySlotAddr
  local partySelectedSlotNumber
  local partySelectedPokemonAddr
  local currBoxNumber
@@ -1318,7 +1320,12 @@ function showPokemonInfo()
  local boxSelectedSlotNumber
  local boxSelectedPokemonAddr
 
- if infoMode[infoIndex] == "Party" then
+ if infoMode[infoIndex] == "Gift" then
+  partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
+  lastPartySlotAddr = partyAddr + (partySlotsCounter * 0x64)
+
+  showInfo(lastPartySlotAddr)
+ elseif infoMode[infoIndex] == "Party" then
   partySelectedSlotNumber = read8Bit(partySelectedSlotNumberAddr)
   partySelectedPokemonAddr = partyAddr + (partySelectedSlotNumber * 0x64)
 
@@ -1362,12 +1369,14 @@ while warning == "" do
 
  advances = read32Bit(advancesAddr) - adjustAdvances
 
- if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
   if showRngInfoText then
    showRngInfo(initSeed, currSeed, battleVideoSeed, advances)
   end
 
-  showTrainerIDs()
+  if mode[index] ~= "Pokemon Info" then
+   showTrainerIDs()
+  end
  end
 
  if mode[index] == "Capture" then
@@ -1387,10 +1396,10 @@ while warning == "" do
   TIDBot()
  elseif mode[index] == "Pokemon Info" then
   getInfoInput()
-  gui.text(0, 143, "Info Mode: "..infoMode[infoIndex])
-  drawArrowLeft(130, 143, leftInfoArrowColor)
-  gui.text(140, 143, "3 - 4")
-  drawArrowRight(168, 143, rightInfoArrowColor)
+  gui.text(100, 125, "Mode: "..infoMode[infoIndex])
+  drawArrowLeft(201, 125, leftInfoArrowColor)
+  gui.text(211, 125, "3 - 4")
+  drawArrowRight(239, 125, rightInfoArrowColor)
 
   showPokemonInfo()
  end

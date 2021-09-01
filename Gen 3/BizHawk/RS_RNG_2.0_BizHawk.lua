@@ -323,7 +323,7 @@ local partySlotsCounterAddr
 local eggLowPIDAddr
 local eggFlagAddr
 
-local infoMode = {"Party", "Stats", "Box"}
+local infoMode = {"Gift", "Party", "Stats", "Box"}
 local infoIndex = 1
 local partySelectedSlotNumberAddr = 0x020200BA
 local pokemonStatsScreenAddr = 0x02018010
@@ -516,7 +516,7 @@ end
 function getRngInfoInput()
  local key = input.get()
 
- if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
   if key["Number5"]then
    showRngInfoText = true
   elseif key["Number6"]then
@@ -524,10 +524,10 @@ function getRngInfoInput()
   end
  end
 
- if (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and showRngInfoText then
-  gui.text((emuWindow.width / 2) - 21, emuWindow.bottomPadding, "6 - Hide RNG info")
- elseif (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and not showRngInfoText then
-  gui.text((emuWindow.width / 2) - 21, emuWindow.bottomPadding, "5 - Show RNG info")
+ if (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info") and showRngInfoText then
+  gui.text((emuWindow.width / 2) - 63, emuWindow.bottomPadding, "6 - Hide RNG info")
+ elseif (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info") and not showRngInfoText then
+  gui.text((emuWindow.width / 2) - 63, emuWindow.bottomPadding, "5 - Show RNG info")
  else
   showRngInfoText = true
  end
@@ -1191,13 +1191,13 @@ function getInfoInput()
   infoIndex = infoIndex - 1
 
   if infoIndex < 1 then
-   infoIndex = 3
+   infoIndex = 4
   end
  elseif key["Number4"] and not prevKeyInfo["Number4"] then
   rightInfoArrowColor = "orange"
   infoIndex = infoIndex + 1
 
-  if infoIndex > 3 then
+  if infoIndex > 4 then
    infoIndex = 1
   end
  end
@@ -1207,6 +1207,7 @@ end
 
 function showPokemonInfo()
  local partySlotsCounter
+ local lastPartySlotAddr
  local partySelectedSlotNumber
  local partySelectedPokemonAddr
  local currBoxNumber
@@ -1214,7 +1215,12 @@ function showPokemonInfo()
  local boxSelectedSlotNumber
  local boxSelectedPokemonAddr
 
- if infoMode[infoIndex] == "Party" then
+ if infoMode[infoIndex] == "Gift" then
+  partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
+  lastPartySlotAddr = partyAddr + (partySlotsCounter * 0x64)
+
+  showInfo(lastPartySlotAddr)
+ elseif infoMode[infoIndex] == "Party" then
   partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
   partySelectedSlotNumber = read8Bit(partySelectedSlotNumberAddr + (partySlotsCounter * 0x88))
   partySelectedPokemonAddr = partyAddr + (partySelectedSlotNumber * 0x64)
@@ -1263,12 +1269,14 @@ while warning == "" do
   userdata.set("advances", advances)
  end
 
- if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
   if showRngInfoText then
    showRngInfo(currSeed, advances)
   end
 
-  showTrainerIDs()
+  if mode[index] ~= "Pokemon Info" then
+   showTrainerIDs()
+  end
  end
 
  if mode[index] == "Capture" then
@@ -1284,10 +1292,10 @@ while warning == "" do
   showPartyEggInfo()
  elseif mode[index] == "Pokemon Info" then
   getInfoInput()
-  gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 18, "Info Mode: "..infoMode[infoIndex])
-  drawArrowLeft(102, 147, leftInfoArrowColor)
-  gui.text((emuWindow.width / 2) - 21, emuWindow.bottomPadding - 18, "3 - 4")
-  drawArrowRight(140, 147, rightInfoArrowColor)
+  gui.text((emuWindow.width / 2) - 63, emuWindow.bottomPadding - 54, "Mode: "..infoMode[infoIndex])
+  drawArrowLeft(187, 135, leftInfoArrowColor)
+  gui.text((emuWindow.width / 2) + 230, emuWindow.bottomPadding - 54, "3 - 4")
+  drawArrowRight(222, 135, rightInfoArrowColor)
 
   showPokemonInfo()
  end

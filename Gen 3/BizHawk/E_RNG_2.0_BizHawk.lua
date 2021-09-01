@@ -333,7 +333,7 @@ local eggPIDPointerAddr
 local TIDFound = false
 local botTargetTIDs = {0, 1, 1337, 8453, 8411, 11233, 11111, 22222, 33333}  -- Input here the bot target TIDs
 
-local infoMode = {"Party", "Party Stats", "Battle Party Stats", "Box", "1st Floor Box Stats", "2nd Floor Box Stats", "DayCare Box Stats"}
+local infoMode = {"Gift", "Party", "Party Stats", "Battle Party Stats", "Box", "1st Floor Box Stats", "2nd Floor Box Stats", "DayCare Box Stats"}
 local infoIndex = 1
 local partySelectedSlotNumberAddr
 local pokemonStatsScreenAddr
@@ -528,7 +528,7 @@ end
 function getRngInfoInput()
  local key = input.get()
 
- if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
   if key["Number5"]then
    showRngInfoText = true
   elseif key["Number6"]then
@@ -536,10 +536,10 @@ function getRngInfoInput()
   end
  end
 
- if (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and showRngInfoText then
-  gui.text((emuWindow.width / 2) - 21, emuWindow.bottomPadding, "6 - Hide RNG info")
- elseif (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora") and not showRngInfoText then
-  gui.text((emuWindow.width / 2) - 21, emuWindow.bottomPadding, "5 - Show RNG info")
+ if (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info") and showRngInfoText then
+  gui.text((emuWindow.width / 2) - 63, emuWindow.bottomPadding, "6 - Hide RNG info")
+ elseif (mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info") and not showRngInfoText then
+  gui.text((emuWindow.width / 2) - 63, emuWindow.bottomPadding, "5 - Show RNG info")
  else
   showRngInfoText = true
  end
@@ -1307,13 +1307,13 @@ function getInfoInput()
   infoIndex = infoIndex - 1
 
   if infoIndex < 1 then
-   infoIndex = 7
+   infoIndex = 8
   end
  elseif key["Number4"] and not prevKeyInfo["Number4"] then
   rightInfoArrowColor = "orange"
   infoIndex = infoIndex + 1
 
-  if infoIndex > 7 then
+  if infoIndex > 8 then
    infoIndex = 1
   end
  end
@@ -1322,6 +1322,8 @@ function getInfoInput()
 end
 
 function showPokemonInfo()
+ local partySlotsCounter
+ local lastPartySlotAddr
  local partySelectedSlotNumber
  local partySelectedPokemonAddr
  local currBoxNumber
@@ -1329,7 +1331,12 @@ function showPokemonInfo()
  local boxSelectedSlotNumber
  local boxSelectedPokemonAddr
 
- if infoMode[infoIndex] == "Party" then
+ if infoMode[infoIndex] == "Gift" then
+  partySlotsCounter = read8Bit(partySlotsCounterAddr) - 1
+  lastPartySlotAddr = partyAddr + (partySlotsCounter * 0x64)
+
+  showInfo(lastPartySlotAddr)
+ elseif infoMode[infoIndex] == "Party" then
   partySelectedSlotNumber = read8Bit(partySelectedSlotNumberAddr)
   partySelectedPokemonAddr = partyAddr + (partySelectedSlotNumber * 0x64)
 
@@ -1384,12 +1391,14 @@ while warning == "" do
  userdata.set("advances", adjustAdvances)
  userdata.set("seed", initSeed)
 
- if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" then
+ if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
   if showRngInfoText then
    showRngInfo(initSeed, currSeed, battleVideoSeed, advances)
   end
 
-  showTrainerIDs()
+  if mode[index] ~= "Pokemon Info" then
+   showTrainerIDs()
+  end
  end
 
  if mode[index] == "Capture" then
@@ -1409,10 +1418,10 @@ while warning == "" do
   TIDBot()
  elseif mode[index] == "Pokemon Info" then
   getInfoInput()
-  gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 18, "Info Mode: "..infoMode[infoIndex])
-  drawArrowLeft(102, 147, leftInfoArrowColor)
-  gui.text((emuWindow.width / 2) - 21, emuWindow.bottomPadding - 18, "3 - 4")
-  drawArrowRight(140, 147, rightInfoArrowColor)
+  gui.text((emuWindow.width / 2) - 63, emuWindow.bottomPadding - 54, "Mode: "..infoMode[infoIndex])
+  drawArrowLeft(187, 135, leftInfoArrowColor)
+  gui.text((emuWindow.width / 2) + 230, emuWindow.bottomPadding - 54, "3 - 4")
+  drawArrowRight(222, 135, rightInfoArrowColor)
 
   showPokemonInfo()
  end
