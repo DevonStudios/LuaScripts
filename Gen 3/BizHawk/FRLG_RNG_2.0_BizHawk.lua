@@ -268,6 +268,21 @@ local catchRatesList = {
  45, 90, 90, 45, 45, 190, 75, 205, 155, 255, 90, 45, 45, 45, 45, 255, 60, 45,
  200, 225, 45, 190, 90, 200, 45, 30, 125, 190, 75, 255, 120, 45, 255, 60,
  60, 25, 225, 45, 45, 45, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
+ 
+local locationNamesList = {
+ "Pallet Town", "Viridian City", "Pewter City", "Cerulean City", "Lavender Town", "Vermilion City",
+ "Celadon City", "Fuchsia City", "Cinnabar Island", "Indigo Plateau Exterior", "Saffron City",
+ "Saffron City Connection", "One Island", "Two Island", "Three Island", "Four Island", "Five Island",
+ "Seven Island", "Six Island", "Route 1", "Route 2", "Route 3", "Route 4", "Route 5", "Route 6", "Route 7",
+ "Route 8", "Route 9", "Route 10", "Route 11", "Route 12", "Route 13", "Route 14", "Route 15", "Route 16",
+ "Route 17", "Route 18", "Route 19", "Route 20", "Route 21 North", "Route 21 South", "Route 22", "Route 23",
+ "Route 24", "Route 25", "One Island Kindle Road", "One Island Treasure Beach", "Two Island Cape Brink",
+ "Three Island Bond Bridge", "Three Island Port", "Prototype Sevii Isle 6", "Prototype Sevii Isle 7",
+ "Prototype Sevii Isle 8", "Prototype Sevii Isle 9", "Five Island Resort Gorgeous",
+ "Five Island Water Labyrinth", "Five Island Meadow", "Five Island Memorial Pillar",
+ "Six Island Outcast Island", "Six Island Green Path", "Six Island Water Path", "Six Island Ruin Valley",
+ "Seven Island Trainer Tower", "Seven Island Sevault Canyon Entrance", "Seven Island Sevault Canyon",
+ "Seven Island Tanoby Ruins"}
 
 local statusConditionNamesList = {
  "None", "SLP", "PSN", "BRN", "FRZ", "PAR", "PSN"}
@@ -300,6 +315,7 @@ local advances = 0
 local wildAddr
 local saveBlock1Addr
 local saveBlock2Addr
+local roamerMapGroupNumAddr
 local wildEncounterDataAddr
 local playerAvatarAddr
 local encounterRateBase = 0
@@ -366,6 +382,7 @@ if gameLang == 0x45 then  -- Check game language
  wildAddr = 0x0202402C  -- capture
  saveBlock1Addr = 0x03005008
  saveBlock2Addr = 0x0300500C
+ roamerMapGroupNumAddr = 0x0203F3AE
  wildEncounterDataAddr = 0x020386D0
  playerAvatarAddr = 0x02037078
  speciesDexIndexAddr = 0x020235C8  -- 100% catch
@@ -389,6 +406,7 @@ elseif gameLang == 0x4A then
  wildAddr = 0x02023F8C  -- capture
  saveBlock1Addr = 0x03004FA8
  saveBlock2Addr = 0x03004FAC
+ roamerMapGroupNumAddr = 0x0203F322
  wildEncounterDataAddr = 0x0203861C
  playerAvatarAddr = 0x02036FAC
  speciesDexIndexAddr = 0x02023528  -- 100% catch
@@ -412,6 +430,7 @@ else
  wildAddr = 0x0202402C  -- capture
  saveBlock1Addr = 0x03004F58
  saveBlock2Addr = 0x03004F5C
+ roamerMapGroupNumAddr = 0x0203F3AE
  wildEncounterDataAddr = 0x020386D0
  playerAvatarAddr = 0x02037078
  speciesDexIndexAddr = 0x020235C8  -- 100% catch
@@ -894,6 +913,14 @@ function showOpponentPokemonInfo()
  showInfo(wildAddr)
 end
 
+function isRoamerAtPlayerLocation(mapGroupNum1, mapGroupNum2)
+ if mapGroupNum1 == mapGroupNum2 then
+  return "limegreen"
+ else
+  return nil
+ end
+end
+
 function showRoamerInfo()
  local roamerAddr = read32Bit(saveBlock1Addr) + 0x30D0
  local roamerIVsValue = read32Bit(roamerAddr)
@@ -907,6 +934,11 @@ function showRoamerInfo()
  local roamerLevel = read8Bit(roamerAddr + 0xC)
  local roamerStatusIndex = read8Bit(roamerAddr + 0xD)
  local roamerStatus
+
+ local roamerMapGroupNum = read16Bit(roamerMapGroupNumAddr)
+ local roamerMapNum = rshift(roamerMapGroupNum, 8)
+ local playerMapGroupNumAddr = read32Bit(saveBlock1Addr) + 0x4
+ local playerMapGroupNum = read16Bit(playerMapGroupNumAddr)
 
  if roamerStatusIndex > 0 and roamerStatusIndex < 0x8 then
   roamerStatus = statusConditionNamesList[2]
@@ -940,6 +972,8 @@ function showRoamerInfo()
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 126, "HP: "..roamerHP)
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 144, "Level: "..roamerLevel)
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 162, "Status condition: "..roamerStatus)
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 180, "Current position:")
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 198, locationNamesList[roamerMapNum + 1], isRoamerAtPlayerLocation(playerMapGroupNum, roamerMapGroupNum))
  else
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, string.format("Active Roamer? No"))
  end

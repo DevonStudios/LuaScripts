@@ -269,6 +269,17 @@ local catchRatesList = {
  200, 225, 45, 190, 90, 200, 45, 30, 125, 190, 75, 255, 120, 45, 255, 60,
  60, 25, 225, 45, 45, 45, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
 
+local locationNamesList = {
+ "Petalburg City", "Slateport City", "Mauville City", "Rustboro City", "Fortree City", "Lilycove City",
+ "Mossdeep City", "Sootopolis City", "Ever Grande City", "Littleroot Town", "Oldale Town", "Dewford Town",
+ "Lavaridge Town", "Fallarbor Town", "Verdanturf Town", "Pacifidlog Town", "Route 101", "Route 102",
+ "Route 103", "Route 104", "Route 105", "Route 106", "Route 107", "Route 108", "Route 109", "Route 110",
+ "Route 111", "Route 112", "Route 113", "Route 114", "Route 115", "Route 116", "Route 117", "Route 118",
+ "Route 119", "Route 120", "Route 121", "Route 122", "Route 123", "Route 124", "Route 125", "Route 126",
+ "Route 127", "Route 128", "Route 129", "Route 130", "Route 131", "Route 132", "Route 133", "Route 134",
+ "Underwater Route124", "Underwater Route126", "Underwater Route 127", "Underwater Route 128",
+ "Underwater Route 129", "Underwater Route 105", "Underwater Route 125"}
+
 local statusConditionNamesList = {
  "None", "SLP", "PSN", "BRN", "FRZ", "PAR", "PSN"}
 
@@ -304,6 +315,7 @@ local battleVideoSeed2Addr
 local wildAddr
 local saveBlock1Addr
 local saveBlock2Addr
+local roamerMapGroupNumAddr
 
 local speciesDexIndexAddr
 local selectedItemAddr
@@ -363,6 +375,7 @@ if gameLang == 0x4A then  -- Check game language
  wildAddr = 0x020243E8  -- capture
  saveBlock1Addr = 0x03005AEC
  saveBlock2Addr = 0x03005AF0
+ roamerMapGroupNumAddr = 0x0203B952
  speciesDexIndexAddr = 0x0202370C  -- 100% catch
  selectedItemAddr = 0x0203CB48
  wildTypeAddr = 0x02023DA1
@@ -388,6 +401,7 @@ else
  wildAddr = 0x02024744  -- capture
  saveBlock1Addr = 0x03005D8C
  saveBlock2Addr = 0x03005D90
+ roamerMapGroupNumAddr = 0x0203BC86
  speciesDexIndexAddr = 0x02023A68  -- 100% catch
  selectedItemAddr = 0x0203CE7C
  wildTypeAddr = 0x020240FD
@@ -880,6 +894,14 @@ function showOpponentPokemonInfo()
  showInfo(wildAddr)
 end
 
+function isRoamerAtPlayerLocation(mapGroupNum1, mapGroupNum2)
+ if mapGroupNum1 == mapGroupNum2 then
+  return "limegreen"
+ else
+  return nil
+ end
+end
+
 function showRoamerInfo()
  local roamerAddr = read32Bit(saveBlock1Addr) + 0x31DC
  local roamerIVsValue = read32Bit(roamerAddr)
@@ -893,6 +915,11 @@ function showRoamerInfo()
  local roamerLevel = read8Bit(roamerAddr + 0xC)
  local roamerStatusIndex = read8Bit(roamerAddr + 0xD)
  local roamerStatus
+
+ local roamerMapGroupNum = read16Bit(roamerMapGroupNumAddr)
+ local roamerMapNum = rshift(roamerMapGroupNum, 8)
+ local playerMapGroupNumAddr = read32Bit(saveBlock1Addr) + 0x4
+ local playerMapGroupNum = read16Bit(playerMapGroupNumAddr)
 
  if roamerStatusIndex > 0 and roamerStatusIndex < 0x8 then
   roamerStatus = statusConditionNamesList[2]
@@ -926,6 +953,8 @@ function showRoamerInfo()
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 126, "HP: "..roamerHP)
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 144, "Level: "..roamerLevel)
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 162, "Status condition: "..roamerStatus)
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 180, "Current position:")
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 198, locationNamesList[roamerMapNum + 1], isRoamerAtPlayerLocation(playerMapGroupNum, roamerMapGroupNum))
  else
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, string.format("Active Roamer? No"))
  end
