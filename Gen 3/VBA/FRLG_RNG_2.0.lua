@@ -1663,6 +1663,7 @@ while warning == "" do
 
  if mode[index] == "Capture" or mode[index] == "Breeding" or mode[index] == "Pandora" or mode[index] == "Pokemon Info" then
   if showRngInfoText then
+   showMissingStepsForEncounter()
    showRngInfo(initSeed, currSeed, advances)
   end
 
@@ -1677,8 +1678,6 @@ while warning == "" do
   if showRoamerInfoText then
    showRoamerInfo()
   end
-
-  showMissingStepsForEncounter()
  elseif mode[index] == "100% Catch" then
   catchRng()
  elseif mode[index] == "Breeding" then
