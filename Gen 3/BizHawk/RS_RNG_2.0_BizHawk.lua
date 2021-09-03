@@ -888,7 +888,7 @@ function isRoamerAtPlayerLocation(mapGroupNum1, mapGroupNum2)
  mapGroupNum1 = lshift(band(mapGroupNum1, 0xFF) - 1, 8) + rshift(mapGroupNum1, 8)
 
  if mapGroupNum1 == mapGroupNum2 then
-  return "green"
+  return "limegreen"
  else
   return nil
  end
