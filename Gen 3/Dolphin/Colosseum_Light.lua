@@ -115,12 +115,26 @@ function calcRate(HP, bonusBall, rate)
  return math.floor(1048560 / math.sqrt(math.sqrt(16711680 / a)))
 end
 
+function shinyCheck(highPID, lowPID, trainerID, trainerSID)
+ local shinyType = trainerID ~ trainerSID ~ highPID ~ lowPID
+
+ if shinyType == 0 then
+  return "(Square)"
+ elseif shinyType < 8 then
+  return "(Star)"
+ else
+  return ""
+ end
+end
+
 function setInfo(start, partyStart, boxStart)
  isShadow = 0
  i = 0
  while isShadow == 0 and i < 6 do -- get shadow opponent Pokémon stats
   shadowStart = start + (0x138 * i)
   pid = ReadValue32(shadowStart)
+  OTID = TID
+  OTSID = SID
   speciesAddr = shadowStart - 0x4
   index = nationalDexTable[ReadValue16(speciesAddr) + 1] + 1
   species = pokemon[index]
@@ -143,7 +157,7 @@ function setInfo(start, partyStart, boxStart)
  end
 
  speciesText = string.format("\n\nOpponent\n\nSpecies: %s", species)
- PIDs = string.format("\nPID: %08X", pid)
+ PIDs = string.format("\nPID: %08X %s", pid, shinyCheck(pid >> 16, pid & 0xFFFF, OTID, OTSID))
  naturesText = string.format("\nNature: %s", nature)
  ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", hpiv, atkiv, defiv, spdefiv, spatkiv, spdiv)
  hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)
@@ -151,6 +165,8 @@ function setInfo(start, partyStart, boxStart)
  infoText = speciesText..PIDs..naturesText..ivs..hiddenPower..catchRngText
 
  partyPid = ReadValue32(partyStart)
+ partyOTID = ReadValue16(partyStart + 0x12)
+ partyOTSID = ReadValue16(partyStart + 0x10)
  partySpeciesAddr = partyStart - 0x4
  partyIndex = nationalDexTable[ReadValue16(partySpeciesAddr) + 1] + 1
  partySpecies = pokemon[partyIndex]
@@ -168,13 +184,15 @@ function setInfo(start, partyStart, boxStart)
  partyHidpowbase = (((partyHpiv&2)/2 + (partyAtkiv&2) + 2*(partyDefiv&2) + 4*(partySpdiv&2) + 8*(partySpdefiv&2) + 16*(partySpatkiv&2))*40) // 63 + 30
 
  speciesText = string.format("\nParty\n\nSpecies: %s", partySpecies)
- PIDs = string.format("\nPID: %08X", partyPid)
+ PIDs = string.format("\nPID: %08X %s", partyPid, shinyCheck(partyPid >> 16, partyPid & 0xFFFF, partyOTID, partyOTSID))
  naturesText = string.format("\nNature: %s", partyNature)
  ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", partyHpiv, partyAtkiv, partyDefiv, partySpdefiv, partySpatkiv, partySpdiv)
  hiddenPower = string.format("\nHP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)
  partyInfoText = speciesText..PIDs..naturesText..ivs..hiddenPower
 
  boxPid = ReadValue32(boxStart)
+ boxOTID = ReadValue16(boxStart + 0x12)
+ boxOTSID = ReadValue16(boxStart + 0x10)
  boxSpeciesAddr = boxStart - 0x4
  boxIndex = nationalDexTable[ReadValue16(boxSpeciesAddr) + 1] + 1
  boxSpecies = pokemon[boxIndex]
@@ -192,7 +210,7 @@ function setInfo(start, partyStart, boxStart)
  boxHidpowbase = (((boxHpiv&2)/2 + (boxAtkiv&2) + 2*(boxDefiv&2) + 4*(boxSpdiv&2) + 8*(boxSpdefiv&2) + 16*(boxSpatkiv&2))*40) // 63 + 30
 
  speciesText = string.format("\nBox\n\nSpecies: %s", boxSpecies)
- PIDs = string.format("\nPID: %08X", boxPid)
+ PIDs = string.format("\nPID: %08X %s", boxPid, shinyCheck(boxPid >> 16, boxPid & 0xFFFF, boxOTID, boxOTSID))
  naturesText = string.format("\nNature: %s", boxNature)
  ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", boxHpiv, boxAtkiv, boxDefiv, boxSpdefiv, boxSpatkiv, boxSpdiv)
  hiddenPower = string.format("\nHP: %s %02d", typeOrder[boxHidpowtype + 1], boxHidpowbase)

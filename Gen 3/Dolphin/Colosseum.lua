@@ -121,6 +121,18 @@ function setPadding(maxLength, goodSpacing, stringVar)
  return spaces
 end
 
+function shinyCheck(highPID, lowPID, trainerID, trainerSID)
+ local shinyType = trainerID ~ trainerSID ~ highPID ~ lowPID
+
+ if shinyType == 0 then
+  return "(Square)"
+ elseif shinyType < 8 then
+  return "(Star)  "
+ else
+  return "        "
+ end
+end
+
 function calcRate(HP, bonusBall, rate)
  a = math.floor((HP * rate * bonusBall) / (3 * HP))
  return math.floor(1048560 / math.sqrt(math.sqrt(16711680 / a)))
@@ -128,6 +140,8 @@ end
 
 function setInfo(start, partyStart, boxStart, i)
  pid = ReadValue32(start)
+ OTID = TID
+ OTSID = SID
  speciesAddr = start - 0x4
  index = nationalDexTable[ReadValue16(speciesAddr) + 1] + 1
  species = pokemon[index]
@@ -148,6 +162,8 @@ function setInfo(start, partyStart, boxStart, i)
  hidpowbase = (((hpiv&2)/2 + (atkiv&2) + 2*(defiv&2) + 4*(spdiv&2) + 8*(spdefiv&2) + 16*(spatkiv&2))*40) // 63 + 30
 
  partyPid = ReadValue32(partyStart)
+ partyOTID = ReadValue16(partyStart + 0x12)
+ partyOTSID = ReadValue16(partyStart + 0x10)
  partySpeciesAddr = partyStart - 0x4
  partyIndex = nationalDexTable[ReadValue16(partySpeciesAddr) + 1] + 1
  partySpecies = pokemon[partyIndex]
@@ -168,6 +184,8 @@ function setInfo(start, partyStart, boxStart, i)
 
  if i == 0 then
   boxPid = ReadValue32(boxStart)
+  boxOTID = ReadValue16(boxStart + 0x12)
+  boxOTSID = ReadValue16(boxStart + 0x10)
   boxSpeciesAddr = boxStart - 0x4
   boxIndex = nationalDexTable[ReadValue16(boxSpeciesAddr) + 1] + 1
   boxSpecies = pokemon[boxIndex]
@@ -185,7 +203,7 @@ function setInfo(start, partyStart, boxStart, i)
   boxHidpowbase = (((boxHpiv&2)/2 + (boxAtkiv&2) + 2*(boxDefiv&2) + 4*(boxSpdiv&2) + 8*(boxSpdefiv&2) + 16*(boxSpatkiv&2))*40) // 63 + 30
 
   speciesText = string.format("Species: %sSpecies: %sSpecies: %s", species, partySpecies, boxSpecies)
-  PIDs = string.format("\nPID: %08X            PID: %08X            PID: %08X", pid, partyPid, boxPid)
+  PIDs = string.format("\nPID: %08X %s   PID: %08X %s   PID: %08X %s", pid, shinyCheck(pid >> 16, pid & 0xFFFF, OTID, OTSID), partyPid, shinyCheck(partyPid >> 16, partyPid & 0xFFFF, partyOTID, partyOTSID), boxPid, shinyCheck(boxPid >> 16, boxPid & 0xFFFF, boxOTID, boxOTSID))
   naturesText = string.format("\nNature: %sNature: %sNature: %s", nature, partyNature, boxNature)
   ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d   IVs: %02d/%02d/%02d/%02d/%02d/%02d   IVs: %02d/%02d/%02d/%02d/%02d/%02d", hpiv, atkiv, defiv, spdefiv, spatkiv, spdiv, partyHpiv, partyAtkiv, partyDefiv, partySpdefiv, partySpatkiv, partySpdiv, boxHpiv, boxAtkiv, boxDefiv, boxSpdefiv, boxSpatkiv, boxSpdiv)
   hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[hidpowtype + 1], hidpowbase))..string.format("HP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase))..string.format("HP: %s %02d", typeOrder[boxHidpowtype + 1], boxHidpowbase)
@@ -193,7 +211,7 @@ function setInfo(start, partyStart, boxStart, i)
   infoText = speciesText..PIDs..naturesText..ivs..hiddenPower..catchRngText
  else
   speciesText = string.format("Species: %sSpecies: %s", species, partySpecies)
-  PIDs = string.format("\nPID: %08X            PID: %08X", pid, partyPid)
+  PIDs = string.format("\nPID: %08X %s   PID: %08X %s", pid, shinyCheck(pid >> 16, pid & 0xFFFF, OTID, OTSID), partyPid, shinyCheck(partyPid >> 16, partyPid & 0xFFFF, partyOTID, partyOTSID))
   naturesText = string.format("\nNature: %sNature: %s", nature, partyNature)
   ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d   IVs: %02d/%02d/%02d/%02d/%02d/%02d", hpiv, atkiv, defiv, spdefiv, spatkiv, spdiv, partyHpiv, partyAtkiv, partyDefiv, partySpdefiv, partySpatkiv, partySpdiv)
   hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)..setPadding(11, 9, string.format("%s %02d", typeOrder[hidpowtype + 1], hidpowbase))..string.format("HP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)
