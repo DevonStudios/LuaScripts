@@ -647,8 +647,8 @@ function calcAdvancesJump(seed)
 end
 
 function showRngInfo(initial, current, advances)
- gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 36, "Initial Seed: "..string.format("%04X", initial))
- gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 18, "Current Seed: "..string.format("%08X", current))
+ gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 36, string.format("Initial Seed: %04X", initial))
+ gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 18, string.format("Current Seed: %08X", current))
  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding, "Advances: "..advances)
 end
 
@@ -1028,7 +1028,7 @@ function showRoamerInfo()
  local isRoamerActive = read8Bit(roamerAddr + 0x13) == 1
 
  if isRoamerActive then
-  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, string.format("Active Roamer? Yes"))
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, "Active Roamer? Yes")
 
   if roamerSpeciesName ~= nil then
    gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 36, "Species: "..roamerSpeciesName)
@@ -1044,7 +1044,7 @@ function showRoamerInfo()
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 180, "Current position:")
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 198, locationNamesList[roamerMapNum + 1], isRoamerAtPlayerLocation(playerMapGroupNum, roamerMapGroupNum))
  else
-  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, string.format("Active Roamer? No"))
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, "Active Roamer? No")
  end
 end
 
@@ -1521,7 +1521,7 @@ function showFoundInitSeed()
 
  if initSeedFound then
   gui.text(emuWindow.leftPadding + 1, emuWindow.height / 2, "Found!")
-  gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 18, "Initial Seed: "..string.format("%04X", init))
+  gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 18, string.format("Initial Seed: %04X", init))
 
   if not botOneTime then
    emu.pause()

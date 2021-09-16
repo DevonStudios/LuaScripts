@@ -603,10 +603,10 @@ end
 
 function showRngInfo(current, advances)
  if initSeed ~= nil then
-  gui.text(0, 134, "Initial Seed: "..string.format("%04X", initSeed))
+  gui.text(0, 134, string.format("Initial Seed: %04X", initSeed))
  end
 
- gui.text(1, 143, "Current Seed: "..string.format("%08X", current))
+ gui.text(1, 143, string.format("Current Seed: %08X", current))
  gui.text(1, 152, "Advances: "..advances)
 end
 
@@ -984,7 +984,7 @@ function showRoamerInfo()
  local isRoamerActive = read8Bit(roamerAddr + 0x13) == 1
 
  if isRoamerActive then
-  gui.text(150, 10, string.format("Active Roamer? Yes"))
+  gui.text(150, 10, "Active Roamer? Yes")
 
   if roamerSpeciesName ~= nil then
    gui.text(150, 19, "Species: "..roamerSpeciesName)
@@ -1000,7 +1000,7 @@ function showRoamerInfo()
   gui.text(150, 91, "Current position:")
   gui.text(150, 100, locationNamesList[roamerMapNum + 1], isRoamerAtPlayerLocation(playerMapGroupNum, roamerMapGroupNum))
  else
-  gui.text(150, 10, string.format("Active Roamer? No"))
+  gui.text(150, 10, "Active Roamer? No")
  end
 end
 

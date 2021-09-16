@@ -627,9 +627,9 @@ function getEncounterAdvancesHit()
 end
 
 function showRngInfo(initial, current, battle, advances)
- gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 54, "Initial Seed: "..string.format("%04X", initial))
- gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 36, "Battle Video Seed: "..string.format("%04X", battle))
- gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 18, "Current Seed: "..string.format("%08X", current))
+ gui.text(emuWindow.leftPadding, emuWindow.bottomPadding - 54, string.format("Initial Seed: %04X", initial))
+ gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 36, string.format("Battle Video Seed: %04X", battle))
+ gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding - 18, string.format("Current Seed: %08X", current))
  gui.text(emuWindow.leftPadding + 1, emuWindow.bottomPadding, "Advances: "..advances)
 end
 
@@ -1009,7 +1009,7 @@ function showRoamerInfo()
  local isRoamerActive = read8Bit(roamerAddr + 0x13) == 1
 
  if isRoamerActive then
-  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, string.format("Active Roamer? Yes"))
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, "Active Roamer? Yes")
 
   if roamerSpeciesName ~= nil then
    gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 36, "Species: "..roamerSpeciesName)
@@ -1025,7 +1025,7 @@ function showRoamerInfo()
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 180, "Current position:")
   gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 198, locationNamesList[roamerMapNum + 1], isRoamerAtPlayerLocation(playerMapGroupNum, roamerMapGroupNum))
  else
-  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, string.format("Active Roamer? No"))
+  gui.text(emuWindow.leftPadding + 420, emuWindow.topPadding + 18, "Active Roamer? No")
  end
 end
 
@@ -1301,16 +1301,16 @@ function showDayCareInfo()
 
  if isEggReady then
   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 126, "Egg generated, go get it!")
-  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, string.format("Egg PID:"))
+  gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, "Egg PID:")
   gui.text(emuWindow.leftPadding + 478, emuWindow.topPadding + 144, string.format("%08X%s", eggPID, eggShinyType[2]), eggShinyType[1])
   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 162, "Nature: "..natureNamesList[eggNatureNumber + 1])
 
   if iter > 1 then
    gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 234, string.format("Approx iter: %d", iter))
-   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 252, string.format("Stone worked!"))
+   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 252, "Stone worked!")
   else
-   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 234, string.format("First egg PID result"))
-   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 252, string.format("Stone failed?"))
+   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 234, "First egg PID result")
+   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 252, "Stone failed?")
   end
  elseif eggStepsCounter == 1 then
   gui.text(emuWindow.leftPadding + 388, emuWindow.topPadding + 144, "Next step might generate")

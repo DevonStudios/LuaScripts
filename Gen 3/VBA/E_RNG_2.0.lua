@@ -616,9 +616,9 @@ function getEncounterAdvancesHit()
 end
 
 function showRngInfo(initial, current, battle, advances)
- gui.text(0, 125, "Initial Seed: "..string.format("%04X", initial))
- gui.text(1, 134, "Battle Video Seed: "..string.format("%04X", battle))
- gui.text(1, 143, "Current Seed: "..string.format("%08X", current))
+ gui.text(0, 125, string.format("Initial Seed: %04X", initial))
+ gui.text(1, 134, string.format("Battle Video Seed: %04X", battle))
+ gui.text(1, 143, string.format("Current Seed: %08X", current))
  gui.text(1, 152, "Advances: "..advances)
 end
 
@@ -998,7 +998,7 @@ function showRoamerInfo()
  local isRoamerActive = read8Bit(roamerAddr + 0x13) == 1
 
  if isRoamerActive then
-  gui.text(150, 10, string.format("Active Roamer? Yes"))
+  gui.text(150, 10, "Active Roamer? Yes")
 
   if roamerSpeciesName ~= nil then
    gui.text(150, 19, "Species: "..roamerSpeciesName)
@@ -1014,7 +1014,7 @@ function showRoamerInfo()
   gui.text(150, 91, "Current position:")
   gui.text(150, 100, locationNamesList[roamerMapNum + 1], isRoamerAtPlayerLocation(playerMapGroupNum, roamerMapGroupNum))
  else
-  gui.text(150, 10, string.format("Active Roamer? No"))
+  gui.text(150, 10, "Active Roamer? No")
  end
 end
 
@@ -1290,16 +1290,16 @@ function showDayCareInfo()
 
  if isEggReady then
   gui.text(127, 55, "Egg generated, go get it!")
-  gui.text(127, 64, string.format("Egg PID:"))
+  gui.text(127, 64, "Egg PID:")
   gui.text(163, 64, string.format("%08X%s", eggPID, eggShinyType[2]), eggShinyType[1])
   gui.text(127, 73, "Nature: "..natureNamesList[eggNatureNumber + 1])
 
   if iter > 1 then
    gui.text(127, 118, string.format("Approx iter: %d", iter))
-   gui.text(127, 127, string.format("Stone worked!"))
+   gui.text(127, 127, "Stone worked!")
   else
-   gui.text(127, 118, string.format("First egg PID result"))
-   gui.text(127, 127, string.format("Stone failed?"))
+   gui.text(127, 118, "First egg PID result")
+   gui.text(127, 127, "Stone failed?")
   end
  elseif eggStepsCounter == 1 then
   gui.text(127, 73, "Next step might generate")
