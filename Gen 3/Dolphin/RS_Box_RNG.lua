@@ -229,6 +229,8 @@ local itemNamesList = {
  "Dome Fossil", "Silph Scope", "Bicycle", "Town Map", "VS Seeker", "Fame Checker", "TM Case", "Berry Pouch", "Teachy TV", "Tri-Pass",
  "Rainbow Pass", "Tea", "MysticTicket", "AuroraTicket", "Powder Jar", "Ruby", "Sapphire", "Magma Emblem", "Old Sea Map"}
 
+local gameLang
+
 local currSeedAddr
 local initSeed
 local tempCurr
@@ -239,16 +241,17 @@ local wildAddr
 local IDsAddr
 
 function onScriptStart()
+ gameLang = ReadValue8(0x3)
  initSeed = nil
  tempCurr = 0
  advances = 0
  checkInit = false
 
- if ReadValue8(0x3) == 0x4A then -- J
+ if gameLang == 0x4A then -- J
   currSeedAddr = 0xB4E548
   wildAddr = 0xB4E2F0
   IDsAddr = 0xB2EA0E
- elseif ReadValue8(0x3) == 0x45 then -- U
+ elseif gameLang == 0x45 then -- U
   currSeedAddr = 0xB1E9F8
   wildAddr = 0xB1E7A0
   IDsAddr = 0xAFF08E
