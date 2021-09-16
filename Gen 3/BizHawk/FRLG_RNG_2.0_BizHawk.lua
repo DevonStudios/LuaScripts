@@ -268,7 +268,7 @@ local catchRatesList = {
  45, 90, 90, 45, 45, 190, 75, 205, 155, 255, 90, 45, 45, 45, 45, 255, 60, 45,
  200, 225, 45, 190, 90, 200, 45, 30, 125, 190, 75, 255, 120, 45, 255, 60,
  60, 25, 225, 45, 45, 45, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
- 
+
 local locationNamesList = {
  "Pallet Town", "Viridian City", "Pewter City", "Cerulean City", "Lavender Town", "Vermilion City",
  "Celadon City", "Fuchsia City", "Cinnabar Island", "Indigo Plateau Exterior", "Saffron City",
@@ -320,6 +320,11 @@ local wildEncounterDataAddr
 local playerAvatarAddr
 local encounterRateBase = 0
 local encounterRateFlag = false
+local prevPID = 0
+local tempEncounterSeed = 0
+local hitEncounterSeed = 0
+local advancesHit = 0
+local encounterMethod = 0
 
 local speciesDexIndexAddr
 local selectedItemAddr
@@ -603,10 +608,17 @@ function checkInitialSeedGeneration(initial, current)
  end
 end
 
+function getEncounterAdvancesHit()
+ if prevPID ~= read32Bit(wildAddr) then
+  advancesHit = advances + 1
+ end
+end
+
 function LCRNG(s, mul1, mul2, sum)
  local a = mul1 * (s % 0x10000) + rshift(s, 16) * mul2
  local b = mul2 * (s % 0x10000) + (a % 0x10000) * 0x10000 + sum
  local c = b % 4294967296
+
  return c
 end
 
@@ -788,6 +800,59 @@ function isEgg(addr)
  return read16Bit(addr + 0x12) == 0x601
 end
 
+function getEncounterSeed(seed)
+ local tempSeed = seed
+
+ for i = advancesHit, advances - 1 do
+  tempSeed = LCRNG(tempSeed, 0xEEB9, 0xEB65, 0x0A3561A1)
+ end
+
+ return tempSeed
+end
+
+function getMethod(iv1, iv2, iv3, pid1, pid2)
+ if iv1 == piv1 then
+  if iv2 == piv2 then
+   return 1
+  elseif iv3 == piv2 then
+   return 4
+  end
+ elseif iv2 == piv1 then
+  if iv3 == piv2 then
+   return 2
+  end
+ end
+
+ return 0
+end
+
+function getEncounterMethod(PID, IVsValue)
+ if prevPID ~= PID then
+  prevPID = PID
+  tempEncounterSeed = read32Bit(currSeedAddr)
+  hitEncounterSeed = getEncounterSeed(tempEncounterSeed)
+ end
+
+ while rshift(PID, 16) ~= rshift(tempEncounterSeed, 16) do
+  tempEncounterSeed = LCRNG(tempEncounterSeed, 0xEEB9, 0xEB65, 0x0A3561A1)
+ end
+
+ tempEncounterSeed = LCRNG(tempEncounterSeed, 0x41C6, 0x4E6D, 0x6073)
+ iv1 = band(rshift(tempEncounterSeed, 16), 0x7FFF)
+ tempEncounterSeed = LCRNG(tempEncounterSeed, 0x41C6, 0x4E6D, 0x6073)
+ iv2 = band(rshift(tempEncounterSeed, 16), 0x7FFF)
+ tempEncounterSeed = LCRNG(tempEncounterSeed, 0x41C6, 0x4E6D, 0x6073)
+ iv3 = band(rshift(tempEncounterSeed, 16), 0x7FFF)
+ piv1 = band(IVsValue, 0x7FFF)
+ piv2 = band(rshift(IVsValue, 15), 0x7FFF)
+
+ encounterMethod = getMethod(iv1, iv2, iv3, piv1, piv2)
+
+ gui.text(emuWindow.rightPadding - 350, emuWindow.topPadding + 252, string.format("Method %d", encounterMethod))
+ gui.text(emuWindow.rightPadding - 350, emuWindow.topPadding + 270, string.format("Hit Seed: %08X", hitEncounterSeed))
+ gui.text(emuWindow.rightPadding - 350, emuWindow.topPadding + 288, string.format("Hit Advances: %d", advancesHit))
+end
+
 function shinyCheck(PID, addr)
  addr = addr or nil
 
@@ -886,6 +951,10 @@ function showInfo(addr)
  if speciesDexNumber ~= nil and speciesDexNumber < 387 and abilityNumber ~= nil then
   abilityName = abilityNamesList[pokemonAbilities[speciesDexNumber][abilityNumber]]
  end
+
+ --[[if mode[index] == "Capture" then
+  getEncounterMethod(PID, IVsAndAbilityValue)
+ end]]
 
  if speciesName ~= nil then
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 18, "Species: "..speciesName)
@@ -1628,6 +1697,10 @@ while warning == "" do
  currSeed = read32Bit(currSeedAddr)
 
  checkInitialSeedGeneration(initSeed, currSeed)
+
+ --[[if mode[index] == "Capture" then
+  getEncounterAdvancesHit()
+ end]]
 
  advances = advances + calcAdvancesJump(currSeed)
  userdata.set("advances", advances)
