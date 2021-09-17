@@ -230,6 +230,8 @@ local itemNamesList = {
  "Rainbow Pass", "Tea", "MysticTicket", "AuroraTicket", "Powder Jar", "Ruby", "Sapphire", "Magma Emblem", "Old Sea Map"}
 
 local gameLang
+local gbaGameLang
+local engOffset
 
 local currSeedAddr
 local initSeed
@@ -242,6 +244,7 @@ local IDsAddr
 
 function onScriptStart()
  gameLang = ReadValue8(0x3)
+ engOffset = 0
  initSeed = nil
  tempCurr = 0
  advances = 0
@@ -256,8 +259,14 @@ function onScriptStart()
   wildAddr = 0xB1E7A0
   IDsAddr = 0xAFF08E
  else -- E
-  currSeedAddr = 0xB51E68
-  wildAddr = 0xB51C10
+  gbaGameLang = ReadValue8(0xC110AF)
+
+  if gbaGameLang == 0x45 then
+   engOffset = 0x10
+  end
+  
+  currSeedAddr = 0xB51E68 - engOffset
+  wildAddr = 0xB51C10 - engOffset
   IDsAddr = 0xB324EE
  end
 end
