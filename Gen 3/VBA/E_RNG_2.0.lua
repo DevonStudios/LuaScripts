@@ -750,7 +750,7 @@ function showIVsAndHP(IVsValue, isRoamer)
   textXOffset = 149
  end
 
- gui.text(0 + textXOffset, 46, "IVs: 00")
+ gui.text(0 + textXOffset, 46, "IVs:")
  gui.text(20 + textXOffset, 46, string.format("%02d", hpIV), getIVColor(hpIV))
  gui.text(28 + textXOffset, 46, "/")
  gui.text(32 + textXOffset, 46, string.format("%02d", atkIV), getIVColor(atkIV))

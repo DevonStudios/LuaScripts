@@ -755,53 +755,6 @@ end
 function showIVsAndHP(IVsValue, isRoamer)
  isRoamer = isRoamer or nil
 
- local hpIV = band(IVsValue, 0x1F)
- local atkIV = band(IVsValue, 0x1F * 0x20) / 0x20
- local defIV = band(IVsValue, 0x1F * 0x400) / 0x400
- local spAtkIV = band(IVsValue, 0x1F * 0x100000) / 0x100000
- local spDefIV = band(IVsValue, 0x1F * 0x2000000) / 0x2000000
- local spdIV = band(IVsValue, 0x1F * 0x8000) / 0x8000
-
- local hpType = floor(((hpIV%2 + 2*(atkIV%2) + 4*(defIV%2) + 8*(spdIV%2) + 16*(spAtkIV%2) + 32*(spDefIV%2))*15)/63)
- local hpPower = floor(((band(hpIV,2)/2 + band(atkIV,2) + 2*band(defIV,2) + 4*band(spdIV,2) + 8*band(spAtkIV,2) + 16*band(spDefIV,2))*40)/63 + 30)
-
- if not isRoamer then
-  gui.text(0, 19, "IVs:")
-  gui.text(29, 19, "HP")
-  gui.text(41, 19, hpIV, getIVColor(hpIV))
-  gui.text(59, 19, "Atk")
-  gui.text(75, 19, atkIV, getIVColor(atkIV))
-  gui.text(93, 19, "Def")
-  gui.text(109, 19, defIV, getIVColor(defIV))
-  gui.text(127, 19, "SpA")
-  gui.text(143, 19, spAtkIV, getIVColor(spAtkIV))
-  gui.text(161, 19, "SpD")
-  gui.text(177, 19, spDefIV, getIVColor(spDefIV))
-  gui.text(195, 19, "Spe")
-  gui.text(211, 19, spdIV, getIVColor(spdIV))
-
-  gui.text(150, 28, "Hidd Pow "..HPTypeNamesList[hpType + 1].." "..hpPower)
- else
-  gui.text(149, 82, "IVs:")
-  gui.text(169, 82, hpIV, getIVColor(hpIV))
-  gui.text(177, 82, "/")
-  gui.text(181, 82, atkIV, getIVColor(atkIV))
-  gui.text(185, 82, "/")
-  gui.text(189, 82, defIV, getIVColor(defIV))
-  gui.text(193, 82, "/")
-  gui.text(197, 82, spAtkIV, getIVColor(spAtkIV))
-  gui.text(201, 82, "/")
-  gui.text(205, 82, spDefIV, getIVColor(spDefIV))
-  gui.text(209, 82, "/")
-  gui.text(213, 82, spdIV, getIVColor(spdIV))
-
-  gui.text(150, 91, "Hidd Pow: "..HPTypeNamesList[hpType + 1].." "..hpPower)
- end
-end
-
-function showIVsAndHP(IVsValue, isRoamer)
- isRoamer = isRoamer or nil
-
  local textXOffset = 0
 
  local hpIV = band(IVsValue, 0x1F)
@@ -818,7 +771,7 @@ function showIVsAndHP(IVsValue, isRoamer)
   textXOffset = 149
  end
 
- gui.text(0 + textXOffset, 46, "IVs: 00")
+ gui.text(0 + textXOffset, 46, "IVs:")
  gui.text(20 + textXOffset, 46, string.format("%02d", hpIV), getIVColor(hpIV))
  gui.text(28 + textXOffset, 46, "/")
  gui.text(32 + textXOffset, 46, string.format("%02d", atkIV), getIVColor(atkIV))
