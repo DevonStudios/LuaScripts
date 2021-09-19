@@ -194,7 +194,7 @@ end
 
 function findFeebasTiles(seed)
  for i = 0, 3 do
-  feebasTiles[i + 1] = (band(rshift(seed, (24 - 8 * i)), 0xFF) % 0x84) + (0x84 * i)
+  feebasTiles[i + 1] = (band(rshift(seed, (24 - (8 * i))), 0xFF) % 0x84) + (0x84 * i)
  end
 end
 

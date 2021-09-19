@@ -174,7 +174,7 @@ print()
 print("Game Version: "..game..warning)
 print("Language: "..language)
 
-function next(s, mul1, mul2, sum)
+function LCRNG(s, mul1, mul2, sum)
  local a = mul1 * (s % 65536) + rshift(s, 16) * mul2
  local b = mul2 * (s % 65536) + (a % 65536) * 65536 + sum
  local c = b % 4294967296
@@ -196,8 +196,9 @@ end
 
 function findFeebasTiles(seed)
  local i = 1
+
  while i <= 6 do
-  seed = next(seed, 0x41C6, 0x4E6D, 0x3039)
+  seed = LCRNG(seed, 0x41C6, 0x4E6D, 0x3039)
   feebasTiles[i] = (rshift(seed, 16)) % 0x1BF
 
   if feebasTiles[i] == 0 then
