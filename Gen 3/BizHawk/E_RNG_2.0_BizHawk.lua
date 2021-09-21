@@ -1,7 +1,7 @@
 read32Bit = memory.read_u32_le
 read16Bit = memory.read_u16_le
 read8Bit = memory.readbyte
---mrwrite = event.onmemorywrite
+memoryWriteCheck = event.onmemorywrite
 rshift = bit.rshift
 lshift = bit.lshift
 bxor = bit.bxor
@@ -347,6 +347,7 @@ local partyAddr
 local partySlotsCounterAddr
 local eggPIDPointerAddr
 
+local initSeedWritten = false
 local TIDFound = false
 local botTargetTIDs = {0, 1, 1337, 8453, 8411, 11233, 11111, 22222, 33333}  -- Input here the bot target TIDs
 
@@ -1331,11 +1332,11 @@ function showPartyEggInfo()
  end
 end
 
---[[function writeCheck()
+function writeCheck()
  initSeedWritten = true
-end]]
+end
 
---mrwrite(writeCheck, 0x02020000)
+memoryWriteCheck(writeCheck, 0x02020000)
 
 function isTIDFound()
  local TID = read32Bit(0x02020000)
@@ -1349,7 +1350,7 @@ function isTIDFound()
 end
 
 function TIDBotLoop()
- --initSeedWritten = false
+ initSeedWritten = false
  botOneTime = false
 
  while not TIDFound do
@@ -1357,18 +1358,18 @@ function TIDBotLoop()
   joypad.set({A = true})
 
   i = 0
-  while read16Bit(0x04000106) ~= 0 and i < 40 do
+  while not initSeedWritten and i < 40 do
    emu.frameadvance()
    i = i + 1
   end
 
-  if read16Bit(0x04000106) == 0 then
+  if initSeedWritten then
    --print(read16Bit(0x02020000))
    TIDFound = isTIDFound()
   end
 
   if not TIDFound then
-   --initSeedWritten = false
+   initSeedWritten = false
    savestate.load(0)
    emu.frameadvance()
   else
@@ -1385,7 +1386,7 @@ function showFoundTID()
   gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 18, "TID: "..TID)
 
   if not botOneTime then
-   emu.pause()
+   client.pause()
    botOneTime = true
   end
  end

@@ -1,7 +1,7 @@
 read32Bit = memory.read_u32_le
 read16Bit = memory.read_u16_le
 read8Bit = memory.readbyte
---mrwrite = event.onmemorywrite
+memoryWriteCheck = event.onmemorywrite
 rshift = bit.rshift
 lshift = bit.lshift
 bxor = bit.bxor
@@ -352,7 +352,7 @@ local delay2 = 213
 local delay4 = 475
 local delay3 = 215
 local delay6 = 2912
---local initSeedWritten = false
+local initSeedWritten = false
 local initSeedFound = false
 local botOneTime = true
 local botTargetInitSeeds = {0x0, 0x0BAD, 0xDEAD, 0x0DAD, 0x1EE7, 0xFEED}  -- Input here the bot target Initial Seeds
@@ -1442,11 +1442,11 @@ function advanceToDelay(delay, state)
  end
 end
 
---[[function writeCheck()
+function writeCheck()
  initSeedWritten = true
-end]]
+end
 
---mrwrite(writeCheck, 0x02020000)
+memoryWriteCheck(writeCheck, 0x02020000)
 
 function isInitSeedFound()
  local init = read32Bit(0x02020000)
@@ -1460,7 +1460,7 @@ function isInitSeedFound()
 end
 
 function initSeedBotLoop()
- --initSeedWritten = false
+ initSeedWritten = false
  initSeedFound = false
  botOneTime = false
 
@@ -1471,19 +1471,19 @@ function initSeedBotLoop()
     joypad.set({A = true})
 
     i = 0
-    while read16Bit(0x02020010) == 0 and i < 130 do
+    while not initSeedWritten and i < 130 do
      emu.frameadvance()
      i = i + 1
     end
 
-    if read16Bit(0x02020010) ~= 0 then
+    if initSeedWritten then
      --print(string.format("%04X", read16Bit(0x02020000)))
      initSeedFound = isInitSeedFound()
     end
 
     if not initSeedFound then
      delay3 = delay3 + 1
-     --initSeedWritten = false
+     initSeedWritten = false
      savestate.loadslot(0)
      emu.frameadvance()
     else
@@ -1524,7 +1524,7 @@ function showFoundInitSeed()
   gui.text(emuWindow.leftPadding, (emuWindow.height / 2) + 18, string.format("Initial Seed: %04X", init))
 
   if not botOneTime then
-   emu.pause()
+   client.pause()
    botOneTime = true
   end
  end
@@ -1555,7 +1555,7 @@ function isTIDFound()
 end
 
 function TIDBotLoop()
- --initSeedWritten = false
+ initSeedWritten = false
  botOneTime = false
 
  while not TIDFound do
@@ -1563,18 +1563,18 @@ function TIDBotLoop()
   joypad.set({A = true})
 
   i = 0
-  while read16Bit(0x04000106) ~= 0 and i < 40 do
+  while not initSeedWritten and i < 40 do
    emu.frameadvance()
    i = i + 1
   end
 
-  if read16Bit(0x04000106) == 0 then
+  if initSeedWritten then
    --print(read16Bit(0x02020000))
    TIDFound = isTIDFound()
   end
 
   if not TIDFound then
-   --initSeedWritten = false
+   initSeedWritten = false
    savestate.load(0)
    emu.frameadvance()
   else
@@ -1591,7 +1591,7 @@ function showFoundTID()
   gui.text(emuWindow.leftPadding + 1, (emuWindow.height / 2) + 18, "TID: "..TID)
 
   if not botOneTime then
-   emu.pause()
+   client.pause()
    botOneTime = true
   end
  end
