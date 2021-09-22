@@ -496,6 +496,8 @@ function getInstructionsInput()
   gui.text(1, 64, "6) Load the state you made, advance frames until counter")
   gui.text(13, 73, "become 0")
   gui.text(1, 82, "7) Unpase the game while holding A")
+  gui.text(1, 91, "Note: the delay can be not stable, be sure to check")
+  gui.text(1, 100, "counter -1 or +1")
  elseif mode[index] == "TID Bot" and showInstructionsText then
   gui.text(155, 1, "4 - Hide instructions")
   gui.text(1, 10, "1) Go to name insertion screen")
@@ -1241,9 +1243,9 @@ function catchRng()
  local wildCatchDelay = getCatchDelay(isSafariZone)
 
  if wildCatchDelay <= 0 then
-  gui.text(1, 100, "Delay not calculated yet")
+  gui.text(1, 109, "Delay not calculated yet")
  else
-  gui.text(1, 100, "Delay calculated")
+  gui.text(1, 109, "Delay calculated")
  end
 
  local catchSeed = findCatchSeed(read32Bit(currSeedAddr), wildCatchDelay)
@@ -1252,7 +1254,7 @@ function catchRng()
  if wildCatchDelay > 0 then
   sureCatchDelay = findSureCatch(catchSeed, calcCatchProb(isSafariZone), isSafariZone)
 
-  gui.text(1, 109, "100% catch missing advances: "..sureCatchDelay)
+  gui.text(1, 118, "100% catch missing advances: "..sureCatchDelay)
  end
 end
 

@@ -508,6 +508,8 @@ function getInstructionsInput()
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 126, "6) Load the state you made, advance frames until counter")
   gui.text(emuWindow.leftPadding + 30, emuWindow.topPadding + 144, "become 0")
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 162, "7) Unpase the game while holding A")
+  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 180, "Note: the delay can be not stable, be sure to check")
+  gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 198, "counter -1 or +1")
  elseif mode[index] == "TID Bot" and showInstructionsText then
   gui.text(emuWindow.rightPadding - 200, emuWindow.topPadding, "4 - Hide instructions")
   gui.text(emuWindow.leftPadding + 1, emuWindow.topPadding + 18, "1) Go to name insertion screen")
