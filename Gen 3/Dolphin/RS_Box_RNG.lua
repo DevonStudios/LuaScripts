@@ -261,7 +261,7 @@ function onScriptStart()
   if gbaGameLang == 0x45 then
    engOffset = 0x10
   end
-  
+
   currSeedAddr = 0xB51E68 - engOffset
   wildAddr = 0xB51C10 - engOffset
   IDsAddr = 0xB324EE
@@ -303,7 +303,7 @@ function LCRNG(s, mul1, mul2, sum)
 end
 
 function calcAdvancesJump(seed)
- local calibrationFrame = 0
+ local calibrationAdvances = 0
  local tempCurr2
 
  if tempCurr ~= seed then
@@ -312,9 +312,9 @@ function calcAdvancesJump(seed)
   while tempCurr ~= seed and tempCurr2 ~= seed do
    tempCurr = LCRNG(tempCurr, 0x41C6, 0x4E6D, 0x6073)
    tempCurr2 = LCRNG(tempCurr2, 0xEEB9, 0xEB65, 0x0A3561A1)
-   calibrationFrame = calibrationFrame + 1
+   calibrationAdvances = calibrationAdvances + 1
 
-   if calibrationFrame > 9999 then
+   if calibrationAdvances > 9999 then
     initSeed = nil
     tempCurr = 0
     advances = 0
@@ -324,12 +324,12 @@ function calcAdvancesJump(seed)
   end
 
   if tempCurr2 == seed and tempCurr2 ~= tempCurr then
-   calibrationFrame = (-1) * calibrationFrame
+   calibrationAdvances = (-1) * calibrationAdvances
    tempCurr = tempCurr2
   end
  end
 
- return calibrationFrame
+ return calibrationAdvances
 end
 
 function getRngInfoText(current, advances)
