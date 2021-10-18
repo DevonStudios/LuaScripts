@@ -160,9 +160,7 @@ function onScriptCancel()
 end
 
 function onStateLoaded()
-
 end
 
 function onStateSaved()
-
 end

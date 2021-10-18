@@ -1,3 +1,7 @@
+read32Bit = ReadValue32
+read16Bit = ReadValue16
+read8Bit = ReadValue8
+
 local natureNamesList = {
  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
  "Bold", "Docile", "Relaxed", "Impish", "Lax",
@@ -239,7 +243,7 @@ local wildAddr
 local IDsAddr
 
 function onScriptStart()
- local gameLang = ReadValue8(0x3)
+ local gameLang = read8Bit(0x3)
  local gbaGameLang
  local engOffset = 0
  initSeed = nil
@@ -256,7 +260,7 @@ function onScriptStart()
   wildAddr = 0xB1E7A0
   IDsAddr = 0xAFF08E
  else -- E
-  gbaGameLang = ReadValue8(0xC110AF)
+  gbaGameLang = read8Bit(0xC110AF)
 
   if gbaGameLang == 0x45 then
    engOffset = 0x10
@@ -269,14 +273,14 @@ function onScriptStart()
 end
 
 function reverse32Bit(addr)
- local value = ReadValue32(addr)
+ local value = read32Bit(addr)
  local reversed32BitValue = ((value & 0xFF) * 0x1000000) + ((value & 0xFF00) * 0x100) + ((value  >> 8) & 0xFF00) + (value  >> 24)
 
  return reversed32BitValue
 end
 
 function reverse16Bit(addr)
- local value = ReadValue16(addr)
+ local value = read16Bit(addr)
  local reversed16BitValue = ((value & 0xFF) * 0x100) + (value >> 8)
 
  return reversed16BitValue
@@ -567,7 +571,6 @@ end
 
 function onScriptUpdate()
  currSeed = reverse32Bit(currSeedAddr)
-
  checkInitialSeedGeneration(currSeed)
 
  if initSeed ~= nil then
@@ -586,9 +589,7 @@ function onScriptCancel()
 end
 
 function onStateLoaded()
-
 end
 
 function onStateSaved()
-
 end
