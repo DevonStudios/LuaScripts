@@ -229,10 +229,6 @@ local itemNamesList = {
  "Dome Fossil", "Silph Scope", "Bicycle", "Town Map", "VS Seeker", "Fame Checker", "TM Case", "Berry Pouch", "Teachy TV", "Tri-Pass",
  "Rainbow Pass", "Tea", "MysticTicket", "AuroraTicket", "Powder Jar", "Ruby", "Sapphire", "Magma Emblem", "Old Sea Map"}
 
-local gameLang
-local gbaGameLang
-local engOffset
-
 local currSeedAddr
 local initSeed
 local tempCurr
@@ -243,8 +239,9 @@ local wildAddr
 local IDsAddr
 
 function onScriptStart()
- gameLang = ReadValue8(0x3)
- engOffset = 0
+ local gameLang = ReadValue8(0x3)
+ local gbaGameLang
+ local engOffset = 0
  initSeed = nil
  tempCurr = 0
  advances = 0
@@ -440,9 +437,9 @@ function getIVsAndHP(IVsValue)
  local hpPower = ((((hpIV&2)/2 + (atkIV&2) + 2*(defIV&2) + 4*(spdIV&2) + 8*(spAtkIV&2) + 16*(spDefIV&2))*40)//63) + 30
 
  local ivsText = string.format("IVs: %d/%d/%d/%d/%d/%d\n", hpIV, atkIV, defIV, spAtkIV, spDefIV, spdIV)
- local hiddenPowerText = string.format("HPower: %s %d\n", HPTypeNamesList[hpType + 1], hpPower)
+ local HPText = string.format("HPower: %s %d\n", HPTypeNamesList[hpType + 1], hpPower)
 
- return ivsText..hiddenPowerText
+ return ivsText..HPText
 end
 
 function setMovePadding(moveName)
