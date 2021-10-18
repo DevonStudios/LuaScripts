@@ -1,3 +1,5 @@
+read32Bit = ReadValue32
+
 local natureName = {
  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
  "Bold", "Docile", "Relaxed", "Impish", "Lax",
@@ -11,66 +13,70 @@ local hpTypeName = {
  "Fire", "Water", "Grass", "Electric",
  "Psychic", "Ice", "Dragon", "Dark"}
 
-function next(s)
- local a = 0x3 * (s % 65536) + (s >> 16) * 0x43FD
- local b = 0x43FD * (s % 65536) + (a % 65536) * 65536 + 0x269EC3
- local c = b % 4294967296
+local prngAddr
+local initSeed
+local tempCurr
+local advances
 
- return c
-end
-
-function back(s)
- local a = 0xB9B3 * (s % 65536) + (s >> 16) * 0x3155
- local b = 0x3155 * (s % 65536) + (a % 65536) * 65536 + 0xA170F641
+function LCRNG(s, mul1, mul2, sum)
+ local a = mul1 * (s % 0x10000) + (s >> 16) * mul2
+ local b = mul2 * (s % 0x10000) + (a % 0x10000) * 0x10000 + sum
  local c = b % 4294967296
 
  return c
 end
 
 function getInitialSeed()
- initSeed = ReadValue32(seedAddrs)
- tempSeed = initSeed
- frame = 0
+ initSeed = read32Bit(prngAddr)
+ tempCurr = initSeed
+ advances = 0
 end
 
-function calcFrameJump()
- local calibrationFrame = 0
+function calcAdvancesJump(seed)
+ local calibrationAdvances = 0
 
- if tempSeed ~= currSeed then
-  local tempSeed2 = tempSeed
+ if tempCurr ~= seed then
+  local tempCurr2 = tempCurr
 
-  while tempSeed ~= currSeed and tempSeed2 ~= currSeed do
-   tempSeed = next(tempSeed)
-   tempSeed2 = back(tempSeed2)
-   calibrationFrame = calibrationFrame + 1
+  while tempCurr ~= seed and tempCurr2 ~= seed do
+   tempCurr = LCRNG(tempCurr, 0x3, 0x43FD, 0x269EC3)
+   tempCurr2 = LCRNG(tempCurr2, 0xB9B3, 0x3155, 0xA170F641)
+   calibrationAdvances = calibrationAdvances + 1
+
+   if calibrationAdvances > 999999 then
+    initSeed = 0
+    tempCurr = seed
+    advances = 0
+    break
+   end
   end
 
-  if tempSeed2 == currSeed and tempSeed2 ~= tempSeed then
-   calibrationFrame = (-1) * calibrationFrame
-   tempSeed = tempSeed2
+  if tempCurr2 == seed and tempCurr2 ~= tempCurr then
+   calibrationAdvances = (-1) * calibrationAdvances
+   tempCurr = tempCurr2
   end
  end
 
- return calibrationFrame
+ return calibrationAdvances
 end
 
 function getIVs(seed)
  local ivs = {0, 0, 0, 0, 0, 0}
 
  for i = 1, 4 do
-  seed = next(seed)
+  seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  end
 
  ivs[1] = (seed >> 16) >> 11
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  ivs[2] = (seed >> 16) >> 11
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  ivs[3] = (seed >> 16) >> 11
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  ivs[6] = (seed >> 16) >> 11
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  ivs[4] = (seed >> 16) >> 11
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  ivs[5] = (seed >> 16) >> 11
 
  return ivs
@@ -80,7 +86,7 @@ function getHP(ivs)
  local hpType = ((ivs[1]%2 + 2*(ivs[2]%2) + 4*(ivs[3]%2) + 8*(ivs[6]%2) + 16*(ivs[4]%2) + 32*(ivs[5]%2))*15) // 63
  local hpBase = (((ivs[1]&2)/2 + (ivs[2]&2) + 2*(ivs[3]&2) + 4*(ivs[6]&2) + 8*(ivs[4]&2) + 16*(ivs[5]&2))*40) // 63 + 30
 
- hiddenPower = string.format("HP: %s %02d", hpTypeName[hpType + 1], hpBase)
+ hiddenPower = string.format("HPower: %s %02d", hpTypeName[hpType + 1], hpBase)
 
  return hiddenPower
 end
@@ -99,11 +105,11 @@ end
 
 function getJirachiStats(seed)
  local tid = 40122
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  local sid = seed >> 16
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  local high = seed >> 16
- seed = next(seed)
+ seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  local low = seed >> 16
 
  if low > 7 and 0 or 1 ~= (high ~ tid ~ sid) then
@@ -130,11 +136,10 @@ function getJirachiStats(seed)
 end
 
 function onScriptStart()
- seedAddrs = 0x33D888
+ prngAddr = 0x33D888
  initSeed = 0
- currSeed = 0
- tempSeed = 0
- frame = 0
+ tempCurr = 0
+ advances = 0
 end
 
 function onScriptUpdate()
@@ -142,11 +147,11 @@ function onScriptUpdate()
   getInitialSeed()
  end
 
- currSeed = ReadValue32(seedAddrs)
- frame = frame + calcFrameJump()
+ currSeed = read32Bit(prngAddr)
+ advances = advances + calcAdvancesJump(currSeed)
  jirachiStats = getJirachiStats(currSeed)
 
- text = string.format("Initial Seed: %08X\nCurrent Seed: %08X\nFrame: %d\n%s", initSeed, currSeed, frame, jirachiStats)
+ text = string.format("Initial Seed: %08X\nCurrent Seed: %08X\nAdvances: %d\n%s", initSeed, currSeed, advances, jirachiStats)
  SetScreenText(text)
 end
 
