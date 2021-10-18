@@ -151,7 +151,6 @@ function calcAdvancesJump(seed)
    if calibrationAdvances > 999999 then
     initSeed = 0
     tempCurr = seed
-    advances = 0
     break
    end
   end
