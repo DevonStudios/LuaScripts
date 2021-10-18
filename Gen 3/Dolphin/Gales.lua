@@ -107,7 +107,6 @@ local catchRatesList = {
 
 local prngAddr
 local initSeed
-local currSeed
 local tempCurr
 local advances
 
@@ -123,6 +122,14 @@ local currBoxNumberAddr
 local boxSelectedSlotNumberAddr
 local infoText
 
+function checkInitialSeedGeneration(current)
+ if current > 0xFFFF and initSeed == 0 then
+  initSeed = read32Bit(prngAddr)
+  tempCurr = initSeed
+  advances = 0
+ end
+end
+
 function LCRNG(s, mul1, mul2, sum)
  local a = mul1 * (s % 0x10000) + (s >> 16) * mul2
  local b = mul2 * (s % 0x10000) + (a % 0x10000) * 0x10000 + sum
@@ -131,27 +138,27 @@ function LCRNG(s, mul1, mul2, sum)
  return c
 end
 
-function calcAdvancesJump()
+function calcAdvancesJump(seed)
  local calibrationAdvances = 0
  local tempCurr2
 
- if tempCurr ~= currSeed then
+ if tempCurr ~= seed then
   tempCurr2 = tempCurr
 
-  while tempCurr ~= currSeed and tempCurr2 ~= currSeed do
+  while tempCurr ~= seed and tempCurr2 ~= seed do
    tempCurr = LCRNG(tempCurr, 0x3, 0x43FD, 0x269EC3)
    tempCurr2 = LCRNG(tempCurr2, 0xB9B3, 0x3155, 0xA170F641)
    calibrationAdvances = calibrationAdvances + 1
 
    if calibrationAdvances > 999999 then
     initSeed = 0
-    tempCurr = currSeed
+    tempCurr = seed
 	advances = 0
     break
    end
   end
 
-  if tempCurr2 == currSeed and tempCurr2 ~= tempCurr then
+  if tempCurr2 == seed and tempCurr2 ~= tempCurr then
    calibrationAdvances = (-1) * calibrationAdvances
    tempCurr = tempCurr2
   end
@@ -227,7 +234,7 @@ function calcCatchRate(HP, bonusBall, rate)
 end
 
 function setInfo(enemyAddr, partyAddr, boxAddr, i)
- local enemyPID = ReadValue32(enemyAddr)
+ local enemyPID = read32Bit(enemyAddr)
  local enemyOTID = TID
  local enemyOTSID = SID
  local enemySpeciesDexIndex = read16Bit(enemyAddr - 0x28)
@@ -249,7 +256,7 @@ function setInfo(enemyAddr, partyAddr, boxAddr, i)
  local enemyHPType = ((enemyHpIV%2 + 2*(enemyAtkIV%2) + 4*(enemyDefIV%2) + 8*(enemySpdIV%2) + 16*(enemySpDefIV%2) + 32*(enemySpAtkIV%2))*15) // 63
  local enemyHPPower = (((enemyHpIV&2)/2 + (enemyAtkIV&2) + 2*(enemyDefIV&2) + 4*(enemySpdIV&2) + 8*(enemySpDefIV&2) + 16*(enemySpAtkIV&2))*40) // 63 + 30
 
- local partyPID = ReadValue32(partyAddr)
+ local partyPID = read32Bit(partyAddr)
  local partyOTID = read16Bit(partyAddr - 0x2)
  local partyOTSID = read16Bit(partyAddr - 0x4)
  local partySpeciesDexIndex = read16Bit(partyAddr - 0x28)
@@ -282,7 +289,7 @@ function setInfo(enemyAddr, partyAddr, boxAddr, i)
  local text
 
  if i == 0 then
-  local boxPID = ReadValue32(boxAddr)
+  local boxPID = read32Bit(boxAddr)
   local boxOTID = read16Bit(boxAddr - 0x2)
   local boxOTSID = read16Bit(boxAddr - 0x4)
   local boxSpeciesDexIndex = read16Bit(boxAddr - 0x28)
@@ -367,7 +374,6 @@ function onScriptStart()
  end
 
  initSeed = 0
- currSeed = 0
  tempCurr = 0
  advances = 0
  TID = 0
@@ -376,16 +382,11 @@ function onScriptStart()
 end
 
 function onScriptUpdate()
- if ReadValue32(prngAddr) > 0xFFFF and initSeed == 0 then
-  initSeed = ReadValue32(prngAddr)
-  tempCurr = initSeed
-  advances = 0
- end
+ currSeed = read32Bit(prngAddr)
+ checkInitialSeedGeneration(currSeed)
+ advances = advances + calcAdvancesJump(currSeed)
 
- currSeed = ReadValue32(prngAddr)
- advances = advances + calcAdvancesJump()
-
- pointer = ReadValue32(pointerAddr)
+ pointer = read32Bit(pointerAddr)
 
  if pointer ~= 0 then
   TID = read16Bit(pointer + 0x15E + TIDOff)

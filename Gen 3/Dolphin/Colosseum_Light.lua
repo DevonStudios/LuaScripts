@@ -107,9 +107,11 @@ local catchRatesList = {
 
 local prngAddr
 local initSeed
-local currSeed
 local tempCurr
 local advances
+
+local TID
+local SID
 
 local pointerAddr
 local enemyAddr
@@ -117,6 +119,14 @@ local boxFlagAddr
 local boxSelectedPokemonAddr
 local boxAddr
 local infoText
+
+function checkInitialSeedGeneration(current)
+ if current > 0xFFFF and initSeed == 0 then
+  initSeed = read32Bit(prngAddr)
+  tempCurr = initSeed
+  advances = 0
+ end
+end
 
 function LCRNG(s, mul1, mul2, sum)
  local a = mul1 * (s % 0x10000) + (s >> 16) * mul2
@@ -126,27 +136,27 @@ function LCRNG(s, mul1, mul2, sum)
  return c
 end
 
-function calcAdvancesJump()
+function calcAdvancesJump(seed)
  local calibrationAdvances = 0
  local tempCurr2
 
- if tempCurr ~= currSeed then
+ if tempCurr ~= seed then
   tempCurr2 = tempCurr
 
-  while tempCurr ~= currSeed and tempCurr2 ~= currSeed do
+  while tempCurr ~= seed and tempCurr2 ~= seed do
    tempCurr = LCRNG(tempCurr, 0x3, 0x43FD, 0x269EC3)
    tempCurr2 = LCRNG(tempCurr2, 0xB9B3, 0x3155, 0xA170F641)
    calibrationAdvances = calibrationAdvances + 1
 
    if calibrationAdvances > 999999 then
     initSeed = 0
-    tempCurr = currSeed
+    tempCurr = seed
 	advances = 0
     break
    end
   end
 
-  if tempCurr2 == currSeed and tempCurr2 ~= tempCurr then
+  if tempCurr2 == seed and tempCurr2 ~= tempCurr then
    calibrationAdvances = (-1) * calibrationAdvances
    tempCurr = tempCurr2
   end
@@ -332,7 +342,6 @@ function onScriptStart()
  end
 
  initSeed = 0
- currSeed = 0
  tempCurr = 0
  advances = 0
  TID = 0
@@ -341,14 +350,9 @@ function onScriptStart()
 end
 
 function onScriptUpdate()
- if read32Bit(prngAddr) > 0xFFFF and initSeed == 0 then
-  initSeed = read32Bit(prngAddr)
-  tempCurr = initSeed
-  advances = 0
- end
-
  currSeed = read32Bit(prngAddr)
- advances = advances + calcAdvancesJump()
+ checkInitialSeedGeneration(currSeed)
+ advances = advances + calcAdvancesJump(currSeed)
 
  pointer = read32Bit(pointerAddr)
 
