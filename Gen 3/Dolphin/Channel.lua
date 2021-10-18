@@ -1,13 +1,13 @@
 read32Bit = ReadValue32
 
-local natureName = {
+local natureNamesList = {
  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
  "Bold", "Docile", "Relaxed", "Impish", "Lax",
  "Timid", "Hasty", "Serious", "Jolly", "Naive",
  "Modest", "Mild", "Quiet", "Bashful", "Rash",
  "Calm", "Gentle", "Sassy", "Careful", "Quirky"}
 
-local hpTypeName = {
+local HPTypeNamesList = {
  "Fighting", "Flying", "Poison", "Ground",
  "Rock", "Bug", "Ghost", "Steel",
  "Fire", "Water", "Grass", "Electric",
@@ -46,7 +46,6 @@ function calcAdvancesJump(seed)
    if calibrationAdvances > 999999 then
     initSeed = 0
     tempCurr = seed
-    advances = 0
     break
    end
   end
@@ -86,7 +85,7 @@ function getHP(ivs)
  local hpType = ((ivs[1]%2 + 2*(ivs[2]%2) + 4*(ivs[3]%2) + 8*(ivs[6]%2) + 16*(ivs[4]%2) + 32*(ivs[5]%2))*15) // 63
  local hpBase = (((ivs[1]&2)/2 + (ivs[2]&2) + 2*(ivs[3]&2) + 4*(ivs[6]&2) + 8*(ivs[4]&2) + 16*(ivs[5]&2))*40) // 63 + 30
 
- hiddenPower = string.format("HPower: %s %02d", hpTypeName[hpType + 1], hpBase)
+ hiddenPower = string.format("HPower: %s %02d", HPTypeNamesList[hpType + 1], hpBase)
 
  return hiddenPower
 end
@@ -119,7 +118,7 @@ function getJirachiStats(seed)
  local pid = (high << 16) + low
  local isShiny = shinyCheck(high, low, tid, sid)
  local ability = low & 1
- local nature = natureName[(pid % 25) + 1]
+ local nature = natureNamesList[(pid % 25) + 1]
 
  local ivs = getIVs(seed)
  local stats = "\nJirachi Stats:\n"
