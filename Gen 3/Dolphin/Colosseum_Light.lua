@@ -1,4 +1,22 @@
-local pokemon = {
+read32Bit = ReadValue32
+read16Bit = ReadValue16
+read8Bit = ReadValue8
+
+local natureNamesList = {
+ "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
+ "Bold", "Docile", "Relaxed", "Impish", "Lax",
+ "Timid", "Hasty", "Serious", "Jolly", "Naive",
+ "Modest", "Mild", "Quiet", "Bashful", "Rash",
+ "Calm", "Gentle", "Sassy", "Careful", "Quirky"}
+
+local HPTypeNamesList = {
+ "Fighting", "Flying", "Poison", "Ground",
+ "Rock", "Bug", "Ghost", "Steel",
+ "Fire", "Water", "Grass", "Electric",
+ "Psychic", "Ice", "Dragon", "Dark"}
+
+local speciesNamesList = {
+ -- Gen 1
  "NONE", "BULBASAUR", "IVYSAUR", "VENUSAUR", "CHARMANDER", "CHARMELEON", "CHARIZARD", "SQUIRTLE", "WARTORTLE", "BLASTOISE",
  "CATERPIE", "METAPOD", "BUTTERFREE", "WEEDLE", "KAKUNA", "BEEDRILL", "PIDGEY", "PIDGEOTTO", "PIDGEOT", "RATTATA", "RATICATE",
  "SPEAROW", "FEAROW", "EKANS", "ARBOK", "PIKACHU", "RAICHU", "SANDSHREW", "SANDSLASH", "NIDORAN♀", "NIDORINA", "NIDOQUEEN",
@@ -12,7 +30,9 @@ local pokemon = {
  "RHYDON", "CHANSEY", "TANGELA", "KANGASKHAN", "HORSEA", "SEADRA", "GOLDEEN", "SEAKING", "STARYU", "STARMIE", "MR.MIME", "SCYTHER",
  "JYNX", "ELECTABUZZ", "MAGMAR", "PINSIR", "TAUROS", "MAGIKARP", "GYARADOS", "LAPRAS", "DITTO", "EEVEE", "VAPOREON", "JOLTEON",
  "FLAREON", "PORYGON", "OMANYTE", "OMASTAR", "KABUTO", "KABUTOPS", "AERODACTYL", "SNORLAX", "ARTICUNO", "ZAPDOS", "MOLTRES",
- "DRATINI", "DRAGONAIR", "DRAGONITE", "MEWTWO", "MEW", "CHIKORITA", "BAYLEEF", "MEGANIUM", "CYNDAQUIL", "QUILAVA", "TYPHLOSION",
+ "DRATINI", "DRAGONAIR", "DRAGONITE", "MEWTWO", "MEW",
+ -- Gen 2
+ "CHIKORITA", "BAYLEEF", "MEGANIUM", "CYNDAQUIL", "QUILAVA", "TYPHLOSION",
  "TOTODILE", "CROCONAW", "FERALIGATR", "SENTRET", "FURRET", "HOOTHOOT", "NOCTOWL", "LEDYBA", "LEDIAN", "SPINARAK", "ARIADOS", "CROBAT",
  "CHINCHOU", "LANTURN", "PICHU", "CLEFFA", "IGGLYBUFF", "TOGEPI", "TOGETIC", "NATU", "XATU", "MAREEP", "FLAAFFY", "AMPHAROS", "BELLOSSOM",
  "MARILL", "AZUMARILL", "SUDOWOODO", "POLITOED", "HOPPIP", "SKIPLOOM", "JUMPLUFF", "AIPOM", "SUNKERN", "SUNFLORA", "YANMA", "WOOPER",
@@ -20,33 +40,22 @@ local pokemon = {
  "DUNSPARCE", "GLIGAR", "STEELIX", "SNUBBULL", "GRANBULL", "QWILFISH", "SCIZOR", "SHUCKLE", "HERACROSS", "SNEASEL", "TEDDIURSA",
  "URSARING", "SLUGMA", "MAGCARGO", "SWINUB", "PILOSWINE", "CORSOLA", "REMORAID", "OCTILLERY", "DELIBIRD", "MANTINE", "SKARMORY", "HOUNDOUR",
  "HOUNDOOM", "KINGDRA", "PHANPY", "DONPHAN", "PORYGON2", "STANTLER", "SMEARGLE", "TYROGUE", "HITMONTOP", "SMOOCHUM", "ELEKID", "MAGBY",
- "MILTANK", "BLISSEY", "RAIKOU", "ENTEI", "SUICUNE", "LARVITAR", "PUPITAR", "TYRANITAR", "LUGIA", "HO-OH", "CELEBI", "TREECKO", "GROVYLE",
+ "MILTANK", "BLISSEY", "RAIKOU", "ENTEI", "SUICUNE", "LARVITAR", "PUPITAR", "TYRANITAR", "LUGIA", "HO-OH", "CELEBI",
+ -- Gen 3
+ "TREECKO", "GROVYLE",
  "SCEPTILE", "TORCHIC", "COMBUSKEN", "BLAZIKEN", "MUDKIP", "MARSHTOMP", "SWAMPERT", "POOCHYENA", "MIGHTYENA", "ZIGZAGOON", "LINOONE",
  "WURMPLE", "SILCOON", "BEAUTIFLY", "CASCOON", "DUSTOX", "LOTAD", "LOMBRE", "LUDICOLO", "SEEDOT", "NUZLEAF", "SHIFTRY", "TAILLOW",
  "SWELLOW", "WINGULL", "PELIPPER", "RALTS", "KIRLIA", "GARDEVOIR", "SURSKIT", "MASQUERAIN", "SHROOMISH", "BRELOOM", "SLAKOTH", "VIGOROTH",
  "SLAKING", "NINCADA", "NINJASK", "SHEDINJA", "WHISMUR", "LOUDRED", "EXPLOUD", "MAKUHITA", "HARIYAMA", "AZURILL", "NOSEPASS", "SKITTY",
  "DELCATTY", "SABLEYE", "MAWILE", "ARON", "LAIRON", "AGGRON", "MEDITITE", "MEDICHAM", "ELECTRIKE", "MANECTRIC", "PLUSLE", "MINUN", "VOLBEAT",
  "ILLUMISE", "ROSELIA", "GULPIN", "SWALOT", "CARVANHA", "SHARPEDO", "WAILMER", "WAILORD", "NUMEL", "CAMERUPT", "TORKOAL", "SPOINK", "GRUMPIG",
- "SPINDA", "TRAPINCH", "VIBRAVA", "FLYGON", "CACNEA", "CACTURNE", "SWABLU", "ALTARIA", "ZANGOOSE", "SEVIPER", "LUNATONE", "SOLROCK", "BARBOACH",
- "WHISCASH", "CORPHISH", "CRAWDAUNT", "BALTOY", "CLAYDOL", "LILEEP", "CRADILY", "ANORITH", "ARMALDO", "FEEBAS", "MILOTIC", "CASTFORM", "KECLEON",
- "SHUPPET", "BANETTE", "DUSKULL", "DUSCLOPS", "TROPIUS", "CHIMECHO", "ABSOL", "WYNAUT", "SNORUNT", "GLALIE", "SPHEAL", "SEALEO", "WALREIN",
- "CLAMPERL", "HUNTAIL", "GOREBYSS", "RELICANTH", "LUVDISC", "BAGON", "SHELGON", "SALAMENCE", "BELDUM", "METANG", "METAGROSS", "REGIROCK", "REGICE",
- "REGISTEEL", "LATIAS", "LATIOS", "KYOGRE", "GROUDON", "RAYQUAZA", "JIRACHI", "DEOXYS"}
+ "SPINDA", "TRAPINCH", "VIBRAVA", "FLYGON", "CACNEA", "CACTURNE", "SWABLU", "ALTARIA", "ZANGOOSE", "SEVIPER", "LUNATONE", "SOLROCK",
+ "BARBOACH", "WHISCASH", "CORPHISH", "CRAWDAUNT", "BALTOY", "CLAYDOL", "LILEEP", "CRADILY", "ANORITH", "ARMALDO", "FEEBAS", "MILOTIC",
+ "CASTFORM", "KECLEON", "SHUPPET", "BANETTE", "DUSKULL", "DUSCLOPS", "TROPIUS", "CHIMECHO", "ABSOL", "WYNAUT", "SNORUNT", "GLALIE", "SPHEAL",
+ "SEALEO", "WALREIN", "CLAMPERL", "HUNTAIL", "GOREBYSS", "RELICANTH", "LUVDISC", "BAGON", "SHELGON", "SALAMENCE", "BELDUM", "METANG",
+ "METAGROSS", "REGIROCK", "REGICE", "REGISTEEL", "LATIAS", "LATIOS", "KYOGRE", "GROUDON", "RAYQUAZA", "JIRACHI", "DEOXYS"}
 
-local natureName = {
- "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
- "Bold", "Docile", "Relaxed", "Impish", "Lax",
- "Timid", "Hasty", "Serious", "Jolly", "Naive",
- "Modest", "Mild", "Quiet", "Bashful", "Rash",
- "Calm", "Gentle", "Sassy", "Careful", "Quirky"}
-
-local typeOrder = {
- "Fighting", "Flying", "Poison", "Ground",
- "Rock", "Bug", "Ghost", "Steel",
- "Fire", "Water", "Grass", "Electric",
- "Psychic", "Ice", "Dragon", "Dark"}
-
-local nationalDexTable = {
+local nationalDexList = {
  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
  27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
  51,  52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74,
@@ -68,7 +77,7 @@ local nationalDexTable = {
  335, 369, 304, 305, 306, 351, 313, 314, 345, 346, 347, 348, 280, 281, 282, 371, 372, 373, 374, 375,
  376, 377, 378, 379, 382, 383, 384, 380, 381, 385, 386, 358}
 
-local catchRate = {
+local catchRatesList = {
  -- Gen 1
  0, 45, 45, 45, 45, 45, 45, 45, 45, 45, 255, 120, 90, 255, 120, 90, 255, 120,
  45, 255, 127, 255, 90, 255, 90, 190, 75, 255, 90, 235, 120, 45, 235, 120,
@@ -96,23 +105,65 @@ local catchRate = {
  45, 45, 30, 125, 190, 75, 255, 120, 45, 255, 60, 60, 25, 225, 45, 45, 80, 3, 3,
  15, 3, 3, 3, 3, 3, 5, 5, 3, 3, 3}
 
-function next(s)
- local a = 0x3 * (s % 65536) + (s >> 16) * 0x43FD
- local b = 0x43FD * (s % 65536) + (a % 65536) * 65536 + 0x269EC3
+local prngAddr
+local initSeed
+local currSeed
+local tempSeed
+local advances
+
+local pointerAddr
+local enemyAddr
+local boxFlagAddr
+local boxSelectedPokemonAddr
+local boxAddr
+local infoText
+
+function LCRNG(s, mul1, mul2, sum)
+ local a = mul1 * (s % 0x10000) + (s >> 16) * mul2
+ local b = mul2 * (s % 0x10000) + (a % 0x10000) * 0x10000 + sum
  local c = b % 4294967296
+
  return c
 end
 
-function back(s)
- local a = 0xB9B3 * (s % 65536) + (s >> 16) * 0x3155
- local b = 0x3155 * (s % 65536) + (a % 65536) * 65536 + 0xA170F641
- local c = b % 4294967296
- return c
+function calcAdvancesJump()
+ local calibrationAdvances = 0
+ local tempSeed2
+
+ if tempSeed ~= currSeed then
+  tempSeed2 = tempSeed
+
+  while tempSeed ~= currSeed and tempSeed2 ~= currSeed do
+   tempSeed = LCRNG(tempSeed, 0x3, 0x43FD, 0x269EC3)
+   tempSeed2 = LCRNG(tempSeed2, 0xB9B3, 0x3155, 0xA170F641)
+   calibrationAdvances = calibrationAdvances + 1
+
+   if calibrationAdvances > 999999 then
+    tempSeed = currSeed
+    initSeed = 0
+    break
+   end
+  end
+
+  if tempSeed2 == currSeed and tempSeed2 ~= tempSeed then
+   calibrationAdvances = (-1) * calibrationAdvances
+   tempSeed = tempSeed2
+  end
+ end
+
+ return calibrationAdvances
 end
 
-function calcRate(HP, bonusBall, rate)
- a = math.floor((HP * rate * bonusBall) / (3 * HP))
- return math.floor(1048560 / math.sqrt(math.sqrt(16711680 / a)))
+function isBoxOpened()
+ return read16Bit(boxFlagAddr) == 0x391
+end
+
+function setBoxAddr()
+ if isBoxOpened() then
+  return boxSelectedPokemonAddr
+ else
+  return read32Bit(boxAddr) + 0xBA0
+ end
 end
 
 function shinyCheck(highPID, lowPID, trainerID, trainerSID)
@@ -127,183 +178,193 @@ function shinyCheck(highPID, lowPID, trainerID, trainerSID)
  end
 end
 
-function setInfo(start, partyStart, boxStart)
- isShadow = 0
- i = 0
- while isShadow == 0 and i < 6 do -- get shadow opponent Pokémon stats
-  shadowStart = start + (0x138 * i)
-  pid = ReadValue32(shadowStart)
-  OTID = TID
-  OTSID = SID
-  speciesAddr = shadowStart - 0x4
-  index = nationalDexTable[ReadValue16(speciesAddr) + 1] + 1
-  species = pokemon[index]
-  nature = natureName[(pid % 25) + 1]
-  catchValue = calcRate(ReadValue16(shadowStart + 0x86), 1, catchRate[index])
-  isShadow = ReadValue8(shadowStart + 0xD5)
+function calcCatchRate(HP, bonusBall, rate)
+ local a
 
-  ivsAddr = shadowStart + 0xA1
-  hpiv = ReadValue8(ivsAddr)
-  atkiv = ReadValue8(ivsAddr + 0x2)
-  defiv = ReadValue8(ivsAddr + 0x4)
-  spatkiv = ReadValue8(ivsAddr + 0x8)
-  spdefiv = ReadValue8(ivsAddr + 0x6)
-  spdiv = ReadValue8(ivsAddr + 0xA)
+ if HP ~= 0 then
+  a = (HP * rate * bonusBall) // (3 * HP)
 
-  hidpowtype = ((hpiv%2 + 2*(atkiv%2) + 4*(defiv%2) + 8*(spdiv%2) + 16*(spdefiv%2) + 32*(spatkiv%2))*15) // 63
-  hidpowbase = (((hpiv&2)/2 + (atkiv&2) + 2*(defiv&2) + 4*(spdiv&2) + 8*(spdefiv&2) + 16*(spatkiv&2))*40) // 63 + 30
+  return 1048560 // math.sqrt(math.sqrt(16711680 / a))
+ end
+
+ return 0
+end
+
+function setInfo(enemyAddr, partyAddr, boxAddr)
+ local enemyShadowID = 0
+ local shadowEnemyAddr
+ local enemyPID
+ local enemyOTID
+ local enemyOTSID
+ local enemySpeciesDexIndex 
+ local enemySpeciesDexNumber
+ local enemySpeciesName
+ local enemyNatureName
+ local catchRateValue
+ local enemyIVsAddr
+ local enemyHpIV
+ local enemyAtkIV
+ local enemyDefIV
+ local enemySpAtkIV
+ local enemySpDefIV
+ local enemySpdIV
+ local enemyHPType
+ local enemyHPPower
+
+ local i = 0
+ while enemyShadowID == 0 and i < 6 do
+  shadowEnemyAddr = enemyAddr + (0x138 * i)
+  enemyPID = read32Bit(shadowEnemyAddr)
+  enemyOTID = TID
+  enemyOTSID = SID
+  enemySpeciesDexIndex = read16Bit(shadowEnemyAddr - 0x4)
+  enemySpeciesDexNumber = nationalDexList[enemySpeciesDexIndex + 1] + 1
+  enemySpeciesName = speciesNamesList[enemySpeciesDexNumber]
+  enemyNatureName = natureNamesList[(enemyPID % 25) + 1]
+  catchRateValue = calcCatchRate(read16Bit(shadowEnemyAddr + 0x86), 1, catchRatesList[enemySpeciesDexNumber])
+  enemyShadowID = read8Bit(shadowEnemyAddr + 0xD5)
+
+  enemyIVsAddr = shadowEnemyAddr + 0xA1
+  enemyHpIV = read8Bit(enemyIVsAddr)
+  enemyAtkIV = read8Bit(enemyIVsAddr + 0x2)
+  enemyDefIV = read8Bit(enemyIVsAddr + 0x4)
+  enemySpAtkIV = read8Bit(enemyIVsAddr + 0x6)
+  enemySpDefIV = read8Bit(enemyIVsAddr + 0x8)
+  enemySpdIV = read8Bit(enemyIVsAddr + 0xA)
+
+  enemyHPType = ((enemyHpIV%2 + 2*(enemyAtkIV%2) + 4*(enemyDefIV%2) + 8*(enemySpdIV%2) + 16*(enemySpAtkIV%2) + 32*(enemySpDefIV%2))*15) // 63
+  enemyHPPower = (((enemyHpIV&2)/2 + (enemyAtkIV&2) + 2*(enemyDefIV&2) + 4*(enemySpdIV&2) + 8*(enemySpAtkIV&2) + 16*(enemySpDefIV&2))*40) // 63 + 30
 
   i = i + 1
  end
 
- speciesText = string.format("\n\nOpponent\n\nSpecies: %s", species)
- PIDs = string.format("\nPID: %08X %s", pid, shinyCheck(pid >> 16, pid & 0xFFFF, OTID, OTSID))
- naturesText = string.format("\nNature: %s", nature)
- ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", hpiv, atkiv, defiv, spdefiv, spatkiv, spdiv)
- hiddenPower = string.format("\nHP: %s %02d", typeOrder[hidpowtype + 1], hidpowbase)
- catchRngText = string.format("\nCatch Rate Value: %.0f", catchValue)
- infoText = speciesText..PIDs..naturesText..ivs..hiddenPower..catchRngText
+ local speciesText = string.format("\n\nOpponent\n\nSpecies: %s", enemySpeciesName)
+ local PIDsText = string.format("\nPID: %08X %s", enemyPID, shinyCheck(enemyPID >> 16, enemyPID & 0xFFFF, enemyOTID, enemyOTSID))
+ local naturesText = string.format("\nNature: %s", enemyNatureName)
+ local ivsText = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", enemyHpIV, enemyAtkIV, enemyDefIV, enemySpAtkIV, enemySpDefIV, enemySpdIV)
+ local HPText = string.format("\nHP: %s %02d", HPTypeNamesList[enemyHPType + 1], enemyHPPower)
+ local catchRngText = string.format("\nCatch Rate Value: %.0f", catchRateValue)
+ local text = speciesText..PIDsText..naturesText..ivsText..HPText..catchRngText
 
- partyPid = ReadValue32(partyStart)
- partyOTID = ReadValue16(partyStart + 0x12)
- partyOTSID = ReadValue16(partyStart + 0x10)
- partySpeciesAddr = partyStart - 0x4
- partyIndex = nationalDexTable[ReadValue16(partySpeciesAddr) + 1] + 1
- partySpecies = pokemon[partyIndex]
- partyNature = natureName[(partyPid % 25) + 1]
 
- partyIvsAddr = partyStart + 0xA1
- partyHpiv = ReadValue8(partyIvsAddr)
- partyAtkiv = ReadValue8(partyIvsAddr + 0x2)
- partyDefiv = ReadValue8(partyIvsAddr + 0x4)
- partySpatkiv = ReadValue8(partyIvsAddr + 0x8)
- partySpdefiv = ReadValue8(partyIvsAddr + 0x6)
- partySpdiv = ReadValue8(partyIvsAddr + 0xA)
+ local partyPID = read32Bit(partyAddr)
+ local partyOTID = read16Bit(partyAddr + 0x12)
+ local partyOTSID = read16Bit(partyAddr + 0x10)
+ local partySpeciesDexIndex = read16Bit(partyAddr - 0x4)
+ local partySpeciesDexNumber = nationalDexList[partySpeciesDexIndex + 1] + 1
+ local partySpeciesName = speciesNamesList[partySpeciesDexNumber]
+ local partyNatureName = natureNamesList[(partyPID % 25) + 1]
 
- partyHidpowtype = ((partyHpiv%2 + 2*(partyAtkiv%2) + 4*(partyDefiv%2) + 8*(partySpdiv%2) + 16*(partySpdefiv%2) + 32*(partySpatkiv%2))*15) // 63
- partyHidpowbase = (((partyHpiv&2)/2 + (partyAtkiv&2) + 2*(partyDefiv&2) + 4*(partySpdiv&2) + 8*(partySpdefiv&2) + 16*(partySpatkiv&2))*40) // 63 + 30
+ local partyIVsAddr = partyAddr + 0xA1
+ local partyHpIV = read8Bit(partyIVsAddr)
+ local partyAtkIV = read8Bit(partyIVsAddr + 0x2)
+ local partyDefIV = read8Bit(partyIVsAddr + 0x4)
+ local partySpAtkIV = read8Bit(partyIVsAddr + 0x6)
+ local partySpDefIV = read8Bit(partyIVsAddr + 0x8)
+ local partySpdIV = read8Bit(partyIVsAddr + 0xA)
 
- speciesText = string.format("\nParty\n\nSpecies: %s", partySpecies)
- PIDs = string.format("\nPID: %08X %s", partyPid, shinyCheck(partyPid >> 16, partyPid & 0xFFFF, partyOTID, partyOTSID))
- naturesText = string.format("\nNature: %s", partyNature)
- ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", partyHpiv, partyAtkiv, partyDefiv, partySpdefiv, partySpatkiv, partySpdiv)
- hiddenPower = string.format("\nHP: %s %02d", typeOrder[partyHidpowtype + 1], partyHidpowbase)
- partyInfoText = speciesText..PIDs..naturesText..ivs..hiddenPower
+ local partyHPType = ((partyHpIV%2 + 2*(partyAtkIV%2) + 4*(partyDefIV%2) + 8*(partySpdIV%2) + 16*(partySpAtkIV%2) + 32*(partySpDefIV%2))*15) // 63
+ local partyHPPower = (((partyHpIV&2)/2 + (partyAtkIV&2) + 2*(partyDefIV&2) + 4*(partySpdIV&2) + 8*(partySpAtkIV&2) + 16*(partySpDefIV&2))*40) // 63 + 30
 
- boxPid = ReadValue32(boxStart)
- boxOTID = ReadValue16(boxStart + 0x12)
- boxOTSID = ReadValue16(boxStart + 0x10)
- boxSpeciesAddr = boxStart - 0x4
- boxIndex = nationalDexTable[ReadValue16(boxSpeciesAddr) + 1] + 1
- boxSpecies = pokemon[boxIndex]
- boxNature = natureName[(boxPid % 25)+1]
+ speciesText = string.format("\nParty\n\nSpecies: %s", partySpeciesName)
+ PIDsText = string.format("\nPID: %08X %s", partyPID, shinyCheck(partyPID >> 16, partyPID & 0xFFFF, partyOTID, partyOTSID))
+ naturesText = string.format("\nNature: %s", partyNatureName)
+ ivsText = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", partyHpIV, partyAtkIV, partyDefIV, partySpAtkIV, partySpDefIV, partySpdIV)
+ HPText = string.format("\nHP: %s %02d", HPTypeNamesList[partyHPType + 1], partyHPPower)
+ local partyInfoText = speciesText..PIDsText..naturesText..ivsText..HPText
 
- boxIvsAddr = boxStart + 0xA1
- boxHpiv = ReadValue8(boxIvsAddr)
- boxAtkiv = ReadValue8(boxIvsAddr + 0x2)
- boxDefiv = ReadValue8(boxIvsAddr + 0x4)
- boxSpatkiv = ReadValue8(boxIvsAddr + 0x8)
- boxSpdefiv = ReadValue8(boxIvsAddr + 0x6)
- boxSpdiv = ReadValue8(boxIvsAddr + 0xA)
+ local boxPID = read32Bit(boxAddr)
+ local boxOTID = read16Bit(boxAddr + 0x12)
+ local boxOTSID = read16Bit(boxAddr + 0x10)
+ local boxSpeciesDexIndex = read16Bit(boxAddr - 0x4)
+ local boxSpeciesDexNumber = nationalDexList[boxSpeciesDexIndex + 1] + 1
+ local boxSpeciesName = speciesNamesList[boxSpeciesDexNumber]
+ local boxNatureName = natureNamesList[(boxPID % 25) + 1]
 
- boxHidpowtype = ((boxHpiv%2 + 2*(boxAtkiv%2) + 4*(boxDefiv%2) + 8*(boxSpdiv%2) + 16*(boxSpdefiv%2) + 32*(boxSpatkiv%2))*15) // 63
- boxHidpowbase = (((boxHpiv&2)/2 + (boxAtkiv&2) + 2*(boxDefiv&2) + 4*(boxSpdiv&2) + 8*(boxSpdefiv&2) + 16*(boxSpatkiv&2))*40) // 63 + 30
+ local boxIVsAddr = boxAddr + 0xA1
+ local boxHpIV = read8Bit(boxIVsAddr)
+ local boxAtkIV = read8Bit(boxIVsAddr + 0x2)
+ local boxDefIV = read8Bit(boxIVsAddr + 0x4)
+ local boxSpAtkIV = read8Bit(boxIVsAddr + 0x6)
+ local boxSpDefIV = read8Bit(boxIVsAddr + 0x8)
+ local boxSpdIV = read8Bit(boxIVsAddr + 0xA)
 
- speciesText = string.format("\nBox\n\nSpecies: %s", boxSpecies)
- PIDs = string.format("\nPID: %08X %s", boxPid, shinyCheck(boxPid >> 16, boxPid & 0xFFFF, boxOTID, boxOTSID))
- naturesText = string.format("\nNature: %s", boxNature)
- ivs = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", boxHpiv, boxAtkiv, boxDefiv, boxSpdefiv, boxSpatkiv, boxSpdiv)
- hiddenPower = string.format("\nHP: %s %02d", typeOrder[boxHidpowtype + 1], boxHidpowbase)
- catchRngText = string.format("\nCatch Rate Value: %.0f", catchValue)
- boxInfoText = speciesText..PIDs..naturesText..ivs..hiddenPower
+ local boxHPType = ((boxHpIV%2 + 2*(boxAtkIV%2) + 4*(boxDefIV%2) + 8*(boxSpdIV%2) + 16*(boxSpAtkIV%2) + 32*(boxSpDefIV%2))*15) // 63
+ local boxHPPower = (((boxHpIV&2)/2 + (boxAtkIV&2) + 2*(boxDefIV&2) + 4*(boxSpdIV&2) + 8*(boxSpAtkIV&2) + 16*(boxSpDefIV&2))*40) // 63 + 30
 
- infoText = infoText.."\n\n"..partyInfoText.."\n\n"..boxInfoText
- return infoText
-end
+ speciesText = string.format("\nBox\n\nSpecies: %s", boxSpeciesName)
+ PIDsText = string.format("\nPID: %08X %s", boxPID, shinyCheck(boxPID >> 16, boxPID & 0xFFFF, boxOTID, boxOTSID))
+ naturesText = string.format("\nNature: %s", boxNatureName)
+ ivsText = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", boxHpIV, boxAtkIV, boxDefIV, boxSpAtkIV, boxSpDefIV, boxSpdIV)
+ HPText = string.format("\nHP: %s %02d", HPTypeNamesList[boxHPType + 1], boxHPPower)
+ local boxInfoText = speciesText..PIDsText..naturesText..ivsText..HPText
 
-function calcFrameJump()
- calibrationFrame = 0
- if tempSeed ~= currSeed then
-  tempSeed2 = tempSeed
-  while tempSeed ~= currSeed and tempSeed2 ~= currSeed do
-   tempSeed = next(tempSeed)
-   tempSeed2 = back(tempSeed2)
-   calibrationFrame = calibrationFrame + 1
-  end
+ text = text.."\n\n"..partyInfoText.."\n\n"..boxInfoText
 
-  if tempSeed2 == currSeed and tempSeed2 ~= tempSeed then
-   calibrationFrame = (-1) * calibrationFrame
-   tempSeed = tempSeed2
-  end
- end
- return calibrationFrame
+ return text
 end
 
 function onScriptStart()
- if ReadValue32(0x0) == 0x4743364A then -- J
-  IDsOff = 0
-  startOff = 0
-  boxOff = 0
-  boxAddrOff = 0
-  seedOff = 0
- elseif ReadValue32(0x0) == 0x47433645 then -- U
-  IDsOff = 0x91D44
-  startOff = 0x14920
-  boxOff = 0x13930
-  boxAddrOff = 0x14950
-  seedOff = 0x14930
- else
-  IDsOff = 0x1AE278
-  startOff = 0x61DB8
-  boxOff = 0x60DB0
-  boxAddrOff = 0x61E00
-  seedOff = 0x61DD0
+ local gameLang = read8Bit(0x3)
+
+ if gameLang == 0x4A then -- J
+  prngAddr = 0x464360
+  pointerAddr = 0x75E088
+  enemyAddr = 0x45E750
+  boxFlagAddr = 0x4641EA
+  boxSelectedPokemonAddr = 0x395CBC
+  boxAddr = 0x466468
+ elseif gameLang == 0x45 then -- U
+  prngAddr = 0x478C90
+  pointerAddr = 0x7EFDCC
+  enemyAddr = 0x473070
+  boxFlagAddr = 0x478B1A
+  boxSelectedPokemonAddr = 0x3A95EC
+  boxAddr = 0x47ADB8
+ else -- E
+  prngAddr = 0x4C6130
+  pointerAddr = 0x90C300
+  enemyAddr = 0x4C0508
+  boxFlagAddr = 0x4C5FBA
+  boxSelectedPokemonAddr = 0x3F6A6C
+  boxAddr = 0x4C8268
  end
 
- start = 0x45E750 + startOff
- seedAddr = 0x464360 + seedOff
- boxNormalStart = 0x395CBC + boxOff
- boxFirstPos = 0x466468 + boxAddrOff
- info = "\n\n"
- TID = 0
- SID = 0
  initSeed = 0
  currSeed = 0
  tempSeed = 0
- frame = 0
- boxStart = 0
+ advances = 0
+ TID = 0
+ SID = 0
+ infoText = "\n\n"
 end
 
 function onScriptUpdate()
- IDsPointer = ReadValue32(0x75E088 + IDsOff)
-
- if IDsPointer ~= 0 then
-  TID = ReadValue16(IDsPointer + 0x7FFE42E2)
-  SID = ReadValue16(IDsPointer + 0x7FFE42E0)
-  partyStart = IDsPointer + 0x7FFE42E8
-
-  if ReadValue16(0x4641EA + seedOff) == 0x391 then
-   boxStart = boxNormalStart
-  else
-   boxStart = ReadValue32(boxFirstPos) + 0xBA0
-  end
-
-  info = setInfo(start, partyStart, boxStart).."\n\n"
- end
-
- if ReadValue32(seedAddr) > 0xFFFF and initSeed == 0 then
-  initSeed = ReadValue32(seedAddr)
+ if read32Bit(prngAddr) > 0xFFFF and initSeed == 0 then
+  initSeed = read32Bit(prngAddr)
   tempSeed = initSeed
-  frame = 0
+  advances = 0
  end
 
- currSeed = ReadValue32(seedAddr)
- frame = frame + calcFrameJump()
+ currSeed = read32Bit(prngAddr)
+ advances = advances + calcAdvancesJump()
 
- RNGInfo = string.format("Initial Seed: %08X\nCurrent Seed: %08X\nFrame: %d", initSeed, currSeed, frame)
- IDs = string.format("\n\n\nTID: %05d\nSID: %05d", TID, SID)
- text = RNGInfo..info..IDs
- SetScreenText(text)
+ pointer = read32Bit(pointerAddr)
+
+ if pointer ~= 0 then
+  TID = read16Bit(pointer + 0x7FFE42E2)
+  SID = read16Bit(pointer + 0x7FFE42E0)
+
+  partyAddr = pointer + 0x7FFE42E8
+  currBoxAddr = setBoxAddr()
+
+  infoText = setInfo(enemyAddr, partyAddr, currBoxAddr).."\n\n"
+ end
+
+ RNGInfoText = string.format("Initial Seed: %08X\nCurrent Seed: %08X\nAdvances: %d", initSeed, currSeed, advances)
+ IDsInfoText = string.format("\n\n\nTID: %05d\nSID: %05d", TID, SID)
+ finalText = RNGInfoText..infoText..IDsInfoText
+ SetScreenText(finalText)
 end
 
 function onScriptCancel()
@@ -311,9 +372,7 @@ function onScriptCancel()
 end
 
 function onStateLoaded()
-
 end
 
 function onStateSaved()
-
 end
