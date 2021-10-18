@@ -321,7 +321,6 @@ function calcAdvancesJump(seed)
    if calibrationAdvances > 9999 then
     initSeed = nil
     tempCurr = 0
-    advances = 0
     checkInit = false
     break
    end
