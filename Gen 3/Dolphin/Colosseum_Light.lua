@@ -122,7 +122,7 @@ local infoText
 
 function checkInitialSeedGeneration(current)
  if current > 0xFFFF and initSeed == 0 then
-  initSeed = read32Bit(prngAddr)
+  initSeed = current
   tempCurr = initSeed
   advances = 0
  end
@@ -151,7 +151,7 @@ function calcAdvancesJump(seed)
    if calibrationAdvances > 999999 then
     initSeed = 0
     tempCurr = seed
-	advances = 0
+    advances = 0
     break
    end
   end
@@ -207,7 +207,7 @@ function setInfo(enemyAddr, partyAddr, boxAddr)
  local enemyPID
  local enemyOTID
  local enemyOTSID
- local enemySpeciesDexIndex 
+ local enemySpeciesDexIndex
  local enemySpeciesDexNumber
  local enemySpeciesName
  local enemyNatureName
@@ -253,10 +253,9 @@ function setInfo(enemyAddr, partyAddr, boxAddr)
  local PIDsText = string.format("\nPID: %08X %s", enemyPID, shinyCheck(enemyPID >> 16, enemyPID & 0xFFFF, enemyOTID, enemyOTSID))
  local naturesText = string.format("\nNature: %s", enemyNatureName)
  local ivsText = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", enemyHpIV, enemyAtkIV, enemyDefIV, enemySpAtkIV, enemySpDefIV, enemySpdIV)
- local HPText = string.format("\nHP: %s %02d", HPTypeNamesList[enemyHPType + 1], enemyHPPower)
+ local HPText = string.format("\nHPower: %s %02d", HPTypeNamesList[enemyHPType + 1], enemyHPPower)
  local catchRngText = string.format("\nCatch Rate Value: %.0f", catchRateValue)
  local text = speciesText..PIDsText..naturesText..ivsText..HPText..catchRngText
-
 
  local partyPID = read32Bit(partyAddr)
  local partyOTID = read16Bit(partyAddr + 0x12)
@@ -281,7 +280,7 @@ function setInfo(enemyAddr, partyAddr, boxAddr)
  PIDsText = string.format("\nPID: %08X %s", partyPID, shinyCheck(partyPID >> 16, partyPID & 0xFFFF, partyOTID, partyOTSID))
  naturesText = string.format("\nNature: %s", partyNatureName)
  ivsText = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", partyHpIV, partyAtkIV, partyDefIV, partySpAtkIV, partySpDefIV, partySpdIV)
- HPText = string.format("\nHP: %s %02d", HPTypeNamesList[partyHPType + 1], partyHPPower)
+ HPText = string.format("\nHPower: %s %02d", HPTypeNamesList[partyHPType + 1], partyHPPower)
  local partyInfoText = speciesText..PIDsText..naturesText..ivsText..HPText
 
  local boxPID = read32Bit(boxAddr)
@@ -307,7 +306,7 @@ function setInfo(enemyAddr, partyAddr, boxAddr)
  PIDsText = string.format("\nPID: %08X %s", boxPID, shinyCheck(boxPID >> 16, boxPID & 0xFFFF, boxOTID, boxOTSID))
  naturesText = string.format("\nNature: %s", boxNatureName)
  ivsText = string.format("\nIVs: %02d/%02d/%02d/%02d/%02d/%02d", boxHpIV, boxAtkIV, boxDefIV, boxSpAtkIV, boxSpDefIV, boxSpdIV)
- HPText = string.format("\nHP: %s %02d", HPTypeNamesList[boxHPType + 1], boxHPPower)
+ HPText = string.format("\nHPower: %s %02d", HPTypeNamesList[boxHPType + 1], boxHPPower)
  local boxInfoText = speciesText..PIDsText..naturesText..ivsText..HPText
 
  text = text.."\n\n"..partyInfoText.."\n\n"..boxInfoText

@@ -124,7 +124,7 @@ local infoText
 
 function checkInitialSeedGeneration(current)
  if current > 0xFFFF and initSeed == 0 then
-  initSeed = read32Bit(prngAddr)
+  initSeed = current
   tempCurr = initSeed
   advances = 0
  end
@@ -153,7 +153,7 @@ function calcAdvancesJump(seed)
    if calibrationAdvances > 999999 then
     initSeed = 0
     tempCurr = seed
-	advances = 0
+    advances = 0
     break
    end
   end
@@ -187,7 +187,7 @@ function setBoxAddr(partyAddr)
  end
 
  if isBoxOpened() then
-  return boxAddr + (0xC4 * (boxSelectedSlotNumber - boxSelectedSlotNumberOff)) + (0x14 * currBoxNumber) + (0xC4 * currBoxNumber * 0x1E) 
+  return boxAddr + (0xC4 * (boxSelectedSlotNumber - boxSelectedSlotNumberOff)) + (0x14 * currBoxNumber) + (0xC4 * currBoxNumber * 0x1E)
  else
   return boxAddr
  end
@@ -322,7 +322,7 @@ function setInfo(enemyAddr, partyAddr, boxAddr, i)
   boxHPTypeName = HPTypeNamesList[boxHPType + 1]
   HPText = string.format("\nHPower: %s %02d", HPTypeName, enemyHPPower)..setPadding(11, 5, string.format("%s %02d", HPTypeName, enemyHPPower))..
                          string.format("HPower: %s %02d", partyHPTypeName, partyHPPower)..setPadding(11, 5, string.format("%s %02d", partyHPTypeName,
-						 partyHPPower))..string.format("HPower: %s %02d", boxHPTypeName, boxHPPower)
+                         partyHPPower))..string.format("HPower: %s %02d", boxHPTypeName, boxHPPower)
   catchRngText = string.format("\nCatch Rate Value: %.0f", catchRateValue)
   text = speciesText..PIDsText..naturesText..ivsText..HPText..catchRngText
  else
