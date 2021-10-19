@@ -241,7 +241,6 @@ function onScriptUpdate()
  end
 
  --PressButton("D-Down")
- --text = "Pressing Down"
  SetScreenText(finalText)
 end
 
