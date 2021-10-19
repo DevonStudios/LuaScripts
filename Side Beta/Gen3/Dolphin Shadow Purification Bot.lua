@@ -136,7 +136,7 @@ function setInfo(partyAddr, breedingAddr, i)
  local partyHeartGauge = read16Bit(partyAddr + 0xDA)
  local partyHeartGaugeStepsCounter = getHeartGaugeStepsCounte(partyShadowID)
 
- if partyHeartGauge > 20000 or partyShadowID == 0 then
+ if partyHeartGauge > 20000 or partyHeartGauge == 0 or partyShadowID == 0 then
   partyHeartGauge = 0
   partyHeartGaugeStepsCounter = 0
  end
@@ -178,7 +178,7 @@ function setInfo(partyAddr, breedingAddr, i)
   local breedingHeartGauge = read16Bit(breedingAddr + 0xDA)
   local breedingHeartGaugeStepsCounter = getHeartGaugeStepsCounte(breedingShadowID)
 
-  if breedingHeartGauge > 20000 or breedingShadowID == 0 then
+  if breedingHeartGauge > 20000 or breedingHeartGauge == 0 or breedingShadowID == 0 then
    breedingHeartGauge = 0
    breedingHeartGaugeStepsCounter = 0
   end
