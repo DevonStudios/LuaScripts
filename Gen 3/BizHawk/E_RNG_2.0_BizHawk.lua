@@ -584,7 +584,7 @@ function calcAdvancesJump(seed)
  if tempCurr ~= current then
   tempCurr2 = tempCurr
 
-  while tempCurr ~= current and tempCurr2 ~= current and calibrationAdvances < 99999 do
+  while tempCurr ~= current and tempCurr2 ~= current do
    tempCurr = LCRNG(tempCurr, 0x41C6, 0x4E6D, 0x6073)
    tempCurr2 = LCRNG(tempCurr2, 0xEEB9, 0xEB65, 0x0A3561A1)
    calibrationAdvances = calibrationAdvances + 1
