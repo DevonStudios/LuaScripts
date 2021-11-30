@@ -252,8 +252,8 @@ function setInfo(enemyAddr, partyAddr, boxAddr, i)
  local enemySpDefIV = read8Bit(enemyIVsAddr + 0x4)
  local enemySpdIV = read8Bit(enemyIVsAddr + 0x5)
 
- local enemyHPType = ((enemyHpIV%2 + 2*(enemyAtkIV%2) + 4*(enemyDefIV%2) + 8*(enemySpdIV%2) + 16*(enemySpDefIV%2) + 32*(enemySpAtkIV%2))*15) // 63
- local enemyHPPower = (((enemyHpIV&2)/2 + (enemyAtkIV&2) + 2*(enemyDefIV&2) + 4*(enemySpdIV&2) + 8*(enemySpDefIV&2) + 16*(enemySpAtkIV&2))*40) // 63 + 30
+ local enemyHPType = ((enemyHpIV%2 + 2*(enemyAtkIV%2) + 4*(enemyDefIV%2) + 8*(enemySpdIV%2) + 16*(enemySpAtkIV%2) + 32*(enemySpDefIV%2))*15) // 63
+ local enemyHPPower = (((enemyHpIV&2)/2 + (enemyAtkIV&2) + 2*(enemyDefIV&2) + 4*(enemySpdIV&2) + 8*(enemySpAtkIV&2) + 16*(enemySpDefIV&2))*40) // 63 + 30
 
  local partyPID = read32Bit(partyAddr)
  local partyOTID = read16Bit(partyAddr - 0x2)
