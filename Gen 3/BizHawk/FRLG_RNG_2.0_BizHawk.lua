@@ -291,6 +291,7 @@ local gameVersion = read8Bit(0x080000AE)
 local game
 local gameLang = read8Bit(0x080000AF)
 local language = ""
+local gameRev = read8Bit(0x080000BC) == 0x1
 local warning
 
 local emuWindow = {}
@@ -407,10 +408,20 @@ if gameLang == 0x45 then  -- Check game language
  boxSelectedSlotNumberAddr = 0x02039821
 elseif gameLang == 0x4A then
  language = "JPN"
- currSeedAddr = 0x03004FA0
+
+ if gameRev then
+  currSeedAddr = 0x03004FA0
+  saveBlock1Addr = 0x03004FA8
+  saveBlock2Addr = 0x03004FAC
+  currBoxNumberPointerAddr = 0x03004FB0
+ else
+  currSeedAddr = 0x03005040
+  saveBlock1Addr = 0x03005048
+  saveBlock2Addr = 0x0300504C
+  currBoxNumberPointerAddr = 0x03005050
+ end
+
  wildAddr = 0x02023F8C  -- capture
- saveBlock1Addr = 0x03004FA8
- saveBlock2Addr = 0x03004FAC
  roamerMapGroupNumAddr = 0x0203F322
  wildEncounterDataAddr = 0x0203861C
  playerAvatarAddr = 0x02036FAC
@@ -427,7 +438,6 @@ elseif gameLang == 0x4A then
  pokemonStatsScreenAddr = 0x02006410
  pokemonStatsScreen2Addr = 0x0200324C
  pokemonBattleStatsScreenAddr = 0x02011970
- currBoxNumberPointerAddr = 0x03004FB0
  boxSelectedSlotNumberAddr = 0x0203976D
 else
  language = "EUR"
