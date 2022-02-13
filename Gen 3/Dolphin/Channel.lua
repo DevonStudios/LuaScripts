@@ -1,4 +1,5 @@
 read32Bit = ReadValue32
+read8Bit = ReadValue8
 
 local natureNamesList = {
  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
@@ -135,10 +136,29 @@ function getJirachiStats(seed)
 end
 
 function onScriptStart()
- prngAddr = 0x33D888
- initSeed = 0
- tempCurr = 0
- advances = 0
+ local gameLang = read8Bit(0x3)
+
+ if gameLang == 0x45 then  -- U
+  prngAddr = 0x3502C8
+  initSeed = 0
+  tempCurr = 0
+  advances = 0
+ elseif gameLang == 0x4A then  -- J
+  prngAddr = 0x387C18  -- 0x387C38 for Bangumi Kakuchou Pack version
+  initSeed = 0
+  tempCurr = 0
+  advances = 0
+ elseif gameLang == 0x50 then  -- E
+  prngAddr = 0x33D888
+  initSeed = 0
+  tempCurr = 0
+  advances = 0
+ else  -- A
+  prngAddr = 0x337568
+  initSeed = 0
+  tempCurr = 0
+  advances = 0
+ end
 end
 
 function onScriptUpdate()
