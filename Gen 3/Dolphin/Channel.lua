@@ -137,27 +137,18 @@ end
 
 function onScriptStart()
  local gameLang = read8Bit(0x3)
+ initSeed = 0
+ tempCurr = 0
+ advances = 0
 
  if gameLang == 0x45 then  -- U
   prngAddr = 0x3502C8
-  initSeed = 0
-  tempCurr = 0
-  advances = 0
  elseif gameLang == 0x4A then  -- J
   prngAddr = 0x387C18  -- 0x387C38 for Bangumi Kakuchou Pack version
-  initSeed = 0
-  tempCurr = 0
-  advances = 0
  elseif gameLang == 0x50 then  -- E
   prngAddr = 0x33D888
-  initSeed = 0
-  tempCurr = 0
-  advances = 0
  else  -- A
   prngAddr = 0x337568
-  initSeed = 0
-  tempCurr = 0
-  advances = 0
  end
 end
 
