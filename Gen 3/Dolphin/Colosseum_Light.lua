@@ -228,6 +228,11 @@ function setInfo(enemyAddr, partyAddr, boxAddr)
   enemyOTID = TID
   enemyOTSID = SID
   enemySpeciesDexIndex = read16Bit(shadowEnemyAddr - 0x4)
+
+  if enemySpeciesDexIndex > 411 then
+   enemySpeciesDexIndex = 0
+  end
+
   enemySpeciesDexNumber = nationalDexList[enemySpeciesDexIndex + 1] + 1
   enemySpeciesName = speciesNamesList[enemySpeciesDexNumber]
   enemyNatureName = natureNamesList[(enemyPID % 25) + 1]

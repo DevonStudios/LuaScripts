@@ -221,6 +221,11 @@ function setInfo(enemyAddr, partyAddr, boxAddr, i)
  local enemyOTID = TID
  local enemyOTSID = SID
  local enemySpeciesDexIndex = read16Bit(enemyAddr - 0x4)
+
+ if enemySpeciesDexIndex > 411 then
+  enemySpeciesDexIndex = 0
+ end
+
  local enemySpeciesDexNumber = nationalDexList[enemySpeciesDexIndex + 1] + 1
  local enemySpeciesName = speciesNamesList[enemySpeciesDexNumber]
  enemySpeciesName = enemySpeciesName..setPadding(10, 5, enemySpeciesName)
