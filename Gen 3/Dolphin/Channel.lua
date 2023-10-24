@@ -112,7 +112,7 @@ function getJirachiStats(seed)
  seed = LCRNG(seed, 0x3, 0x43FD, 0x269EC3)
  local low = seed >> 16
 
- if tid ~ sid ~ high ~ low < 8 then
+ if low > 7 and 0 or 1 ~= (high ~ tid ~ sid) then
   high = high ~ 0x8000
  end
 
