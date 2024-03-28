@@ -133,18 +133,11 @@ function isSeedGenerated()
  return mdword(0x0E000FF8) ~= 0
 end
 
-function getSaveBlockSeedAddr()
- local startingCheckSeed = 0x0E0022F6
- local addOffset = 0x1000
+function getFirstSegmentSeed()
+ local startingCheckBlocksAddr = 0x0E000FF4
+ local checkSumSegment = mbyte(startingCheckBlocksAddr)
 
- while mdword(startingCheckSeed) ~= 0x1000 and addOffset <= 0xF000 do
-  startingCheckSeed = startingCheckSeed + addOffset
-  addOffset = addOffset + 0x1000
- end
-
- local saveBlockSeedAddr = startingCheckSeed - 0x1300
-
- return saveBlockSeedAddr
+ return mword(startingCheckBlocksAddr + ((14 - checkSumSegment) * 0x1000) + 0x2)
 end
 
 function getAllChecksums()
@@ -217,8 +210,7 @@ while warning == "" do
  gui.text(1, 85, string.format("Base Save Time: %02d:%02d:%02d:%02d", baseHour, baseMinute, baseSecond, baseSixtiethSecond))
 
  if isSeedGenerated() then
-  currSaveBlockSeedAddr = getSaveBlockSeedAddr()
-  firstSegmentSeed = mword(currSaveBlockSeedAddr)
+  firstSegmentSeed = getFirstSegmentSeed()
 
   if mode[index] == "10th Anniv/Aura Mew" then
    checkSums = getAllChecksums()
