@@ -1,3 +1,5 @@
+# THIS REPO IS NO MORE MAINTAINED. GO HERE FOR THE NEW REPO: https://github.com/Real96/PokeLua
+
 # Lua Scripts
 Many Lua scripts useful for RNG abusing in Pokémon games on various emulators
 
